@@ -3,7 +3,12 @@
 var express = require('express')
   , routes = require('./routes')
   , fs = require('fs')
-  , less = require('less');
+  , less = require('less')
+  , mongo = require('mongojs');
+
+var databaseUrl = "db"; // "username:password@example.com/mydb"
+var collections = ["users", "reports"]
+var db = mongo.connect(databaseUrl, collections);
 
 var app = module.exports = express.createServer();
 
