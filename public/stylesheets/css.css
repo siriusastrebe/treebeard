@@ -1,0 +1,78 @@
+/* color scheme */
+/* widescreen dimensions */
+/* Inherited classes */
+.border {
+  border: 1px #888888 solid;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+.grayed {
+  background-color: #888888;
+  color: #ffffff;
+}
+/* ---- ---- ---- ---- */
+/* Responsive Layout   */
+/* ---- ---- ---- ---- */
+@media (max-width: 959px) {
+  #content {
+    float: left
+    width: 100%;
+  }
+  header {
+    width: 100%;
+  }
+  footer {
+    width: 100%;
+  }
+}
+@media (min-width: 960px) {
+  #content {
+    margin-left: auto;
+    margin-right: auto;
+    width: 960px;
+  }
+  header {
+    width: 960px;
+  }
+  footer {
+    width: 960px;
+  }
+}
+/* ---- ---- ---- ---- */
+/* coloring            */
+/* ---- ---- ---- ---- */
+nav {
+  height: 80px;
+  width: 100%;
+  background-color: #ffa500;
+  -moz-box-shadow: 0px 108px 6px -100px #888888;
+  -webkit-box-shadow: 0px 108px 6px -100px #888888;
+  box-shadow: 0px 108px 6px -100px #888888;
+}
+header {
+  height: 140px;
+  padding-top: 40px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-family: arial;
+}
+header #banner {
+  font-size: 60px;
+}
+header #slogan {
+  font-size: 20px;
+}
+footer {
+  height: 200px;
+}
+/* ---- ---- ---- ---- */
+/* Specific Elements   */
+/* ---- ---- ---- ---- */
+#articleTitle {
+  width: 100%;
+}
+#articleText {
+  width: 100%;
+  min-height: 300px;
+}

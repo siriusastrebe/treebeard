@@ -1,0 +1,111 @@
+/* color scheme */ 
+@primary: #F8FBFF;
+@secondary: #FFA500;
+@tertiary: #8F9;
+@shading: #888;
+@antishading: #FFF;
+
+@border-radius: 10px; 
+
+/* widescreen dimensions */ 
+@wide-width: 960px;
+
+/* Inherited classes */
+.border { 
+  border: 1px @shading solid;
+  border-radius: @border-radius;
+  -moz-border-radius: @border-radius;
+  -webkit-border-radius: @border-radius;
+}
+
+.shadow (@x, @y, @w, @h, @color) {
+  -moz-box-shadow:    @arguments;
+  -webkit-box-shadow: @arguments;
+  box-shadow:         @arguments;
+}
+ 
+.grayed {
+  background-color: @shading;
+  color: @antishading;
+}
+
+
+/* ---- ---- ---- ---- */
+/* Responsive Layout   */
+/* ---- ---- ---- ---- */
+@media (max-width: (@wide-width - 1)) { 
+  #content {
+    float: left
+    width: 100%;
+  }
+
+  header { 
+    width: 100%;
+  }
+  
+  footer {
+    width: 100%;
+  }
+}
+
+@media (min-width: @wide-width) { 
+  #content { 
+    margin-left: auto;
+    margin-right: auto;
+    width: @wide-width;
+  }
+
+  header {
+    width: @wide-width;
+  }
+
+  footer {
+    width: @wide-width;
+  }
+}
+
+
+/* ---- ---- ---- ---- */
+/* coloring            */
+/* ---- ---- ---- ---- */
+nav { 
+  height: 80px;
+  width: 100%;
+
+  background-color: @secondary;
+  .shadow (0px, 108px, 6px, -100px, @shading);
+}
+
+header { 
+  height: 140px;
+  padding-top: 40px;
+  margin-bottom: 20px;
+
+  text-align: center;
+  font-family: arial;
+
+  #banner { 
+    font-size: 60px;
+  }
+
+  #slogan { 
+    font-size: 20px;
+  }
+}
+
+footer { 
+  height: 200px;
+}
+
+
+/* ---- ---- ---- ---- */
+/* Specific Elements   */
+/* ---- ---- ---- ---- */
+#articleTitle { 
+  width: 100%;
+}
+
+#articleText { 
+  width: 100%;
+  min-height: 300px;
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html ng-app lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Pivotal Search</title>
+  <meta name="description" content="Crowdsourcing the writing of guides, articles, how-to's and anything.">
+  <meta name="author" content="Sirius A Strebe">
+
+  <!-- yahoo css reset -->
+  <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.13.0/build/cssreset/cssreset-min.css">
+
+  <!-- styles -->
+  <link href="stylesheets/css.css" rel="stylesheet">
+
+  <script type='text/javascript' src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
+  <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js'></script>
+
+  <script type='text/javascript'>
+    function articleCtrl($scope) { 
+      $scope.articles = [];
+
+      $scope.addArticle = function () { 
+        $scope.articles.push(
+            {
+              title: $scope.articleTitle
+            , text: $scope.articleText
+            }
+        );
+      }
+    }
+  </script>
+
+</head>
+<body>
+  <nav>
+  </nav>
+  <div id='content'>
+    <header>
+      <div id="banner">
+        Articulate
+      </div>
+      <div id="slogan">
+        Crowdsourcing guides, how-to's, and other news.
+      </div>
+    </header>
+    <%- body %>
+    <footer> 
+    </footer>
+  </div>
+
+</body>
+</html>

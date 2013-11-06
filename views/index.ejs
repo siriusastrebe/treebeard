@@ -1,0 +1,42 @@
+<div ng-controller='articleCtrl' id='articles'>
+  <ul> 
+    <li ng-repeat="article in articles" ng-class="{grayed: article.unconfirmed}">
+      <div> {{ article.title }} </div>
+      <div> {{ article.contents }} </div>
+    </li>
+  </ul>
+
+  <form ng-submit="submitArticle()">
+    <input type='text' ng-model='articleTitle' id='articleTitle' placeholder="Title" />
+    <textarea ng-model='articleText' id='articleText' placeholder="Teach me something!"></textarea>
+    <input type='submit' value="publish" />
+  </form>
+
+  <script type="text/javascript" src="js/article.js"></script>
+  <script type="text/javascript">
+    function articleCtrl($scope) { 
+      $scope.articles = [];
+
+      addArticle = function (article) { 
+        $scope.articles.push(article)
+      }
+
+      $scope.submitArticle = function () { 
+        article = new Article(
+            $scope.articleTitle
+          , $scope.articleText
+          , 'Ben Franklin'
+        );
+        
+        $scope.articleText = "";
+        $scope.articleTitle = "";
+
+        article.unconfirmed = true;
+
+        addArticle(article);
+      }
+
+    }
+  </script>
+
+</div>
