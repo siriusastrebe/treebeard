@@ -1,3 +1,44 @@
+<script type="text/javascript" src="js/convo.js"></script>
+<script type="text/javascript">
+  var convoModule = angular.module('convo', []);
+
+  convoModule.controller("TreeController", ['$scope', function($scope) {
+    $scope.delete = function(data) {
+      data.nodes = [];
+    };
+
+    $scope.add = function(data) {
+      var post = data.nodes.length + 1;
+      var newName = data.name + '-' + post;
+      data.nodes.push({name: newName,nodes: []});
+    };
+
+    $scope.tree = [{name: "Node", nodes: [{name: "Frank", nodes: []}, {name: "Bill", nodes: []}]}];
+  }]);
+</script>
+
+<script type="text/ng-template" id="treeRenderer">
+  {{data.name}}
+  <button ng-click="add(data)">Add node</button>
+  <ul>
+    <li ng-repeat="data in data.nodes" ng-include="'treeRenderer'"></li>
+  </ul>
+</script>
+
+<div ng-controller="TreeController">
+  <ul>
+    <li ng-repeat="data in tree" ng-include="'treeRenderer'"></li>
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
 <div ng-controller='articleCtrl' id='articles'>
   <ul> 
     <li ng-repeat="article in articles" ng-class="{grayed: article.unconfirmed}">

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html ng-app lang="en">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Pivotal Search</title>
-  <meta name="description" content="Crowdsourcing the writing of guides, articles, how-to's and anything.">
+  <meta name="description" content="A cross between a forum and a chatroom. Lets you see the conversation develop chronologically, or see who is talking to who.">
   <meta name="author" content="Sirius A Strebe">
 
   <!-- yahoo css reset -->
@@ -15,32 +15,17 @@
   <script type='text/javascript' src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
   <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js'></script>
 
-  <script type='text/javascript'>
-    function articleCtrl($scope) { 
-      $scope.articles = [];
-
-      $scope.addArticle = function () { 
-        $scope.articles.push(
-            {
-              title: $scope.articleTitle
-            , text: $scope.articleText
-            }
-        );
-      }
-    }
-  </script>
-
 </head>
-<body>
+<body ng-app="convo">
   <nav>
   </nav>
   <div id='content'>
     <header>
       <div id="banner">
-        Articulate
+        Convo
       </div>
       <div id="slogan">
-        Crowdsourcing guides, how-to's, and other news.
+        Forums for the thoughtful
       </div>
     </header>
     <%- body %>

@@ -15,12 +15,15 @@ var app = module.exports = express.createServer();
 var lessfile = './public/stylesheets/less.less';
 var cssfile = './public/stylesheets/css.css';
 
+// Supplementary JS
+var Convo = require('./public/js/convo.js');
+
 // App Configuration
 app.configure(function(){
-  app.set('views', __dirname + '/views');
-
   // ejs 
+  app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
+  app.set('view options', {layout: 'layout.ejs'});
 
   // express
   app.use(express.bodyParser());
@@ -45,7 +48,6 @@ app.configure('production', function(){
 // Less css preprocessor
 var lessdata = fs.readFileSync(lessfile, 'utf8');
 
-
 less.render(lessdata, function (e, css) {
   if (e) throw err;
   fs.writeFile(cssfile, css, function (err) {
@@ -55,7 +57,11 @@ less.render(lessdata, function (e, css) {
 
 
 // Routes
-app.get('/', routes.index);
+app.get('/', function (req, res) { 
+    convo = new Convo.Root("First", "Bill Nye the Science Guy", [], "SCIENCE RULES", "http://www.google.com");
+    res.render('index.ejs', {root: convo}); 
+} );
+
 app.get('/articles/', function (req, res) { console.log("article") });
 app.get('/articles/:article', function (req, res) { console.log("article: " + req.params.article) }); 
 app.get('/articles/:article/:rebuttal', function (req, res) { console.log("rebuttal: " + req.params.rebuttal + " article: " + req.params.article) });
