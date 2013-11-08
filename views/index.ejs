@@ -1,33 +1,34 @@
 <script type="text/javascript" src="js/convo.js"></script>
+
 <script type="text/javascript">
   var convoModule = angular.module('convo', []);
-
   convoModule.controller("TreeController", ['$scope', function($scope) {
-    $scope.delete = function(data) {
-      data.nodes = [];
+    $scope.add = function(convo) {
+      child = new Branch("Second", "Joker", [], "Bill Nye");
+      convo.children.push(child);
     };
 
-    $scope.add = function(data) {
-      var post = data.nodes.length + 1;
-      var newName = data.name + '-' + post;
-      data.nodes.push({name: newName,nodes: []});
-    };
-
-    $scope.tree = [{name: "Node", nodes: [{name: "Frank", nodes: []}, {name: "Bill", nodes: []}]}];
+    $scope.root = JSONToRoot(<%- JSON.stringify(rootConvo) %>);
   }]);
 </script>
 
 <script type="text/ng-template" id="treeRenderer">
-  {{data.name}}
-  <button ng-click="add(data)">Add node</button>
+  <h3>{{convo.author}}</h3>
+  <p>{{convo.contents}}</p>
+  <button ng-click="add(convo)">Add node</button>
   <ul>
-    <li ng-repeat="data in data.nodes" ng-include="'treeRenderer'"></li>
+    <li ng-repeat="convo in convo.children" ng-include="'treeRenderer'"></li>
   </ul>
 </script>
 
 <div ng-controller="TreeController">
+  <h2>{{root.title}}</h2>
+  <h3>{{root.author}}</h3>
+  <p><a href="{{root.link}}">{{root.link}}</a></p>
+  <p>{{root.contents}}</p>
+  <button ng-click="add(root)">Add node</button>
   <ul>
-    <li ng-repeat="data in tree" ng-include="'treeRenderer'"></li>
+    <li ng-repeat="convo in root.children" ng-include="'treeRenderer'"></li>
   </ul>
 </div>
 

@@ -66,6 +66,12 @@ header #slogan {
 footer {
   height: 200px;
 }
+ul {
+  list-style-type: square;
+}
+ul li {
+  padding-left: 1em;
+}
 /* ---- ---- ---- ---- */
 /* Specific Elements   */
 /* ---- ---- ---- ---- */

@@ -16,7 +16,7 @@ var lessfile = './public/stylesheets/less.less';
 var cssfile = './public/stylesheets/css.css';
 
 // Supplementary JS
-var Convo = require('./public/js/convo.js');
+var convo = require('./public/js/convo.js');
 
 // App Configuration
 app.configure(function(){
@@ -58,8 +58,9 @@ less.render(lessdata, function (e, css) {
 
 // Routes
 app.get('/', function (req, res) { 
-    convo = new Convo.Root("First", "Bill Nye the Science Guy", [], "SCIENCE RULES", "http://www.google.com");
-    res.render('index.ejs', {root: convo}); 
+    root = new convo.Root("First", "Bill Nye the Science Guy", [], "SCIENCE RULES", "http://www.google.com");
+    console.log(root);
+    res.render('index.ejs', {rootConvo: root}); 
 } );
 
 app.get('/articles/', function (req, res) { console.log("article") });
