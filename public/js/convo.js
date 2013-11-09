@@ -16,11 +16,14 @@ function Node (contents, author, children) {
 }
 
 
+// Root
 function Root (contents, author, children, title, link) { 
   Node.apply(this, [contents, author, children]);
 
   this.title = title;
   this.link = link;
+  
+  this.token = Math.random().toString(36).substr(2);
 }
 Root.prototype = Object.create(Node.prototype);
 
@@ -29,6 +32,7 @@ function JSONToRoot (json) {
 }
 
 
+// Branch
 function Branch (contents, author, children, parent) {
   Node.apply(this, [contents, author, children]);
 
@@ -39,6 +43,7 @@ Branch.prototype = Object.create(Branch.prototype);
 function JSONToBranch (json) {
   return new Branch(json.contents, json.author, json.children, json.parent);
 }
+
 
 
 /* Exporting (requirement of including this file in Node.js) */

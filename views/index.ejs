@@ -1,36 +1,47 @@
 <script type="text/javascript" src="js/convo.js"></script>
 
 <script type="text/javascript">
-  var convoModule = angular.module('convo', []);
-  convoModule.controller("TreeController", ['$scope', function($scope) {
+  angular.module('convo', []).controller("TreeController", ['$scope', function($scope) {
     $scope.add = function(convo) {
-      child = new Branch("Second", "Joker", [], "Bill Nye");
+      child = new Branch(convo.response, "Joker", [], "Bill Nye");
+      child["response"] = "";
       convo.children.push(child);
     };
 
     $scope.root = JSONToRoot(<%- JSON.stringify(rootConvo) %>);
+    $scope.root["response"] = "";
   }]);
 </script>
 
-<script type="text/ng-template" id="treeRenderer">
-  <h3>{{convo.author}}</h3>
-  <p>{{convo.contents}}</p>
-  <button ng-click="add(convo)">Add node</button>
-  <ul>
-    <li ng-repeat="convo in convo.children" ng-include="'treeRenderer'"></li>
-  </ul>
-</script>
 
 <div ng-controller="TreeController">
   <h2>{{root.title}}</h2>
   <h3>{{root.author}}</h3>
   <p><a href="{{root.link}}">{{root.link}}</a></p>
   <p>{{root.contents}}</p>
-  <button ng-click="add(root)">Add node</button>
+
+  <textarea ng-model="root.response" id="response" placeholder="Speak your mind..."></textarea>
+
+  <button ng-click="add(root)">Submit</button>
+
   <ul>
     <li ng-repeat="convo in root.children" ng-include="'treeRenderer'"></li>
   </ul>
 </div>
+
+
+<script type="text/ng-template" id="treeRenderer">
+  <h3>{{convo.author}}</h3>
+  <p>{{convo.contents}}</p>
+
+  <textarea ng-model="convo.response" id="response" placeholder="Speak your mind..."></textarea>
+  <button ng-click="add(convo)">Submit</button>
+
+  <ul>
+    <li ng-repeat="convo in convo.children" ng-include="'treeRenderer'"></li>
+  </ul>
+</script>
+
 
 
 

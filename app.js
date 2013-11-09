@@ -1,16 +1,21 @@
-
+// ****************************************************************
+// Configs and Inits
+// ****************************************************************
 // Module dependencies.
 var express = require('express')
   , routes = require('./routes')
   , fs = require('fs')
   , less = require('less')
-  , mongo = require('mongojs');
+  , mongo = require('mongojs')
+  , socket = require('socket.io');
 
 var databaseUrl = "db"; // "username:password@example.com/mydb"
 var collections = ["users", "reports"]
 var db = mongo.connect(databaseUrl, collections);
 
 var app = module.exports = express.createServer();
+
+var io = socket.listen(app);
 
 var lessfile = './public/stylesheets/less.less';
 var cssfile = './public/stylesheets/css.css';
@@ -31,7 +36,6 @@ app.configure(function(){
  
   // router
   app.use(app.router);
-
   app.use(express.static(__dirname + '/public'));
 });
 
@@ -56,20 +60,36 @@ less.render(lessdata, function (e, css) {
 });
 
 
+
+// ****************************************************************
+// Application Architecture
+// ****************************************************************
 // Routes
 app.get('/', function (req, res) { 
     root = new convo.Root("First", "Bill Nye the Science Guy", [], "SCIENCE RULES", "http://www.google.com");
-    console.log(root);
     res.render('index.ejs', {rootConvo: root}); 
-} );
+});
 
+/* Commented out because it the functionality ain't there yet
 app.get('/articles/', function (req, res) { console.log("article") });
 app.get('/articles/:article', function (req, res) { console.log("article: " + req.params.article) }); 
 app.get('/articles/:article/:rebuttal', function (req, res) { console.log("rebuttal: " + req.params.rebuttal + " article: " + req.params.article) });
 app.get('/users', routes.register);
 app.get('/:topic', function (req, res) { console.log("topic: " + req.params.topic) }); 
+*/
+
+// WebSocket
+io.sockets.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
 
 
+
+// ****************************************************************
 // Deploy
+// ****************************************************************
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
