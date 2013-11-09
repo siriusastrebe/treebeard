@@ -1,3 +1,5 @@
+convoList = {};
+
 /*
  * Node is a superclass of Root and Branches... 
  * Shouldn't have to be instantiated outside
@@ -5,45 +7,84 @@
  * 
  * Argument 'children' are optional.
  */
-function Node (contents, author, children) { 
+function Node (contents, author, optional) { 
   this.contents = contents;
   this.author = author;
+  this.children = [];
+  this.token = Math.random().toString(36).substr(2);
 
-  if (typeof (children) !== undefined) 
-    this.children = children;
-  else 
-    this.children = [];
+  if (!(typeof optional === 'undefined')) { 
+    this.children = optional.children || this.children;
+    this.token = optional.token || this.token;
+  }
+
+  convoList[this.token] = this;
+
+  this.addChild = function (contents, author, optional) {
+    child = new Branch(contents, author, this, optional);
+    this.children.push(child);
+    return child;
+  }
 }
 
 
+
 // Root
-function Root (contents, author, children, title, link) { 
-  Node.apply(this, [contents, author, children]);
+function Root (contents, author, title, link, optional) { 
+  Node.apply(this, [contents, author, optional]);
 
   this.title = title;
   this.link = link;
-  
-  this.token = Math.random().toString(36).substr(2);
+
+  this.toJson = function () { 
+    children = this.children.map(function(node) { node.token } );
+    return {
+      contents: this.contents
+    , author: this.author
+    , children: children
+    , title: this.title
+    , link: this.link
+    , token: this.token
+    }
+  }
+
 }
 Root.prototype = Object.create(Node.prototype);
 
 function JSONToRoot (json) {
-  return new Root(json.contents, json.author, json.children, json.title, json.link);
+  children = json.children.map(function (childToken) { return convoList[childToken] });
+  return new Root(json.contents, json.author, json.title, json.link, {children: children, token: json.token});
 }
 
 
-// Branch
-function Branch (contents, author, children, parent) {
-  Node.apply(this, [contents, author, children]);
+/* Branch
+ * Argument parent
+ */
+function Branch (contents, author, parent, optional) {
+  Node.apply(this, [contents, author, optional]);
 
   this.parent = parent;
+
+  this.toJson = function () { 
+    children = this.children.map(function(node) { return node.token } );
+    return {
+      contents: this.contents
+    , author: this.author
+    , children: children
+    , parent: parent.token
+    , token: this.token
+    }
+  }
+
 }
-Branch.prototype = Object.create(Branch.prototype);
+Branch.prototype = Object.create(Node.prototype);
 
 function JSONToBranch (json) {
-  return new Branch(json.contents, json.author, json.children, json.parent);
-}
+  children = json.children.map(function (childToken) { return convoList[childToken] });
+  parent = convoList[json.parent];
 
+  return parent.addChild(json.contents, json.author, {children: children, token: json.token});
+}
 
 
 /* Exporting (requirement of including this file in Node.js) */

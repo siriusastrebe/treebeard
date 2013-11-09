@@ -65,8 +65,8 @@ less.render(lessdata, function (e, css) {
 // Application Architecture
 // ****************************************************************
 // Routes
+root = new convo.Root("First", "Bill Nye the Science Guy", "SCIENCE RULES", "http://www.google.com");
 app.get('/', function (req, res) { 
-    root = new convo.Root("First", "Bill Nye the Science Guy", [], "SCIENCE RULES", "http://www.google.com");
     res.render('index.ejs', {rootConvo: root}); 
 });
 
@@ -80,9 +80,9 @@ app.get('/:topic', function (req, res) { console.log("topic: " + req.params.topi
 
 // WebSocket
 io.sockets.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  socket.on('convo', function (data) {
+    console.log(data.convo);
+    socket.broadcast.emit('convo', data);
   });
 });
 
