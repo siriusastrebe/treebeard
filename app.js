@@ -65,7 +65,8 @@ less.render(lessdata, function (e, css) {
 // Application Architecture
 // ****************************************************************
 // Routes
-root = new convo.Root("First", "Bill Nye the Science Guy", "SCIENCE RULES", "http://www.google.com");
+text = "1 In the beginning God created the heaven and the earth.  2    And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters.  3     And God said, Let there be light: 2 Cor. 4.6 and there was light.  4    And God saw the light, that it was good: and God divided the light from the darkness.  5    And God called the light Day, and the darkness he called Night. And the evening and the morning were the first day.";
+root = new convo.Root(text, "Bill Nye the Science Guy", "SCIENCE RULES", "http://www.google.com");
 app.get('/', function (req, res) { 
     res.render('index.ejs', {rootConvo: root}); 
 });

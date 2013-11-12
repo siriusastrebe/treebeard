@@ -1,23 +1,36 @@
 /* color scheme */ 
-@primary: #F8FBFF;
+@primary: #097054;
 @secondary: #FFA500;
 @tertiary: #8F9;
+@quaternary: #FFE030;
+
 @shading: #888;
 @antishading: #FFF;
 
-@border-radius: 10px; 
+@fontLarge: arial;
+@fontText: verdana;
+@fontStylish: century gothic;
+
+@borderBig: 20px; 
+@borderMedium: 10px;
+@borderSmall: 5px;
 
 /* widescreen dimensions */ 
 @wide-width: 960px;
 
-/* Inherited classes */
-.border { 
+/* Border */
+.border (@size) { 
   border: 1px @shading solid;
-  border-radius: @border-radius;
-  -moz-border-radius: @border-radius;
-  -webkit-border-radius: @border-radius;
+  border-radius: @size;
+  -moz-border-radius: @size;
+  -webkit-border-radius: @size;
 }
 
+.borderBig { .border (@borderBig); }
+.borderMedium { .border (@borderMedium); }
+.borderSmall { .border (@borderSmall); }
+
+/* Shadow */
 .shadow (@x, @y, @w, @h, @color) {
   -moz-box-shadow:    @arguments;
   -webkit-box-shadow: @arguments;
@@ -82,14 +95,15 @@ header {
   margin-bottom: 20px;
 
   text-align: center;
-  font-family: arial;
 
   #banner { 
     font-size: 60px;
+    font-family: @fontLarge;
   }
 
   #slogan { 
     font-size: 20px;
+    font-family: @fontText;
   }
 }
 
@@ -97,19 +111,54 @@ footer {
   height: 200px;
 }
 
-
-ul { list-style-type: square }
-ul li { padding-left: 1em } 
-
-
 /* ---- ---- ---- ---- */
 /* Specific Elements   */
 /* ---- ---- ---- ---- */
-#articleTitle { 
+/* ---- ---- ---- ---- */
+/* Forum View          */
+/* ---- ---- ---- ---- */
+.treeView {
   width: 100%;
+  margin: 5px 0px 5px 0px;
+  padding: 0px;
+
+  font-family: @fontText;
+
+  border: 1px solid @tertiary;
+  .borderMedium;
+
+  h2 {
+    font-size: 30px;
+    font-family: @fontLarge;
+    text-align: center;
+    margin: 25px 0px 10px;
+
+    a { 
+      text-decoration: none;
+      color: @primary;
+    }
+  }
+
+  h3 {
+    display: inline-block;
+    float: left;
+
+    .borderSmall;
+    margin: 10px 25px 5px 15px;
+    padding: 4px;
+    
+    background-color: @quaternary;
+    color: @shading;
+
+    font-size: 18px;
+    font-family: @fontStylish;
+  }
+  
+  p { 
+    margin: 5px 25px 10px;
+  }
+
+  ul { list-style-type: none; }
+  ul li { padding-left: 0px; } 
 }
 
-#articleText { 
-  width: 100%;
-  min-height: 300px;
-}
