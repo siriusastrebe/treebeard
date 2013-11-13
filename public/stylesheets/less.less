@@ -19,16 +19,15 @@
 @wide-width: 960px;
 
 /* Border */
-.border (@size, @radius) { 
+.border (@size) { 
   border-radius: @size;
   -moz-border-radius: @size;
   -webkit-border-radius: @size;
 }
 
-.borderBig { .border (@borderBig, 2px); }
-.borderMedium { .border (@borderMedium, 1px); }
-.borderSmall { .border (@borderSmall, 1px); }
-.borderRadius { .border (@borderSmall, 0px); }
+.borderBig { .border (@borderBig); }
+.borderMedium { .border (@borderMedium); }
+.borderSmall { .border (@borderSmall); }
 
 /* Shadow */
 .shadow (@x, @y, @w, @h, @color) {
@@ -150,6 +149,7 @@ footer {
     padding: 4px;
     
     background-color: @quaternary;
+    .borderSmall;
     color: @shading;
 
     font-size: 18px;
@@ -168,7 +168,10 @@ footer {
 /* Tree View           */
 /* ---- ---- ---- ---- */
 .treeView { 
+  position: relative;
   white-space: nowrap;
+  padding-top: 5px;
+  padding-bottom: 5px;
 
   .node, .children {
     display: inline-block;
@@ -179,14 +182,35 @@ footer {
     white-space: normal;
     border: 1px solid @tertiary;
     .borderMedium;
+
+    margin-left: 10px;
     padding: 10px;
     width: 500px;
   }
 
-  .children {
+  .bracket {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    display: inline-block;
+    width: 6px;
+
     border-left-width: 3px;
     border-left-color: @shading;
-    border-left-style: outset;
-    border-radius: 10px;
+    border-left-style: solid;
+  }
+
+  .topBracket { 
+    top: 50%;
+    border-top-left-radius: @borderMedium;
+    border-top-width: 3px;
+    border-top-style: solid;
+  }
+
+  .botBracket { 
+    bottom: 50%;
+    border-bottom-left-radius: @borderMedium;
+    border-bottom-width: 3px;
+    border-bottom-style: solid;
   }
 }

@@ -93,7 +93,10 @@
 <!-- Angular logic for creating the Root -->
 <script type="text/ng-template" id="rootRenderer">
   <h2><a href="{{root.link}}">{{root.title}}</a></h2>
-  <h3>{{root.author}}</h3>
+  <div class="details">
+    <h3>{{root.author}}</h3>
+    <h4>{{root.timestamp}}</h4>
+  </div>
   <p>{{root.contents}}</p>
 
   <input type="checkbox" ng-model="root.responseVisible">Respond</input>
@@ -108,8 +111,10 @@
 <!-- Angular logic for creating posts (Forum View) -->
 <script type="text/ng-template" id="forumRenderer">
   <div class="post">
-    <h3>{{convo.author}}</h3>
-    <p>{{convo.contents}}</p>
+    <div class="details">
+      <h3>{{convo.author}}</h3>
+      <p>{{convo.contents}}</p>
+    </div>
 
     <input type="checkbox" ng-model="convo.responseVisible">Respond</input>
 
@@ -125,8 +130,14 @@
 <script type="text/ng-template" id="treeRenderer">
   <div class="treeView">
 
+    <div class="bracket" ng-class="{topBracket: $first, botBracket: $last}"></div>
+
     <div class="node">
-      <h3>{{convo.author}}</h3>
+      <div class="details">
+        <h3>{{convo.author}}</h3>
+        <h4>{{convo.timestamp}}</h4>
+      </div>
+      
       <p>{{convo.contents}}</p>
 
       <input type="checkbox" ng-model="convo.responseVisible">Respond</input>

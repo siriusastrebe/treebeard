@@ -9,7 +9,7 @@ var express = require('express')
   , mongo = require('mongojs')
   , socket = require('socket.io');
 
-var databaseUrl = "db"; // "username:password@example.com/mydb"
+var databaseUrl = "mongo"; // "username:password@example.com/mydb"
 var collections = ["users", "reports"]
 var db = mongo.connect(databaseUrl, collections);
 

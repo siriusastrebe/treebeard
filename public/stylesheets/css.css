@@ -16,11 +16,6 @@
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
 }
-.borderRadius {
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-}
 /* Shadow */
 .grayed {
   background-color: #888888;
@@ -117,6 +112,9 @@ footer {
   margin: 15px 25px 5px 10px;
   padding: 4px;
   background-color: #ffe030;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
   color: #888888;
   font-size: 18px;
   font-family: century gothic;
@@ -134,7 +132,10 @@ footer {
 /* Tree View           */
 /* ---- ---- ---- ---- */
 .treeView {
+  position: relative;
   white-space: nowrap;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 .treeView .node,
 .treeView .children {
@@ -147,12 +148,29 @@ footer {
   border-radius: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
+  margin-left: 10px;
   padding: 10px;
   width: 500px;
 }
-.treeView .children {
+.treeView .bracket {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  display: inline-block;
+  width: 6px;
   border-left-width: 3px;
   border-left-color: #888888;
-  border-left-style: outset;
-  border-radius: 10px;
+  border-left-style: solid;
+}
+.treeView .topBracket {
+  top: 50%;
+  border-top-left-radius: 10px;
+  border-top-width: 3px;
+  border-top-style: solid;
+}
+.treeView .botBracket {
+  bottom: 50%;
+  border-bottom-left-radius: 10px;
+  border-bottom-width: 3px;
+  border-bottom-style: solid;
 }
