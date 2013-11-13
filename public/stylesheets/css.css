@@ -139,6 +139,7 @@ footer {
 .treeView .node,
 .treeView .children {
   display: inline-block;
+  vertical-align: middle;
 }
 .treeView .node {
   white-space: normal;
