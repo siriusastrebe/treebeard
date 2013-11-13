@@ -44,7 +44,7 @@ function Node (contents, author, timestamp, optional) {
 
   initNode(this);
 
-  this.addChild = function (contents, author, optional) {
+  this.addChild = function (contents, author, timestamp, optional) {
     child = new Branch(contents, author, this, optional);
     this.children.push(child);
     return child;

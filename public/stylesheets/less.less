@@ -19,16 +19,16 @@
 @wide-width: 960px;
 
 /* Border */
-.border (@size) { 
-  border: 1px @shading solid;
+.border (@size, @radius) { 
   border-radius: @size;
   -moz-border-radius: @size;
   -webkit-border-radius: @size;
 }
 
-.borderBig { .border (@borderBig); }
-.borderMedium { .border (@borderMedium); }
-.borderSmall { .border (@borderSmall); }
+.borderBig { .border (@borderBig, 2px); }
+.borderMedium { .border (@borderMedium, 1px); }
+.borderSmall { .border (@borderSmall, 1px); }
+.borderRadius { .border (@borderSmall, 0px); }
 
 /* Shadow */
 .shadow (@x, @y, @w, @h, @color) {
@@ -47,12 +47,11 @@
 /* Responsive Layout   */
 /* ---- ---- ---- ---- */
 @media (max-width: (@wide-width - 1)) { 
-  #content {
-    float: left
+  header { 
     width: 100%;
   }
 
-  header { 
+  #forumView {
     width: 100%;
   }
   
@@ -62,17 +61,21 @@
 }
 
 @media (min-width: @wide-width) { 
-  #content { 
+  header {
     margin-left: auto;
     margin-right: auto;
     width: @wide-width;
   }
 
-  header {
+  #forumView { 
+    margin-left: auto;
+    margin-right: auto;
     width: @wide-width;
   }
 
   footer {
+    margin-left: auto;
+    margin-right: auto;
     width: @wide-width;
   }
 }
@@ -117,7 +120,7 @@ footer {
 /* ---- ---- ---- ---- */
 /* Forum View          */
 /* ---- ---- ---- ---- */
-.treeView {
+.post {
   width: 100%;
   margin: 5px 0px 5px 0px;
   padding: 0px;
@@ -143,8 +146,7 @@ footer {
     display: inline-block;
     float: left;
 
-    .borderSmall;
-    margin: 10px 25px 5px 15px;
+    margin: 15px 25px 5px 10px;
     padding: 4px;
     
     background-color: @quaternary;
@@ -162,3 +164,28 @@ footer {
   ul li { padding-left: 0px; } 
 }
 
+/* ---- ---- ---- ---- */
+/* Tree View           */
+/* ---- ---- ---- ---- */
+.treeView { 
+  white-space: nowrap;
+
+  .node, .children {
+    display: inline-block;
+  }
+
+  .node { 
+    white-space: normal;
+    border: 1px solid @tertiary;
+    .borderMedium;
+    padding: 10px;
+    width: 500px;
+  }
+
+  .children {
+    border-left-width: 3px;
+    border-left-color: @shading;
+    border-left-style: outset;
+    border-radius: 10px;
+  }
+}

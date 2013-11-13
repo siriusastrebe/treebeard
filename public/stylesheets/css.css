@@ -2,19 +2,21 @@
 /* widescreen dimensions */
 /* Border */
 .borderBig {
-  border: 1px #888888 solid;
   border-radius: 20px;
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
 }
 .borderMedium {
-  border: 1px #888888 solid;
   border-radius: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
 }
 .borderSmall {
-  border: 1px #888888 solid;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+.borderRadius {
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -28,11 +30,10 @@
 /* Responsive Layout   */
 /* ---- ---- ---- ---- */
 @media (max-width: 959px) {
-  #content {
-    float: left
+  header {
     width: 100%;
   }
-  header {
+  #forumView {
     width: 100%;
   }
   footer {
@@ -40,15 +41,19 @@
   }
 }
 @media (min-width: 960px) {
-  #content {
+  header {
     margin-left: auto;
     margin-right: auto;
     width: 960px;
   }
-  header {
+  #forumView {
+    margin-left: auto;
+    margin-right: auto;
     width: 960px;
   }
   footer {
+    margin-left: auto;
+    margin-right: auto;
     width: 960px;
   }
 }
@@ -86,47 +91,67 @@ footer {
 /* ---- ---- ---- ---- */
 /* Forum View          */
 /* ---- ---- ---- ---- */
-.treeView {
+.post {
   width: 100%;
   margin: 5px 0px 5px 0px;
   padding: 0px;
   font-family: verdana;
   border: 1px solid #88ff99;
-  border: 1px #888888 solid;
   border-radius: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
 }
-.treeView h2 {
+.post h2 {
   font-size: 30px;
   font-family: arial;
   text-align: center;
   margin: 25px 0px 10px;
 }
-.treeView h2 a {
+.post h2 a {
   text-decoration: none;
   color: #097054;
 }
-.treeView h3 {
+.post h3 {
   display: inline-block;
   float: left;
-  border: 1px #888888 solid;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  margin: 10px 25px 5px 15px;
+  margin: 15px 25px 5px 10px;
   padding: 4px;
   background-color: #ffe030;
   color: #888888;
   font-size: 18px;
   font-family: century gothic;
 }
-.treeView p {
+.post p {
   margin: 5px 25px 10px;
 }
-.treeView ul {
+.post ul {
   list-style-type: none;
 }
-.treeView ul li {
+.post ul li {
   padding-left: 0px;
+}
+/* ---- ---- ---- ---- */
+/* Tree View           */
+/* ---- ---- ---- ---- */
+.treeView {
+  white-space: nowrap;
+}
+.treeView .node,
+.treeView .children {
+  display: inline-block;
+}
+.treeView .node {
+  white-space: normal;
+  border: 1px solid #88ff99;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  padding: 10px;
+  width: 500px;
+}
+.treeView .children {
+  border-left-width: 3px;
+  border-left-color: #888888;
+  border-left-style: outset;
+  border-radius: 10px;
 }

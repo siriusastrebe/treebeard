@@ -53,7 +53,7 @@ app.configure('production', function(){
 var lessdata = fs.readFileSync(lessfile, 'utf8');
 
 less.render(lessdata, function (e, css) {
-  if (e) throw err;
+  if (e) throw e;
   fs.writeFile(cssfile, css, function (err) {
     console.log(lessfile + ' rendered into css at ' + cssfile);
   });

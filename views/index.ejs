@@ -1,6 +1,34 @@
+
+<!--      -->
+<!-- View -->
+<!--      -->
+
+<div ng-controller="PostsController">
+  <div id="forumView">
+    <div class="post" ng-include="'rootRenderer'"> </div>
+
+    <ul>
+      <li ng-repeat="convo in posts" ng-hide="$first" ng-include="'forumRenderer'"></li>
+    </ul>
+  </div>
+
+  <div class="treeView">
+    <div class="node" ng-include="'rootRenderer'"> </div>
+    <ul class="children">
+      <li ng-repeat="convo in root.children" ng-include="'treeRenderer'"></li>
+    </ul>
+  </div>
+</div>
+
+
+
+
+<!--             -->
+<!--  Controller -->
+<!--             -->
+
 <script type="text/javascript" src="js/convo.js"></script>
 
-<!-- Socket -->
 <script type="text/javascript">
   var socket = io.connect('http://localhost:3000');
 </script>
@@ -10,42 +38,28 @@
 <script type="text/javascript">
   /* Convo wrapper, since our Angular implementation
    * uses methods that the tree/node model does not utilize */
-  var counter = 0;
-  function convoInit (convo) { 
-    convo.active = false;
-
-    // TODO: Ordering may not be one-to-one with the nodesChronological sort
-    // order if the socket they're sent in are unordered.
-    
-    convo.order = counter;
-
-    counter++
-  }
 
   function root (json) { 
     convo = JSONToRoot(json);
-    convoInit(convo);
     return convo;
   }
 
   function branch (json) { 
     convo = JSONToBranch(json);
-    convoInit(convo);
     return convo;
   }
 
   function fromScratch (parent, text, author) { 
-    child = parent.addChild(text, author);
-    convoInit(child);
+    child = parent.addChild(text, author, new Date());
     return child;
   }
 </script>
 
 
-
 <!-- Angular Controller logic -->
 <script type="text/javascript">
-  angular.module('convo', []).controller("TreeController", ['$scope', function($scope) {
+
+  angular.module('convo', []).controller("PostsController", ['$scope', function($scope) {
 
     $scope.submitConvo = function(convo) {
       child = fromScratch(convo, convo.response, "V for Vendetta");
@@ -63,34 +77,8 @@
       });
     });
 
-    $scope.toggleTreeView = function (convo) { 
-      if (convo.active) {
-        convo.active = false;
-        $scope.postsCutoff = -1;
-      }
-      else { 
-        convo.active = true;
-        $scope.postsCutoff = convo.order;
-      }
-    }
-
     $scope.root = root(<%- JSON.stringify(rootConvo) %>);
     $scope.posts = nodesChronological;
-    $scope.postsCutoff = -1;
-
-    $scope.forumFilter = function (convo) { 
-      if ($scope.postsCutoff >= 0)  
-        return convo.order < $scope.postsCutoff;
-      else  
-        return true;
-    }
-
-    $scope.treeFilter = function (child) { 
-      if (child.active || child.parent.active) 
-        return true;
-      else  
-        return false;
-    }
 
   }]);
 </script>
@@ -98,58 +86,59 @@
 
 
 
+<!--            -->
+<!-- Templating -->
+<!--            -->
 
-<!-- View -->
-<!-- Root -->
-<div ng-controller="TreeController">
-  <div class="forumView">
-    <div class="treeView">
-      <h2><a href="{{root.link}}">{{root.title}}</a></h2>
-      <h3>{{root.author}}</h3>
-      <p>{{root.contents}}</p>
+<!-- Angular logic for creating the Root -->
+<script type="text/ng-template" id="rootRenderer">
+  <h2><a href="{{root.link}}">{{root.title}}</a></h2>
+  <h3>{{root.author}}</h3>
+  <p>{{root.contents}}</p>
 
-      <input type="checkbox" ng-model="root.responseVisible">Respond</input>
-      <input type="checkbox" ng-click="toggleTreeView(root)">See Children</input>
+  <input type="checkbox" ng-model="root.responseVisible">Respond</input>
 
-      <form ng-submit="submitConvo(root)" ng-hide"root.responseVisible">
-        <textarea ng-model="root.response" placeholder="Speak your mind..."></textarea>
-        <button>Submit</button>
-      </form>
+  <form ng-submit="submitConvo(root)" ng-hide"root.responseVisible">
+    <textarea ng-model="root.response" placeholder="Speak your mind..."></textarea>
+    <button>Submit</button>
+  </form>
+</script>
 
-      <ul>
-        <li ng-repeat="convo in root.children | filter: treeFilter" ng-include="'treeRenderer'"></li>
-      </ul>
 
-    </div>
+<!-- Angular logic for creating posts (Forum View) -->
+<script type="text/ng-template" id="forumRenderer">
+  <div class="post">
+    <h3>{{convo.author}}</h3>
+    <p>{{convo.contents}}</p>
 
-    <ul>
-      <li ng-repeat="convo in posts | filter: forumFilter" ng-hide="$first" ng-include="'treeRenderer'"></li>
-    </ul>
+    <input type="checkbox" ng-model="convo.responseVisible">Respond</input>
 
+    <form ng-submit="submitConvo(convo)" ng-hide="convo.responseVisible">
+      <textarea ng-model="convo.response" placeholder="Speak your mind..."></textarea>
+      <button>Submit</button>
+    </form>
   </div>
-</div>
+</script>
 
 
-
-<!-- Angular logic for creating children -->
+<!-- Angular logic for creating branches (Tree View) -->
 <script type="text/ng-template" id="treeRenderer">
-  <div class="forumView">
-    <div class="treeView">
+  <div class="treeView">
+
+    <div class="node">
       <h3>{{convo.author}}</h3>
       <p>{{convo.contents}}</p>
 
       <input type="checkbox" ng-model="convo.responseVisible">Respond</input>
-      <input type="checkbox" ng-click="toggleTreeView(convo)">See Children</input>
 
       <form ng-submit="submitConvo(convo)" ng-hide="convo.responseVisible">
         <textarea ng-model="convo.response" placeholder="Speak your mind..."></textarea>
         <button>Submit</button>
       </form>
-
     </div>
 
-    <ul>
-      <li ng-repeat="convo in convo.children | filter: treeFilter" ng-include="'treeRenderer'"></li>
+    <ul class="children">
+      <li ng-repeat="convo in convo.children" ng-include="'treeRenderer'"></li>
     </ul>
   </div>
 </script>
