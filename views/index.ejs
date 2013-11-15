@@ -101,7 +101,7 @@
 
   <input type="checkbox" ng-model="root.responseVisible">Respond</input>
 
-  <form ng-submit="submitConvo(root)" ng-hide"root.responseVisible">
+  <form ng-submit="submitConvo(root)" ng-show="root.responseVisible">
     <textarea ng-model="root.response" placeholder="Speak your mind..."></textarea>
     <button>Submit</button>
   </form>
@@ -118,7 +118,7 @@
 
     <input type="checkbox" ng-model="convo.responseVisible">Respond</input>
 
-    <form ng-submit="submitConvo(convo)" ng-hide="convo.responseVisible">
+    <form ng-submit="submitConvo(convo)" ng-show="convo.responseVisible">
       <textarea ng-model="convo.response" placeholder="Speak your mind..."></textarea>
       <button>Submit</button>
     </form>
@@ -142,7 +142,7 @@
 
       <input type="checkbox" ng-model="convo.responseVisible">Respond</input>
 
-      <form ng-submit="submitConvo(convo)" ng-hide="convo.responseVisible">
+      <form ng-submit="submitConvo(convo)" ng-show="convo.responseVisible">
         <textarea ng-model="convo.response" placeholder="Speak your mind..."></textarea>
         <button>Submit</button>
       </form>

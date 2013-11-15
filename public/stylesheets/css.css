@@ -122,6 +122,9 @@ footer {
 .post p {
   margin: 5px 25px 10px;
 }
+.post input[type='checkbox'] {
+  margin: 5px 30px 10px 30px;
+}
 .post ul {
   list-style-type: none;
 }
@@ -149,8 +152,33 @@ footer {
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
   margin-left: 10px;
-  padding: 10px;
   width: 500px;
+}
+.treeView h2 {
+  font-size: 20px;
+  font-family: arial;
+  text-align: center;
+  margin: 10px 0px 5px;
+}
+.treeView h2 a {
+  text-decoration: none;
+  color: #097054;
+}
+.treeView .details {
+  display: inline-block;
+  float: left;
+  margin: 10px 15px 5px 10px;
+  padding: 4px;
+  background-color: #ffe030;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  color: #888888;
+  font-size: 14px;
+  font-family: century gothic;
+}
+.treeView p {
+  margin: 5px 15px 10px;
 }
 .treeView .bracket {
   position: absolute;

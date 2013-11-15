@@ -23,6 +23,8 @@ function initNode(convo, sortKey) {
 
 
 
+
+
 /*
  * Node is a superclass of Root and Branches... 
  * Shouldn't have to be instantiated outside
@@ -35,7 +37,7 @@ function Node (contents, author, timestamp, optional) {
   this.author = author;
   this.children = [];
   this.timestamp = timestamp;
-  this.token = Math.random().toString(36).substr(2);
+  this.token = createToken();
 
   if (!(typeof optional === 'undefined')) { 
     this.children = optional.children || this.children;
@@ -48,6 +50,12 @@ function Node (contents, author, timestamp, optional) {
     child = new Branch(contents, author, this, optional);
     this.children.push(child);
     return child;
+  }
+
+  function createToken() { 
+    rand = Math.random().toString(36).substr(2);
+    date = new Date().toString();
+    return date + rand;
   }
 }
 
@@ -78,6 +86,15 @@ Root.prototype = Object.create(Node.prototype);
 function JSONToRoot (json) {
   children = json.children.map(function (childToken) { return getNode(childToken) });
   return new Root(json.contents, json.author, json.title, json.link, json.timestamp, {children: children, token: json.token});
+}
+
+var rootSchema = { 
+  contents: String
+, author: String
+, children: [String]
+, title: String
+, link: String
+, token: String
 }
 
 
@@ -120,6 +137,7 @@ function JSONToBranch (json) {
 /* Exporting (requirement of including this file in Node.js) */
 if (typeof module !== 'undefined') {
   module.exports.Root = Root;
+  module.exports.rootSchema = rootSchema;
   module.exports.Branch = Branch;
 }
 

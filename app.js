@@ -6,12 +6,10 @@ var express = require('express')
   , routes = require('./routes')
   , fs = require('fs')
   , less = require('less')
-  , mongo = require('mongojs')
+  , mongoose = require('mongoose')
   , socket = require('socket.io');
 
-var databaseUrl = "mongo"; // "username:password@example.com/mydb"
-var collections = ["users", "reports"]
-var db = mongo.connect(databaseUrl, collections);
+mongoose.connect('mongodb://localhost/test');
 
 var app = module.exports = express.createServer();
 
@@ -60,15 +58,24 @@ less.render(lessdata, function (e, css) {
 });
 
 
+// ****************************************************************
+// Database Architecture TODO: refactor this outa app.js
+// ****************************************************************
+var Roots = mongoose.model('Root', convo.rootSchema);
+var text = "The happiness of your life depends upon the quality of your thoughts: therefore, guard accordingly, and take care that you entertain no notions unsuitable to virtue and reasonable nature.";
+var root = new convo.Root(text, "Marcus Aurelius", "http://www.livius.org/a/1/emperors/marcus_aurelius.jpg", new Date());
+var rootie = new Roots(root.toJson);
+rootie.save(function (err) { 
+  if (err) throw err;
+  console.log("Meow");
+});
 
 // ****************************************************************
 // Application Architecture
 // ****************************************************************
 // Routes
-text = "1 In the beginning God created the heaven and the earth.  2    And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters.  3     And God said, Let there be light: 2 Cor. 4.6 and there was light.  4    And God saw the light, that it was good: and God divided the light from the darkness.  5    And God called the light Day, and the darkness he called Night. And the evening and the morning were the first day.";
-root = new convo.Root(text, "Bill Nye the Science Guy", "SCIENCE RULES", "http://www.google.com");
 app.get('/', function (req, res) { 
-    res.render('index.ejs', {rootConvo: root}); 
+    res.render('index.ejs', {rootConvo: a}); 
 });
 
 /* Commented out because it the functionality ain't there yet
