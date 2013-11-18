@@ -24,7 +24,6 @@ function initNode(convo, sortKey) {
 
 
 
-
 /*
  * Node is a superclass of Root and Branches... 
  * Shouldn't have to be instantiated outside
@@ -47,15 +46,14 @@ function Node (contents, author, timestamp, optional) {
   initNode(this);
 
   this.addChild = function (contents, author, timestamp, optional) {
-    child = new Branch(contents, author, this, optional);
+    child = new Branch(contents, author, this, timestamp, optional);
     this.children.push(child);
     return child;
   }
 
   function createToken() { 
     rand = Math.random().toString(36).substr(2);
-    date = new Date().toString();
-    return date + rand;
+    return rand;
   }
 }
 
@@ -74,6 +72,7 @@ function Root (contents, author, title, link, timestamp, optional) {
       contents: this.contents
     , author: this.author
     , children: children
+    , timestamp: this.timestamp
     , title: this.title
     , link: this.link
     , token: this.token
@@ -88,21 +87,13 @@ function JSONToRoot (json) {
   return new Root(json.contents, json.author, json.title, json.link, json.timestamp, {children: children, token: json.token});
 }
 
-var rootSchema = { 
-  contents: String
-, author: String
-, children: [String]
-, title: String
-, link: String
-, token: String
-}
 
 
 /* Branch
  * Argument parent
  */
 function Branch (contents, author, parent, timestamp, optional) {
-  Node.apply(this, [contents, author, optional]);
+  Node.apply(this, [contents, author, timestamp, optional]);
 
   this.parent = parent;
 
@@ -113,6 +104,7 @@ function Branch (contents, author, parent, timestamp, optional) {
     , author: this.author
     , children: children
     , parent: parent.token
+    , timestamp: this.timestamp
     , token: this.token
     }
   }
@@ -137,7 +129,6 @@ function JSONToBranch (json) {
 /* Exporting (requirement of including this file in Node.js) */
 if (typeof module !== 'undefined') {
   module.exports.Root = Root;
-  module.exports.rootSchema = rootSchema;
   module.exports.Branch = Branch;
 }
 

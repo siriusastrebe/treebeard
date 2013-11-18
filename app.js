@@ -6,17 +6,15 @@ var express = require('express')
   , routes = require('./routes')
   , fs = require('fs')
   , less = require('less')
-  , mongoose = require('mongoose')
   , socket = require('socket.io');
 
-mongoose.connect('mongodb://localhost/test');
 
 var app = module.exports = express.createServer();
 
 var io = socket.listen(app);
 
-var lessfile = './public/stylesheets/less.less';
-var cssfile = './public/stylesheets/css.css';
+var lessfile = './public/css/less.less';
+var cssfile = './public/css/css.css';
 
 // Supplementary JS
 var convo = require('./public/js/convo.js');
@@ -61,35 +59,24 @@ less.render(lessdata, function (e, css) {
 // ****************************************************************
 // Database Architecture TODO: refactor this outa app.js
 // ****************************************************************
-var Roots = mongoose.model('Root', convo.rootSchema);
 var text = "The happiness of your life depends upon the quality of your thoughts: therefore, guard accordingly, and take care that you entertain no notions unsuitable to virtue and reasonable nature.";
-var root = new convo.Root(text, "Marcus Aurelius", "http://www.livius.org/a/1/emperors/marcus_aurelius.jpg", new Date());
-var rootie = new Roots(root.toJson);
-rootie.save(function (err) { 
-  if (err) throw err;
-  console.log("Meow");
-});
+var root = new convo.Root(text, "Marcus", "http://www.livius.org/a/1/emperors/marcus_aurelius.jpg", new Date());
 
 // ****************************************************************
 // Application Architecture
 // ****************************************************************
 // Routes
 app.get('/', function (req, res) { 
-    res.render('index.ejs', {rootConvo: a}); 
+    res.render('index.ejs'); 
 });
 
-/* Commented out because it the functionality ain't there yet
-app.get('/articles/', function (req, res) { console.log("article") });
-app.get('/articles/:article', function (req, res) { console.log("article: " + req.params.article) }); 
-app.get('/articles/:article/:rebuttal', function (req, res) { console.log("rebuttal: " + req.params.rebuttal + " article: " + req.params.article) });
-app.get('/users', routes.register);
-app.get('/:topic', function (req, res) { console.log("topic: " + req.params.topic) }); 
-*/
 
 // WebSocket
 io.sockets.on('connection', function (socket) {
+  console.log('connected');
+  socket.emit('introducing', {root: root});
+
   socket.on('convo', function (data) {
-    console.log(data.convo);
     socket.broadcast.emit('convo', data);
   });
 });
@@ -99,5 +86,5 @@ io.sockets.on('connection', function (socket) {
 // ****************************************************************
 // Deploy
 // ****************************************************************
-app.listen(3000);
+app.listen(3010);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

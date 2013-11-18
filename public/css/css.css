@@ -1,0 +1,276 @@
+/* ---- ---- ---- ---- */
+/* Default/Colors      */
+/* ---- ---- ---- ---- */
+/* widescreen dimensions */
+/* Border */
+.borderBig {
+  border-radius: 20px;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+}
+.borderMedium {
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+.borderSmall {
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+/* Shadow */
+/* ---- ---- ---- ---- */
+/* Responsive Layout   */
+/* ---- ---- ---- ---- */
+@media (max-width: 959px) {
+  header {
+    width: 100%;
+  }
+  #forumView {
+    width: 100%;
+  }
+  footer {
+    width: 100%;
+  }
+}
+@media (min-width: 960px) {
+  header {
+    margin-left: auto;
+    margin-right: auto;
+    width: 960px;
+  }
+  #forumView {
+    margin-left: auto;
+    margin-right: auto;
+    width: 960px;
+  }
+  footer {
+    margin-left: auto;
+    margin-right: auto;
+    width: 960px;
+  }
+}
+/* ---- ---- ---- ---- */
+/* Specific Elements   */
+/* ---- ---- ---- ---- */
+/* ---- ---- ---- ---- */
+/* Header and Footer   */
+/* ---- ---- ---- ---- */
+body {
+  background-color: #ffffff;
+}
+header {
+  height: 140px;
+  padding-top: 40px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+header #banner {
+  font-size: 60px;
+  font-family: arial;
+}
+header #slogan {
+  font-size: 20px;
+  font-family: verdana;
+}
+footer {
+  height: 200px;
+}
+/* ---- ---- ---- ---- */
+/* Nav                 */
+/* ---- ---- ---- ---- */
+nav {
+  height: 80px;
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  z-index: 30;
+}
+nav #view {
+  position: absolute;
+  right: 0px;
+  background-color: #ffa500;
+  border-bottom-left-radius: 10px;
+}
+nav #view #tree,
+nav #view #list {
+  margin: 0px 8px 0px 8px;
+}
+nav #view #tree:hover,
+nav #view #list:hover {
+  background-color: #888888;
+}
+#icon {
+  position: fixed;
+  top: 100px;
+  right: 0px;
+  z-index: 29;
+}
+/* ---- ---- ---- ---- */
+/* Forum View          */
+/* ---- ---- ---- ---- */
+.selected {
+  -moz-box-shadow: 0px 0px 8px 2px #8888ff;
+  -webkit-box-shadow: 0px 0px 8px 2px #8888ff;
+  box-shadow: 0px 0px 8px 2px #8888ff;
+}
+#forumView {
+  position: relative;
+}
+#forumView .post {
+  width: 100%;
+  margin: 5px 0px 5px 0px;
+  padding: 0px;
+  overflow: auto;
+  background-color: #e8f8ff;
+  border: 1px solid #88ff99;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+#forumView .post h2 {
+  font-size: 30px;
+  font-family: arial;
+  text-align: center;
+  margin: 25px 0px 10px;
+}
+#forumView .post h2 a {
+  text-decoration: none;
+  color: #097054;
+}
+#forumView .post .details {
+  display: inline-block;
+  float: left;
+  margin: 10px 15px 10px 15px;
+  padding: 4px;
+  background-color: #ffff66;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  color: #888888;
+  font-size: 18px;
+  font-family: century gothic;
+}
+#forumView .post form {
+  text-align: center;
+}
+#forumView .post textarea {
+  margin-bottom: 10px;
+  width: 80%;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+#forumView .post p {
+  font-family: verdana;
+  margin: 5px 25px 10px;
+}
+#forumView .post ul {
+  list-style-type: none;
+}
+#forumView .post ul li {
+  padding-left: 0px;
+}
+/* ---- ---- ---- ---- */
+/* Tree View           */
+/* ---- ---- ---- ---- */
+.treeView {
+  position: relative;
+  white-space: nowrap;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.treeView .node,
+.treeView .children {
+  display: inline-block;
+  vertical-align: middle;
+}
+.treeView .children {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.treeView .node {
+  white-space: normal;
+  overflow: auto;
+  background-color: #e8f8ff;
+  border: 1px solid #88ff99;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  margin-left: 10px;
+  width: 500px;
+}
+.treeView h2 {
+  font-size: 20px;
+  font-family: arial;
+  text-align: center;
+  margin: 10px 0px 5px;
+}
+.treeView h2 a {
+  text-decoration: none;
+  color: #097054;
+}
+.treeView .details {
+  display: inline-block;
+  float: left;
+  margin: 5px 10px 5px 10px;
+  padding: 4px;
+  background-color: #ffff66;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  color: #888888;
+  font-size: 14px;
+  font-family: century gothic;
+}
+.treeView p {
+  margin: 5px 15px 10px;
+}
+.treeView form {
+  text-align: center;
+}
+.treeView textarea {
+  margin-bottom: 6px;
+  width: 80%;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+.treeView .bracket {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  display: inline-block;
+  width: 6px;
+  border-left-width: 3px;
+  border-left-color: #888888;
+  border-left-style: solid;
+}
+.treeView .topBracket {
+  top: 50%;
+  border-top-left-radius: 10px;
+  border-top-width: 3px;
+  border-top-style: solid;
+}
+.treeView .botBracket {
+  bottom: 50%;
+  border-bottom-left-radius: 10px;
+  border-bottom-width: 3px;
+  border-bottom-style: solid;
+}
+/* ---- ---- ---- ---- */
+/* Animations          */
+/* ---- ---- ---- ---- */
+.fadeableFast {
+  -webkit-transition: opacity 1s;
+  -moz-transition: opacity 1s;
+  -o-transition: opacity 1s;
+  transition: opacity 1s;
+  opacity: 1;
+}
+.fade {
+  opacity: 0;
+}
+.hidden {
+  display: none;
+}

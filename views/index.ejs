@@ -1,89 +1,41 @@
+<script type="text/javascript" src="/js/convo.js"></script>
+<script type="text/javascript" src="/js/PostsController.js"></script>
 
 <!--      -->
 <!-- View -->
 <!--      -->
 
 <div ng-controller="PostsController">
-  <div id="forumView">
-    <div class="post" ng-include="'rootRenderer'"> </div>
+  <nav class="fadeableFast" ng-fade="!nav" ng-mouseleave="delayedHide('nav')" ng-mouseenter="resetDelayHide()">
+    <div id="view">
+      <a ng-href="##tree"><img id="tree" ng-class="{selected: view==='tree'}" src="/img/tree.png" /></a>
+      <a ng-href="##forum"><img id="list" ng-class="{selected: view==='tree'}" src="/img/list.png" /></a>
+    </div>
+  </nav>
+
+  <div id="icon" ng-switch on="view" ng-click="show('nav')">
+    <img class="icon-switch" ng-switch-when="tree" src="/img/tree.png" />
+    <img class="icon-switch" ng-switch-when="forum" src="/img/list.png" />
+    <img class="icon-switch" ng-switch-when="flow" src="/img/flow.png" />
+  </div>
+
+
+
+  <div id="forumView" ng-show="view==='forum'">
+    <div class="post" id="forum{{root.token}}" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')" ng-include="'rootRenderer'"> </div>
 
     <ul>
       <li ng-repeat="convo in posts" ng-hide="$first" ng-include="'forumRenderer'"></li>
     </ul>
   </div>
 
-  <div class="treeView">
-    <div class="node" ng-include="'rootRenderer'"> </div>
+  <div class="treeView" ng-show="view==='tree'">
+    <div class="node" id="tree{{root.token}}" ng-class="{selected: root.selected}" ng-Click="select(root, 'tree')" ng-include="'rootRenderer'"> </div>
     <ul class="children">
       <li ng-repeat="convo in root.children" ng-include="'treeRenderer'"></li>
     </ul>
   </div>
 </div>
-
-
-
-
-<!--             -->
-<!--  Controller -->
-<!--             -->
-
-<script type="text/javascript" src="js/convo.js"></script>
-
-<script type="text/javascript">
-  var socket = io.connect(document.location.host);
-</script>
-
-
-<!-- Convo wrapper -->
-<script type="text/javascript">
-  /* Convo wrapper, since our Angular implementation
-   * uses methods that the tree/node model does not utilize */
-
-  function root (json) { 
-    convo = JSONToRoot(json);
-    return convo;
-  }
-
-  function branch (json) { 
-    convo = JSONToBranch(json);
-    return convo;
-  }
-
-  function fromScratch (parent, text, author) { 
-    child = parent.addChild(text, author, new Date());
-    return child;
-  }
-</script>
-
-
-<!-- Angular Controller logic -->
-<script type="text/javascript">
-
-  angular.module('convo', []).controller("PostsController", ['$scope', function($scope) {
-
-    $scope.submitConvo = function(convo) {
-      child = fromScratch(convo, convo.response, "V for Vendetta");
-      socket.emit('convo', { convo: child.toJson() });
-    };
-
-    socket.on('convo', function (data) { 
-      $scope.$apply(function () { 
-        convo = branch(data.convo);
-        if (!convo) {
-          console.log("There's been an error linking a user comment to a parent.");
-          data.convo.parent = $scope.root.token;
-          convo = branch(data.convo);
-        }
-      });
-    });
-
-    $scope.root = root(<%- JSON.stringify(rootConvo) %>);
-    $scope.posts = nodesChronological;
-
-  }]);
-</script>
-
-
 
 
 <!--            -->
@@ -93,35 +45,32 @@
 <!-- Angular logic for creating the Root -->
 <script type="text/ng-template" id="rootRenderer">
   <h2><a href="{{root.link}}">{{root.title}}</a></h2>
+
   <div class="details">
     <h3>{{root.author}}</h3>
-    <h4>{{root.timestamp}}</h4>
   </div>
   <p>{{root.contents}}</p>
 
-  <input type="checkbox" ng-model="root.responseVisible">Respond</input>
-
-  <form ng-submit="submitConvo(root)" ng-show="root.responseVisible">
-    <textarea ng-model="root.response" placeholder="Speak your mind..."></textarea>
-    <button>Submit</button>
+  <form ng-submit="reply(root)" ng-show="root.selected">
+    <textarea ng-model="root.response" ng-enter="reply(root)" placeholder="Speak your mind..."></textarea>
   </form>
+
 </script>
 
 
 <!-- Angular logic for creating posts (Forum View) -->
 <script type="text/ng-template" id="forumRenderer">
-  <div class="post">
+  <div class="post" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')">
+
     <div class="details">
       <h3>{{convo.author}}</h3>
-      <p>{{convo.contents}}</p>
     </div>
+    <p>{{convo.contents}}</p>
 
-    <input type="checkbox" ng-model="convo.responseVisible">Respond</input>
-
-    <form ng-submit="submitConvo(convo)" ng-show="convo.responseVisible">
-      <textarea ng-model="convo.response" placeholder="Speak your mind..."></textarea>
-      <button>Submit</button>
+    <form ng-submit="reply(convo)" ng-show="convo.selected">
+      <textarea ng-model="convo.response" ng-enter="reply(convo)" placeholder="Speak your mind..."></textarea>
     </form>
+
   </div>
 </script>
 
@@ -132,25 +81,23 @@
 
     <div class="bracket" ng-class="{topBracket: $first, botBracket: $last}"></div>
 
-    <div class="node">
+    <div class="node" id="tree{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'tree')">
       <div class="details">
         <h3>{{convo.author}}</h3>
-        <h4>{{convo.timestamp}}</h4>
       </div>
       
       <p>{{convo.contents}}</p>
 
-      <input type="checkbox" ng-model="convo.responseVisible">Respond</input>
-
-      <form ng-submit="submitConvo(convo)" ng-show="convo.responseVisible">
-        <textarea ng-model="convo.response" placeholder="Speak your mind..."></textarea>
-        <button>Submit</button>
+      <form ng-submit="reply(convo)" ng-show="convo.selected">
+        <textarea ng-model="convo.response" ng-enter="reply(convo)" placeholder="Speak your mind..."></textarea>
       </form>
+
     </div>
 
     <ul class="children">
       <li ng-repeat="convo in convo.children" ng-include="'treeRenderer'"></li>
     </ul>
+
   </div>
 </script>
 
