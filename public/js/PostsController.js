@@ -18,7 +18,10 @@ function root (json) {
 
 function branch (json) { 
   convo = JSONToBranch(json);
-  return convo;
+  if (convo) return convo;
+  else  {
+    console.log("There's been an error linking a user comment to a parent.");
+  }
 }
 
 function fromScratch (parent, text, author) { 
@@ -27,12 +30,11 @@ function fromScratch (parent, text, author) {
 }
 
 
+
 /*                       */
 /*     Ng-Application    */
 /*                       */
-
 app = angular.module('convo', []);
-
 
 /*                       */
 /*       Controller      */
@@ -44,23 +46,27 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
   // Defaults
   // --------------------------------
   $scope.view = 'forum'
+  $scope.icon = true;
 
   // --------------------------------
   // Navigational menu
   // --------------------------------
-  $scope.show = function (variable) { 
-    $scope[variable] = true;
+  $scope.showNav = function () { 
+    $scope.nav = true;
+    $scope.icon = false;
   }
 
   var timeoutId;
-  $scope.delayedHide = function (variable) { 
+  $scope.delayedNavHide = function () { 
     timeoutId = $timeout( function () {
-      $scope[variable] = false;
+      $scope.nav = false;
+      $timeout( function () { 
+        $scope.icon = true;
+      }, 400);
     }, 2000);
   }
 
   $scope.resetDelayHide = function () { 
-    console.log('reset');
     $timeout.cancel(timeoutId);
   }
   
@@ -103,7 +109,6 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
       $scope.selectedModel = convo;
       convo.selected = true;
       //TODO: A birdie told me you shouldn't access DOM in the controller
-      console.log(convo.token);
       $timeout(function () {
         $('#' + type + convo.token + ' textarea').focus();
       }, 100);
@@ -114,20 +119,18 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
   socket.on('convo', function (data) { 
     $scope.$apply(function () { 
       convo = branch(data.convo);
-      console.log("convo");
-      if (!convo) {
-        console.log("There's been an error linking a user comment to a parent.");
-        data.convo.parent = $scope.root.token;
-        convo = branch(data.convo);
-      }
     });
   });
 
   // Once connected, this client should recieve a list of all current posts
   socket.on('introducing', function (data) { 
     $scope.$apply(function () { 
+      console.log("Introductions: ");
+      console.log(data);
       $scope.root = root(data.root);
-      $scope.selectedModel = $scope.root;
+      data.branches.map( function (convo) { 
+        branch(convo);
+      });
     });
   });
 
@@ -163,7 +166,7 @@ app.directive('ngFade', function ($animate, $timeout) {
         $timeout(function () { 
           if (element.hasClass('fade') && !element.hasClass('hidden')) // Check if we're still fading
             $animate.addClass(element, 'hidden');
-        }, 3000);
+        }, 1000);
       } else { 
         $animate.removeClass(element, 'hidden');
         // Required due to a CSS bug of not fading in if immediately unhidden
@@ -171,6 +174,19 @@ app.directive('ngFade', function ($animate, $timeout) {
           if (!element.hasClass('hidden'))
             $animate.removeClass(element, 'fade');
         }, 200)
+      }
+    });
+  }
+});
+
+// Slide Up & Down animation
+app.directive('ngSlide', function ($animate) { 
+  return function (scope, element, attrs) { 
+    scope.$watch(attrs.ngSlide, function (ngSlide) { 
+      if (ngSlide) {
+        $animate.addClass(element, 'slide');
+      } else { 
+        $animate.removeClass(element, 'slide');
       }
     });
   }

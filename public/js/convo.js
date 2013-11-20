@@ -1,23 +1,43 @@
 nodesByKey = {};
 nodesChronological = [];
+nodesPending = {};
 
 function getNode (token) { 
   try { 
     return nodesByKey[token];
   }
   catch (e) {
-    console.log("Error: cannot locate convo with a token of " + token);
-    return false
+    return false;
   }
 }
 
-function initNode(convo, sortKey) { 
-  nodesByKey[convo.token] = convo;
-  nodesChronological.push(convo);
-  nodesChronological.sort(function (a, b) { 
-    if (a["sortkey"] < b["sortkey"]) return 1;
-    else return -1;
+
+function processChildren (jsonChildren, parentToken, childrenArr) { 
+  // If we're processing a parent who was pending, it must not be anymore. 
+  for (key in nodesPending) { 
+    if (parentToken === key)
+      delete nodesPending[key];
+  }
+
+  // Return children nodes, or add them to the pending list if they don't yet exist. 
+  jsonChildren.map(function (childToken) { 
+      child = getNode(childToken);
+      if (child) childrenArr.push(child);
+      else { nodesPending[child] = parentToken }
   });
+}
+
+
+function nodesToJson () { 
+  json = {branches: []};
+  nodesChronological.map(function (item) { 
+    if (item.type === 'Root') {
+      json['root'] = item.toJson();
+    } else { 
+      json['branches'].push(item.toJson());
+    }
+  });
+  return json;
 }
 
 
@@ -41,14 +61,29 @@ function Node (contents, author, timestamp, optional) {
   if (!(typeof optional === 'undefined')) { 
     this.children = optional.children || this.children;
     this.token = optional.token || this.token;
+    initNode(this, optional.childrenPending || []);
+  } else { 
+    initNode(this, []);
   }
 
-  initNode(this);
 
   this.addChild = function (contents, author, timestamp, optional) {
     child = new Branch(contents, author, this, timestamp, optional);
     this.children.push(child);
     return child;
+  }
+
+  function initNode (convo, pending) { 
+    if ((convo.token) in nodesByKey) { 
+      console.log("Duplicate key found. Double submission.");
+      return false;
+    }
+    nodesByKey[convo.token] = convo;
+    nodesChronological.push(convo);
+    nodesChronological.sort(function (a, b) { 
+      if (a['timestamp'] > b['timestamp']) return 1;
+      else return -1;
+    });
   }
 
   function createToken() { 
@@ -63,6 +98,7 @@ function Node (contents, author, timestamp, optional) {
 function Root (contents, author, title, link, timestamp, optional) { 
   Node.apply(this, [contents, author, timestamp, optional]);
 
+  this.type = 'Root';
   this.title = title;
   this.link = link;
 
@@ -83,7 +119,8 @@ function Root (contents, author, title, link, timestamp, optional) {
 Root.prototype = Object.create(Node.prototype);
 
 function JSONToRoot (json) {
-  children = json.children.map(function (childToken) { return getNode(childToken) });
+  children = [];
+  processChildren(json.children, json.token, children);
   return new Root(json.contents, json.author, json.title, json.link, json.timestamp, {children: children, token: json.token});
 }
 
@@ -96,6 +133,7 @@ function Branch (contents, author, parent, timestamp, optional) {
   Node.apply(this, [contents, author, timestamp, optional]);
 
   this.parent = parent;
+  this.type = 'Branch';
 
   this.toJson = function () { 
     children = this.children.map(function(node) { return node.token } );
@@ -113,7 +151,8 @@ function Branch (contents, author, parent, timestamp, optional) {
 Branch.prototype = Object.create(Node.prototype);
 
 function JSONToBranch (json) {
-  children = json.children.map(function (childToken) { return getNode(childToken) });
+  children = [];
+  processChildren(json.children, json.token, children);
   parent = getNode(json.parent);
   if (parent) 
     return parent.addChild(json.contents, json.author, json.timestamp, {children: children, token: json.token});
@@ -130,5 +169,10 @@ function JSONToBranch (json) {
 if (typeof module !== 'undefined') {
   module.exports.Root = Root;
   module.exports.Branch = Branch;
+  module.exports.nodesToJson = nodesToJson;
+  module.exports.JSONToRoot = JSONToRoot;
+  module.exports.JSONToBranch = JSONToBranch;
+  // Test
+  module.exports.nodesChronological = nodesChronological;
 }
 

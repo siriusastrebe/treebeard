@@ -142,7 +142,7 @@ nav {
 
 #icon { 
   position: fixed;
-  top: 100px;
+  top: 0px;
   right: 0px;
   z-index: 29;
 }
@@ -318,7 +318,7 @@ nav {
 /* ---- ---- ---- ---- */
 /* Animations          */
 /* ---- ---- ---- ---- */
-.fadeableFast { 
+.fadeable { 
   -webkit-transition: opacity 1s;
      -moz-transition: opacity 1s;
        -o-transition: opacity 1s;
@@ -332,4 +332,15 @@ nav {
 
 .hidden { 
   display: none;
+}
+
+.slideable { 
+  -webkit-transition: height 1s;
+     -moz-transition: height 1s;
+       -o-transition: height 1s;
+          transition: height 1s;
+}
+
+.slide { 
+  height: 0px;
 }

@@ -17,7 +17,7 @@ var lessfile = './public/css/less.less';
 var cssfile = './public/css/css.css';
 
 // Supplementary JS
-var convo = require('./public/js/convo.js');
+var Convo = require('./public/js/convo.js');
 
 // App Configuration
 app.configure(function(){
@@ -34,6 +34,8 @@ app.configure(function(){
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
+
+io.set('log level', 2);
 
 // Deployment configuration
 app.configure('development', function(){
@@ -60,7 +62,7 @@ less.render(lessdata, function (e, css) {
 // Database Architecture TODO: refactor this outa app.js
 // ****************************************************************
 var text = "The happiness of your life depends upon the quality of your thoughts: therefore, guard accordingly, and take care that you entertain no notions unsuitable to virtue and reasonable nature.";
-var root = new convo.Root(text, "Marcus", "http://www.livius.org/a/1/emperors/marcus_aurelius.jpg", new Date());
+var root = new Convo.Root(text, 'Marcus', "Aurelius' Wise Words", "http://www.livius.org/a/1/emperors/marcus_aurelius.jpg", new Date());
 
 // ****************************************************************
 // Application Architecture
@@ -73,10 +75,13 @@ app.get('/', function (req, res) {
 
 // WebSocket
 io.sockets.on('connection', function (socket) {
-  console.log('connected');
-  socket.emit('introducing', {root: root});
+  socket.emit('introducing', Convo.nodesToJson());
 
   socket.on('convo', function (data) {
+    branch = Convo.JSONToBranch(data.convo);
+    if (!branch) { 
+      console.log("Warning: Unable to link child node to a parent");
+    }
     socket.broadcast.emit('convo', data);
   });
 });
@@ -86,5 +91,5 @@ io.sockets.on('connection', function (socket) {
 // ****************************************************************
 // Deploy
 // ****************************************************************
-app.listen(3010);
+app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

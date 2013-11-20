@@ -6,17 +6,17 @@
 <!--      -->
 
 <div ng-controller="PostsController">
-  <nav class="fadeableFast" ng-fade="!nav" ng-mouseleave="delayedHide('nav')" ng-mouseenter="resetDelayHide()">
+  <nav class="fadeable" ng-fade="!nav" ng-mouseleave="delayedNavHide()" ng-mouseenter="resetDelayHide()">
     <div id="view">
       <a ng-href="##tree"><img id="tree" ng-class="{selected: view==='tree'}" src="/img/tree.png" /></a>
       <a ng-href="##forum"><img id="list" ng-class="{selected: view==='tree'}" src="/img/list.png" /></a>
     </div>
   </nav>
 
-  <div id="icon" ng-switch on="view" ng-click="show('nav')">
+  <div id="icon" class="fadeable" ng-fade="!icon" ng-switch on="view" ng-click="showNav()">
     <img class="icon-switch" ng-switch-when="tree" src="/img/tree.png" />
     <img class="icon-switch" ng-switch-when="forum" src="/img/list.png" />
-    <img class="icon-switch" ng-switch-when="flow" src="/img/flow.png" />
+    <img class="icon-switch" ng-switch-when="flow" src="" />
   </div>
 
 
