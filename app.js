@@ -17,7 +17,7 @@ var lessfile = './public/css/less.less';
 var cssfile = './public/css/css.css';
 
 // Supplementary JS
-var Convo = require('./public/js/convo.js');
+var Convoset = require('./public/js/Convoset.js');
 
 // App Configuration
 app.configure(function(){
@@ -59,15 +59,25 @@ less.render(lessdata, function (e, css) {
 
 
 // ****************************************************************
-// Database Architecture TODO: refactor this outa app.js
+// Datasets
 // ****************************************************************
-var text = "The happiness of your life depends upon the quality of your thoughts: therefore, guard accordingly, and take care that you entertain no notions unsuitable to virtue and reasonable nature.";
-var root = new Convo.Root(text, 'Marcus', "Aurelius' Wise Words", "http://www.livius.org/a/1/emperors/marcus_aurelius.jpg", new Date());
+var Convos = new Convoset();
+rootJson = {
+    contents: "The best remedy for those who are afraid, lonely or unhappy is to go outside, somewhere where they can be quiet, alone with the heavens, nature and God. Because only then does one feel that all is as it should be."
+  , author: "Anne Frank"
+  , title: "Anne Frank the Belieber"
+  , link: "http://www.funnyordie.com/videos/ca8e174a54/between-two-ferns-with-zach-galifianakis-justin-bieber"
+  , timestamp: new Date()
+}
+Convos.JSONToRoot(rootJson);
 
 // ****************************************************************
 // Application Architecture
 // ****************************************************************
 // Routes
+app.get('/home', function (req, res) { 
+    res.render('home.ejs');
+});
 app.get('/', function (req, res) { 
     res.render('index.ejs'); 
 });
@@ -75,10 +85,10 @@ app.get('/', function (req, res) {
 
 // WebSocket
 io.sockets.on('connection', function (socket) {
-  socket.emit('introducing', Convo.nodesToJson());
+  socket.emit('introducing', Convos.nodesToJson());
 
   socket.on('convo', function (data) {
-    branch = Convo.JSONToBranch(data.convo);
+    branch = Convos.JSONToBranch(data.convo);
     if (!branch) { 
       console.log("Warning: Unable to link child node to a parent");
     }

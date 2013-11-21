@@ -201,8 +201,9 @@ var Convoset = function () {
   Branch.prototype = Object.create(Node.prototype);
 
   this.JSONToBranch = function (json) {
+    console.log(json);
     children = [];
-    processChildren(json.children, json.token, children);
+    processChildren(json.children || [], json.token, children);
     parent = getNode(json.parent);
     if (parent) 
       return parent.addChild(json.contents, json.author, json.timestamp, {children: children, token: json.token});

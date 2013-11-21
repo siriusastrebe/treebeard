@@ -11,13 +11,15 @@ var socket = io.connect();
 /* Convo wrapper, since our Angular implementation
  * uses methods that the tree/node model does not utilize */
 
+var Convos = new Convoset();
+
 function root (json) { 
-  convo = JSONToRoot(json);
+  convo = Convos.JSONToRoot(json);
   return convo;
 }
 
 function branch (json) { 
-  convo = JSONToBranch(json);
+  convo = Convos.JSONToBranch(json);
   if (convo) return convo;
   else  {
     console.log("There's been an error linking a user comment to a parent.");
@@ -90,35 +92,36 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
   // Node manipulation
   // --------------------------------
   // Replying to a node
-  $scope.reply = function(convo) {
-    child = fromScratch(convo, convo.response, "molerat");
-    convo.response = "";
+  $scope.reply = function(post) {
+    child = fromScratch(post, post.response, "molerat");
+    post.response = "";
     $scope.select(false);
     socket.emit('convo', { convo: child.toJson() });
   };
 
   // Clicking on a node selects it and allows you to reply
-  $scope.select = function (convo, type) { 
+  $scope.select = function (post, type) { 
     if ($scope.selectedModel !== false)  
       $scope.selectedModel.selected = false;
 
-    if (convo === false) {
+    if (post === false) {
       $scope.selectedModel = false;
     }
-    else if ($scope.selectedModel !== convo.token) {
-      $scope.selectedModel = convo;
-      convo.selected = true;
+    else if ($scope.selectedModel !== post.token) {
+      $scope.selectedModel = post;
+      post.selected = true;
       //TODO: A birdie told me you shouldn't access DOM in the controller
       $timeout(function () {
-        $('#' + type + convo.token + ' textarea').focus();
+        $('#' + type + post.token + ' textarea').focus();
       }, 100);
     }
   }
 
   // Receiving a new post
   socket.on('convo', function (data) { 
+    console.log(data);
     $scope.$apply(function () { 
-      convo = branch(data.convo);
+      branch(data.convo);
     });
   });
 
@@ -134,7 +137,7 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
     });
   });
 
-  $scope.posts = nodesChronological;
+  $scope.posts = Convos.getNodes();
   $scope.selectedModel = false;
 }]);
 

@@ -104,6 +104,8 @@ nav #view #list:hover {
   position: fixed;
   top: 0px;
   right: 0px;
+  height: 64px;
+  width: 64px;
   z-index: 29;
 }
 /* ---- ---- ---- ---- */
