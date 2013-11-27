@@ -1,10 +1,64 @@
-<header>
-  <div id="banner">
-    Convo
-  </div>
-  <h1 id="slogan">
-    Forums for the thoughtful
-  </h1>
-</header>
+<script type="text/javascript" src="/js/Convoset.js"></script>
+
+<script type="text/javascript">
+  var socket = io.connect();
+</script>
+
+<script type="text/javascript">
+  function newTopic (title, link, contents) {
+
+    set = new Convoset();
+
+    json = {
+      title: title,
+      link: link,
+      contents: contents,
+      author: "Johhny Depp",
+      timestamp: new Date(), 
+    }
+    return set.JsonToRoot(json);
+  }
+</script>
+
+
+<script type="text/javascript">
+var debug;
+
+  app = angular.module('convo', []);
+
+  app.controller('TopicsController', ['$scope', function ($scope) { 
+
+    $scope.topicSubmit = function () {
+      topic = newTopic($scope.title, $scope.link, $scope.contents);
+      socket.emit("buildTopic", {root: topic.toJson()});
+    }
+
+    $scope.topics = <%- roots %>; 
+    debug = $scope.topics;
+
+  }]);
+</script>
+
+<h2>Select a topic</h2>
+
+<div ng-controller="TopicsController">
+  <ul>
+    <li ng-repeat="topic in topics">{{topic.title}} <a href="{{topic.link}}">{{topic.link}}</a> {{topic.author}}</li>
+  </ul>
+
+
+  <h3>New Topic</h3>
+  <form ng-submit="topicSubmit()">
+    <input type='text' ng-model='title' placeholder='Title' />
+    <input type='text' ng-model='link' placeholder='Link' />
+    <textarea ng-model='contents'></textarea>
+    <input type='submit' />
+  </form>
+
+</div>
+
+
+
+
 
 

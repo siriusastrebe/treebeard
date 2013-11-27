@@ -18,6 +18,7 @@ var cssfile = './public/css/css.css';
 
 // Supplementary JS
 var Convoset = require('./public/js/Convoset.js');
+var Topics =   require('./public/js/Topics.js');
 
 // App Configuration
 app.configure(function(){
@@ -61,7 +62,7 @@ less.render(lessdata, function (e, css) {
 // ****************************************************************
 // Datasets
 // ****************************************************************
-var Convos = new Convoset();
+
 rootJson = {
     contents: "The best remedy for those who are afraid, lonely or unhappy is to go outside, somewhere where they can be quiet, alone with the heavens, nature and God. Because only then does one feel that all is as it should be."
   , author: "Anne Frank"
@@ -69,30 +70,64 @@ rootJson = {
   , link: "http://www.funnyordie.com/videos/ca8e174a54/between-two-ferns-with-zach-galifianakis-justin-bieber"
   , timestamp: new Date()
 }
-Convos.JSONToRoot(rootJson);
+
+firstConvoset = new Convoset();
+firstConvoset.JsonToRoot(rootJson);
+
+var topics = new Topics();
+topics.addTopic(firstConvoset);
 
 // ****************************************************************
 // Application Architecture
 // ****************************************************************
 // Routes
-app.get('/home', function (req, res) { 
-    res.render('home.ejs');
-});
 app.get('/', function (req, res) { 
-    res.render('index.ejs'); 
+    res.render('home.ejs', 
+      { roots: topics.getRootsInJson()}
+) });
+
+app.get('/:topic/',  function (req, res) { 
+    // TODO: Add in a view 404 topics
+    // TODO: allow for multiple topics
+    topic = topics.getTopic(req.params.topic);
+    slug = topic.toSlug();
+    res.render('index.ejs', 
+      { topicSlug: slug }
+    );
 });
+
 
 
 // WebSocket
 io.sockets.on('connection', function (socket) {
-  socket.emit('introducing', Convos.nodesToJson());
+  
+  socket.on('introduceMe', function (data) { 
+    // TODO: allow multiple topics in the same view
+    // TODO: Add in a view 404 topics
+    topic = topics.getTopic(data.topics);
+    json = topic.nodesToJson();
+    socket.emit('introducing', json);
+  });
 
-  socket.on('convo', function (data) {
-    branch = Convos.JSONToBranch(data.convo);
+  socket.on('addBranch', function (data) {
+    topic = topics.getTopic(data.topic);
+    console.log(data.topic);
+
+    branch = topic.JsonToBranch(data.convo);
+
     if (!branch) { 
       console.log("Warning: Unable to link child node to a parent");
     }
-    socket.broadcast.emit('convo', data);
+
+    // TODO: this is broadcast to every view, when it should be sent
+    // only to the views on the same topic. 
+    socket.broadcast.emit('newBranch', data);
+  });
+
+  socket.on('buildTopic', function (data) {
+    topic = new Convoset();
+    topic.JsonToRoot(data.root);
+    topics.addTopic(topic);
   });
 });
 

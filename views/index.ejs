@@ -1,3 +1,6 @@
+<script type="text/javascript">
+  var TOPICS = '<%- topicSlug %>';
+</script>
 <script type="text/javascript" src="/js/Convoset.js"></script>
 <script type="text/javascript" src="/js/PostsController.js"></script>
 
@@ -24,8 +27,8 @@
   <div id="forumView" ng-show="view==='forum'">
     <div class="post" id="forum{{root.token}}" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')" ng-include="'rootRenderer'"> </div>
 
-    <ul>
-      <li ng-repeat="convo in posts" ng-hide="$first" ng-include="'forumRenderer'"></li>
+      <ul>
+        <li ng-repeat="convo in posts" ng-hide="$first" ng-include="'forumRenderer'"></li>
     </ul>
   </div>
 

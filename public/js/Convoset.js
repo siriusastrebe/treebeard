@@ -2,11 +2,12 @@
  * Convoset
  * 
  * Public Methods:
- *  - JSONToNode(json)    (returns a Node object)
- *  - JSONToBranch(json)  (returns a Node object)
+ *  - JsonToNode(json)    (returns a Node object)
+ *  - JsonToBranch(json)  (returns a Node object)
  *  - nodesToJson()       (returns JSON)
  *  - getNodes()          (returns a reference to the array containing the list of nodes)
  *  - getNodesByKey()     (returns reference to an associative array of nodes by token)
+ *  - getRoot()           (returns a Node object)
  *
  *
  * Those node objects contain the following public methods:
@@ -34,6 +35,7 @@ var Convoset = function () {
   var nodesByKey = {};
   var nodesChronological = [];
   var nodesPending = {};
+  var rootNodes = [];
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
   /*     Helper Functions             */
@@ -61,12 +63,14 @@ var Convoset = function () {
         delete nodesPending[key];
     }
 
-    // Return children nodes, or add them to the pending list if they don't yet exist. 
-    jsonChildren.map(function (childToken) { 
-        child = getNode(childToken);
-        if (child) childrenArr.push(child);
-        else { nodesPending[child] = parentToken }
-    });
+    if (typeof jsonChildren !== 'undefined') {
+      // Return children nodes, or add them to the pending list if they don't yet exist. 
+      jsonChildren.map(function (childToken) { 
+          child = getNode(childToken);
+          if (child) childrenArr.push(child);
+          else { nodesPending[child] = parentToken }
+      });
+    }
   }
 
 
@@ -92,6 +96,22 @@ var Convoset = function () {
 
   this.getNodesByKey = function () { 
     return nodesByKey;
+  }
+
+  this.getRoots = function () { 
+    return rootNodes;
+  }
+
+  this.toString = function () { 
+    return this.getRoots()[0].title;
+  }
+
+  this.toSlug = function () { 
+    return this.toString() 
+                .toLowerCase()
+                .replace(/-+/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '');
   }
 
 
@@ -151,6 +171,7 @@ var Convoset = function () {
     this.type = 'Root';
     this.title = title;
     this.link = link;
+    rootNodes.push(this);
 
     this.toJson = function () { 
       children = this.children.map(function(node) { node.token } );
@@ -168,9 +189,9 @@ var Convoset = function () {
   }
   Root.prototype = Object.create(Node.prototype);
 
-  this.JSONToRoot = function (json) {
+  this.JsonToRoot = function (json) {
     children = [];
-    processChildren(json.children || [], json.token, children);
+    processChildren(json.children, json.token, children);
     return new Root(json.contents, json.author, json.title, json.link, json.timestamp, {children: children, token: json.token});
   }
 
@@ -200,10 +221,9 @@ var Convoset = function () {
   }
   Branch.prototype = Object.create(Node.prototype);
 
-  this.JSONToBranch = function (json) {
-    console.log(json);
+  this.JsonToBranch = function (json) {
     children = [];
-    processChildren(json.children || [], json.token, children);
+    processChildren(json.children, json.token, children);
     parent = getNode(json.parent);
     if (parent) 
       return parent.addChild(json.contents, json.author, json.timestamp, {children: children, token: json.token});

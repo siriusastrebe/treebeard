@@ -2,6 +2,13 @@
 /*      Socket.io     */
 /*                    */
 var socket = io.connect();
+socket.on('connect', function () {
+  // Get the names of each topic.
+  // the TOPICS variable should be preset in the
+  // html portion.
+  
+  socket.emit('introduceMe', {topics: TOPICS});
+});
 
 
 /*                    */
@@ -14,19 +21,19 @@ var socket = io.connect();
 var Convos = new Convoset();
 
 function root (json) { 
-  convo = Convos.JSONToRoot(json);
+  convo = Convos.JsonToRoot(json);
   return convo;
 }
 
 function branch (json) { 
-  convo = Convos.JSONToBranch(json);
+  convo = Convos.JsonToBranch(json);
   if (convo) return convo;
   else  {
     console.log("There's been an error linking a user comment to a parent.");
   }
 }
 
-function fromScratch (parent, text, author) { 
+function branchFromScratch (parent, text, author) { 
   child = parent.addChild(text, author, new Date());
   return child;
 }
@@ -93,10 +100,10 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
   // --------------------------------
   // Replying to a node
   $scope.reply = function(post) {
-    child = fromScratch(post, post.response, "molerat");
+    child = branchFromScratch(post, post.response, "molerat");
     post.response = "";
     $scope.select(false);
-    socket.emit('convo', { convo: child.toJson() });
+    socket.emit('addBranch', { topic: TOPICS, convo: child.toJson() });
   };
 
   // Clicking on a node selects it and allows you to reply
@@ -118,7 +125,7 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
   }
 
   // Receiving a new post
-  socket.on('convo', function (data) { 
+  socket.on('newBranch', function (data) { 
     console.log(data);
     $scope.$apply(function () { 
       branch(data.convo);
