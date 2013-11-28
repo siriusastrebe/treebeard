@@ -33,8 +33,8 @@ var debug;
       socket.emit("buildTopic", {root: topic.toJson()});
     }
 
-    $scope.topics = <%- roots %>; 
-    debug = $scope.topics;
+    $scope.roots = <%- roots %>; 
+    debug = $scope.roots;
 
   }]);
 </script>
@@ -43,7 +43,7 @@ var debug;
 
 <div ng-controller="TopicsController">
   <ul>
-    <li ng-repeat="topic in topics">{{topic.title}} <a href="{{topic.link}}">{{topic.link}}</a> {{topic.author}}</li>
+    <li ng-repeat="root in roots"><a href="/{{root.slug}}/">{{root.title}}</a></li>
   </ul>
 
 

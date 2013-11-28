@@ -8,8 +8,8 @@ var Topics = function () {
 
   this.addTopic = function (convoset) { 
     // Add to associative array
-    if (topicsByKey[convoset.toSlug()] == undefined) { 
-      topicsByKey[convoset.toSlug()] = convoset;
+    if (topicsByKey[convoset.slug] == undefined) { 
+      topicsByKey[convoset.slug] = convoset;
     } else { 
       return false
     }
@@ -22,7 +22,7 @@ var Topics = function () {
     delete topicsByKey[key];
 
     for (var i=0; i<topics.length; i++) { 
-      if (topics[i].toSlug() === key) 
+      if (topics[i].slug === key) 
         topics.splice(i--, 1);
     }
   }
@@ -37,13 +37,13 @@ var Topics = function () {
 
   this.getRoots = function () {
     return topics.map(function (convoset) {
-      return convoset.getRoots()[0];
+      return convoset.root;
     })
   }
 
   this.getRootsInJson = function () { 
     return JSON.stringify(topics.map(function (convoset) {
-      return convoset.getRoots()[0].toJson();
+      return convoset.root.toJson();
     }));
   }
 

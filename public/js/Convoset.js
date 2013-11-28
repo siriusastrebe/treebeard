@@ -7,7 +7,8 @@
  *  - nodesToJson()       (returns JSON)
  *  - getNodes()          (returns a reference to the array containing the list of nodes)
  *  - getNodesByKey()     (returns reference to an associative array of nodes by token)
- *  - getRoot()           (returns a Node object)
+ *  - root                (returns the root object)
+ *  - slug                (returns a string)
  *
  *
  * Those node objects contain the following public methods:
@@ -35,7 +36,7 @@ var Convoset = function () {
   var nodesByKey = {};
   var nodesChronological = [];
   var nodesPending = {};
-  var rootNodes = [];
+  var convoset = this;
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
   /*     Helper Functions             */
@@ -73,6 +74,19 @@ var Convoset = function () {
     }
   }
 
+  function toSlug (title) { 
+    return title.toString() 
+                .toLowerCase()
+                .replace(/-+/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '');
+  }
+
+
+  function updateRoot(root) { 
+    convoset.root = root;
+    convoset.slug = root.slug;
+  }
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
   /* Publically Accessible Methods    */
@@ -98,21 +112,13 @@ var Convoset = function () {
     return nodesByKey;
   }
 
-  this.getRoots = function () { 
-    return rootNodes;
-  }
 
   this.toString = function () { 
-    return this.getRoots()[0].title;
+    return this.root.title;
   }
 
-  this.toSlug = function () { 
-    return this.toString() 
-                .toLowerCase()
-                .replace(/-+/g, '')
-                .replace(/\s+/g, '-')
-                .replace(/[^a-z0-9-]/g, '');
-  }
+  this.root;
+  this.slug;
 
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -171,7 +177,8 @@ var Convoset = function () {
     this.type = 'Root';
     this.title = title;
     this.link = link;
-    rootNodes.push(this);
+    this.slug = toSlug(this.title);
+    updateRoot(this);
 
     this.toJson = function () { 
       children = this.children.map(function(node) { node.token } );
@@ -181,6 +188,7 @@ var Convoset = function () {
       , children: children
       , timestamp: this.timestamp
       , title: this.title
+      , slug: this.slug
       , link: this.link
       , token: this.token
       }

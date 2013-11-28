@@ -64,10 +64,10 @@ less.render(lessdata, function (e, css) {
 // ****************************************************************
 
 rootJson = {
-    contents: "The best remedy for those who are afraid, lonely or unhappy is to go outside, somewhere where they can be quiet, alone with the heavens, nature and God. Because only then does one feel that all is as it should be."
-  , author: "Anne Frank"
-  , title: "Anne Frank the Belieber"
-  , link: "http://www.funnyordie.com/videos/ca8e174a54/between-two-ferns-with-zach-galifianakis-justin-bieber"
+    contents: "Click on this box and type something in. Once you've done that, click the icon in the top right for an example of what this app is capable of."
+  , author: "Stroobles"
+  , title: "Demo"
+  , link: "www.google.com"
   , timestamp: new Date()
 }
 
@@ -90,7 +90,7 @@ app.get('/:topic/',  function (req, res) {
     // TODO: Add in a view 404 topics
     // TODO: allow for multiple topics
     topic = topics.getTopic(req.params.topic);
-    slug = topic.toSlug();
+    slug = topic.slug;
     res.render('index.ejs', 
       { topicSlug: slug }
     );
@@ -104,6 +104,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('introduceMe', function (data) { 
     // TODO: allow multiple topics in the same view
     // TODO: Add in a view 404 topics
+    console.log(data.topics);
     topic = topics.getTopic(data.topics);
     json = topic.nodesToJson();
     socket.emit('introducing', json);
