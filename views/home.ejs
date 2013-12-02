@@ -1,11 +1,7 @@
 <script type="text/javascript" src="/js/Convoset.js"></script>
 
 <script type="text/javascript">
-  var socket = io.connect();
-</script>
-
-<script type="text/javascript">
-  function newTopic (title, link, contents) {
+  function newTopic (title, link, contents, author) {
 
     set = new Convoset();
 
@@ -13,7 +9,7 @@
       title: title,
       link: link,
       contents: contents,
-      author: "Johhny Depp",
+      author: author,
       timestamp: new Date(), 
     }
     return set.JsonToRoot(json);
@@ -22,16 +18,29 @@
 
 
 <script type="text/javascript">
-var debug;
+  var debug;
 
-  app = angular.module('convo', []);
-
-  app.controller('TopicsController', ['$scope', function ($scope) { 
+  APP.controller('TopicsController', ['$scope', function ($scope) { 
 
     $scope.topicSubmit = function () {
-      topic = newTopic($scope.title, $scope.link, $scope.contents);
-      socket.emit("buildTopic", {root: topic.toJson()});
+      if (LOGIN.status === 'participant') { 
+        topic = newTopic($scope.title, $scope.link, $scope.contents, LOGIN.username);
+        IO.emit("buildTopic", {root: topic.toJson()});
+      } else { 
+        // TODO: Show the login dialog box when you're not logged in.
+        console.log('not logged in');
+      }
     }
+
+    IO.on('builtTopic', function (data) { 
+      if (data.status === 'success') {
+        window.location.href = "/" + data.url + "/";
+      }
+      else if (data.status === 'failure') {
+        // TODO: Add in a failure message to users.
+        console.log("can't create a new topic, " + data.error);
+      }
+    });
 
     $scope.roots = <%- roots %>; 
     debug = $scope.roots;
@@ -43,7 +52,11 @@ var debug;
 
 <div ng-controller="TopicsController">
   <ul>
-    <li ng-repeat="root in roots"><a href="/{{root.slug}}/">{{root.title}}</a></li>
+    <li ng-repeat="root in roots">
+      <h4><a href="/{{root.slug}}/">{{root.title}}</a></h4>
+      <h5>{{root.author}}</h5>
+      <p>{{root.contents}}</p>
+    </li>
   </ul>
 
 

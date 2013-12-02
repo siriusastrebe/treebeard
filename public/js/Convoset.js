@@ -41,7 +41,7 @@ var Convoset = function () {
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
   /*     Helper Functions             */
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-  function getNode (token) { 
+  function findNode (token) { 
     try { 
       return nodesByKey[token];
     }
@@ -67,7 +67,7 @@ var Convoset = function () {
     if (typeof jsonChildren !== 'undefined') {
       // Return children nodes, or add them to the pending list if they don't yet exist. 
       jsonChildren.map(function (childToken) { 
-          child = getNode(childToken);
+          child = findNode(childToken);
           if (child) childrenArr.push(child);
           else { nodesPending[child] = parentToken }
       });
@@ -108,7 +108,7 @@ var Convoset = function () {
     return nodesChronological;
   }
 
-  this.getNodesByKey = function () { 
+  this.getNodesAssociative = function () { 
     return nodesByKey;
   }
 
@@ -232,7 +232,7 @@ var Convoset = function () {
   this.JsonToBranch = function (json) {
     children = [];
     processChildren(json.children, json.token, children);
-    parent = getNode(json.parent);
+    parent = findNode(json.parent);
     if (parent) 
       return parent.addChild(json.contents, json.author, json.timestamp, {children: children, token: json.token});
     else

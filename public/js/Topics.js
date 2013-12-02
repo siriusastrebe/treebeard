@@ -7,15 +7,14 @@ var Topics = function () {
   var topicsByKey = {};
 
   this.addTopic = function (convoset) { 
-    // Add to associative array
     if (topicsByKey[convoset.slug] == undefined) { 
       topicsByKey[convoset.slug] = convoset;
+      topics.push(convoset);
+      return true;
     } else { 
       return false
     }
 
-    // Add to array
-    topics.push(convoset);
   }
 
   this.removeTopic = function (key) { 
@@ -27,7 +26,7 @@ var Topics = function () {
     }
   }
 
-  this.getTopic = function (key) { 
+  this.findTopic = function (key) { 
     return topicsByKey[key];
   }
 

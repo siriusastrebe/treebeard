@@ -1,6 +1,7 @@
 <script type="text/javascript">
   var TOPICS = '<%- topicSlug %>';
 </script>
+
 <script type="text/javascript" src="/js/Convoset.js"></script>
 <script type="text/javascript" src="/js/PostsController.js"></script>
 
@@ -9,26 +10,12 @@
 <!--      -->
 
 <div ng-controller="PostsController">
-  <nav class="fadeable" ng-fade="!nav" ng-mouseleave="delayedNavHide()" ng-mouseenter="resetDelayHide()">
-    <div id="view">
-      <a ng-href="##tree"><img id="tree" ng-class="{selected: view==='tree'}" src="/img/tree.png" /></a>
-      <a ng-href="##forum"><img id="list" ng-class="{selected: view==='tree'}" src="/img/list.png" /></a>
-    </div>
-  </nav>
-
-  <div id="icon" class="fadeable" ng-fade="!icon" ng-switch on="view" ng-click="showNav()">
-    <img class="icon-switch" ng-switch-when="tree" src="/img/tree.png" />
-    <img class="icon-switch" ng-switch-when="forum" src="/img/list.png" />
-    <img class="icon-switch" ng-switch-when="flow" src="" />
-  </div>
-
-
 
   <div id="forumView" ng-show="view==='forum'">
     <div class="post" id="forum{{root.token}}" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')" ng-include="'rootRenderer'"> </div>
 
-      <ul>
-        <li ng-repeat="convo in posts" ng-hide="$first" ng-include="'forumRenderer'"></li>
+    <ul>
+      <li ng-repeat="convo in posts" ng-hide="$first" ng-include="'forumRenderer'"></li>
     </ul>
   </div>
 
@@ -45,7 +32,9 @@
 <!-- Templating -->
 <!--            -->
 
-<!-- Angular logic for creating the Root -->
+<!--                                     ~~      -->
+<!-- Angular logic for creating the -<((Root))>- -->
+<!--                                     ~~      -->
 <script type="text/ng-template" id="rootRenderer">
   <h2><a href="{{root.link}}">{{root.title}}</a></h2>
 
@@ -61,7 +50,9 @@
 </script>
 
 
-<!-- Angular logic for creating posts (Forum View) -->
+<!--                                       ~ ~ ~ ~       -->
+<!-- Angular logic for creating posts -<((Forum View))>- -->
+<!--                                       ~ ~ ~ ~       --> 
 <script type="text/ng-template" id="forumRenderer">
   <div class="post" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')">
 
@@ -77,8 +68,9 @@
   </div>
 </script>
 
-
-<!-- Angular logic for creating branches (Tree View) -->
+<!--                                   ~ ~ ~                    -->
+<!-- Angular logic for creating  -<(( Branches ))>- (Tree View) -->
+<!--                                   ~ ~ ~                    -->
 <script type="text/ng-template" id="treeRenderer">
   <div class="treeView">
 

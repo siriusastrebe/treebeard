@@ -1,13 +1,12 @@
 /*                    */
 /*      Socket.io     */
 /*                    */
-var socket = io.connect();
-socket.on('connect', function () {
+IO.on('connect', function () {
   // Get the names of each topic.
   // the TOPICS variable should be preset in the
   // html portion.
   
-  socket.emit('introduceMe', {topics: TOPICS});
+  IO.emit('introduceMe', {topics: TOPICS});
 });
 
 
@@ -39,50 +38,21 @@ function branchFromScratch (parent, text, author) {
 }
 
 
-
-/*                       */
-/*     Ng-Application    */
-/*                       */
-app = angular.module('convo', []);
-
 /*                       */
 /*       Controller      */
 /*                       */
 
 var Panther = "testVariable. Delete before deploying."
-app.controller('PostsController', ['$scope', '$timeout', '$location', function ($scope, $timeout, $location) {
+APP.controller('PostsController', ['$scope', '$timeout', '$location', function ($scope, $timeout, $location) {
   // --------------------------------
   // Defaults
   // --------------------------------
-  $scope.view = 'forum'
-  $scope.icon = true;
+  $scope.view = 'tree';
 
   // --------------------------------
-  // Navigational menu
+  // Tree/List View control
   // --------------------------------
-  $scope.showNav = function () { 
-    $scope.nav = true;
-    $scope.icon = false;
-  }
-
-  var timeoutId;
-  $scope.delayedNavHide = function () { 
-    timeoutId = $timeout( function () {
-      $scope.nav = false;
-      $timeout( function () { 
-        $scope.icon = true;
-      }, 400);
-    }, 2000);
-  }
-
-  $scope.resetDelayHide = function () { 
-    $timeout.cancel(timeoutId);
-  }
-  
-
-  // --------------------------------
-  // View control
-  // --------------------------------
+  // TODO: this code violates DRY in /views/layout.ejs
   $scope.$on("$locationChangeStart", function (event, next, current) { 
     if ($location.hash() === 'tree') { 
       $scope.view = 'tree';
@@ -100,10 +70,10 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
   // --------------------------------
   // Replying to a node
   $scope.reply = function(post) {
-    child = branchFromScratch(post, post.response, "molerat");
+    child = branchFromScratch(post, post.response, LOGIN.username);
     post.response = "";
     $scope.select(false);
-    socket.emit('addBranch', { topic: TOPICS, convo: child.toJson() });
+    IO.emit('addBranch', { topic: TOPICS, convo: child.toJson() });
   };
 
   // Clicking on a node selects it and allows you to reply
@@ -125,7 +95,7 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
   }
 
   // Receiving a new post
-  socket.on('newBranch', function (data) { 
+  IO.on('newBranch', function (data) { 
     console.log(data);
     $scope.$apply(function () { 
       branch(data.convo);
@@ -133,7 +103,7 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
   });
 
   // Once connected, this client should recieve a list of all current posts
-  socket.on('introducing', function (data) { 
+  IO.on('introducing', function (data) { 
     $scope.$apply(function () { 
       console.log("Introductions: ");
       console.log(data);
@@ -153,7 +123,7 @@ app.controller('PostsController', ['$scope', '$timeout', '$location', function (
 /*      Directives      */
 /*                      */
 // Autosubmit on Enter Key
-app.directive('ngEnter', function () {
+APP.directive('ngEnter', function () {
   return function (scope, element, attrs) {
     element.bind("keydown keypress", function (event) {
       if(event.which === 13) {
@@ -167,37 +137,3 @@ app.directive('ngEnter', function () {
   };
 });
 
-// Fade animation
-app.directive('ngFade', function ($animate, $timeout) { 
-  return function (scope, element, attrs) {
-    scope.$watch(attrs.ngFade, function (ngFade) { 
-      if (ngFade) {
-        $animate.addClass(element, 'fade');
-        $timeout(function () { 
-          if (element.hasClass('fade') && !element.hasClass('hidden')) // Check if we're still fading
-            $animate.addClass(element, 'hidden');
-        }, 1000);
-      } else { 
-        $animate.removeClass(element, 'hidden');
-        // Required due to a CSS bug of not fading in if immediately unhidden
-        $timeout(function () { 
-          if (!element.hasClass('hidden'))
-            $animate.removeClass(element, 'fade');
-        }, 200)
-      }
-    });
-  }
-});
-
-// Slide Up & Down animation
-app.directive('ngSlide', function ($animate) { 
-  return function (scope, element, attrs) { 
-    scope.$watch(attrs.ngSlide, function (ngSlide) { 
-      if (ngSlide) {
-        $animate.addClass(element, 'slide');
-      } else { 
-        $animate.removeClass(element, 'slide');
-      }
-    });
-  }
-});

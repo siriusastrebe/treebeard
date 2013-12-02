@@ -13,12 +13,41 @@
   <link href="/css/css.css" rel="stylesheet">
 
   <script type='text/javascript' src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
+  <script type='text/javascript' src="//cdn.jsdelivr.net/jquery.cookie/1.4.0/jquery.cookie.js"></script>
   <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.js'></script>
   <script type='text/javascript' src="/socket.io/socket.io.js"></script>
+
+  <script type="text/javascript">
+    var IO = io.connect(),
+        APP = angular.module('convo', []),
+        SESSIONID = findSID(), 
+        LOGIN = {status: 'lurker', username: '', watchers: []};
+   
+
+    function findSID()  {
+      return $.cookie('connect.sid'); 
+    }
+
+    IO.on('connect', function () {
+      IO.emit('identifyMe', {sessionID: SESSIONID});
+    });
+
+    IO.on('namedYou', function (data) {
+      console.log('just got named ' + data.username);
+      LOGIN.status = 'participant';
+      LOGIN.username = data.username;
+      LOGIN.watchers.forEach( function (watcher) {
+        watcher.call(this, LOGIN);
+      });
+    });
+  </script>
+
+
 
 
 </head>
 <body ng-app="convo">
+  <!-- Banner and Slogan -->
   <header>
     <div id="banner">
       Convo
@@ -29,8 +58,147 @@
   </header>
 
 
+  <!-- Nav menu -->
+  <div ng-controller="NavController">
+    <nav class="fadeable" ng-fade="!nav" ng-mouseleave="delayedNavHide()" ng-mouseenter="resetDelayHide()">
+      <div id="user"> 
+        {{username}}
+      </div>
+      <div id="views">
+        <a ng-href="##tree"><img id="tree" ng-class="{selected: view==='tree'}" src="/img/tree.png" /></a>
+        <a ng-href="##forum"><img id="list" ng-class="{selected: view==='forum'}" src="/img/list.png" /></a>
+      </div>
+    </nav>
+  
+    <div id="icon" class="fadeable" ng-fade="!icon" ng-switch on="view" ng-click="showNav()">
+      <img class="icon-switch" ng-switch-when="tree" src="/img/tree.png" />
+      <img class="icon-switch" ng-switch-when="forum" src="/img/list.png" />
+      <img class="icon-switch" ng-switch-when="flow" src="" />
+    </div>
+  </div>
 
+
+  <!-- Content -->
   <%- body %>
+
+
+  <!-- Login -->
+  <div ng-controller="LoginController" id="login">
+    <form ng-submit="login()">
+      <input type="text" ng-model='username' placeholder="Pick a username" />
+      <input type='submit' />
+    </form>
+  </div>
+
+  <script type="text/javascript">
+
+    APP.controller('LoginController', ['$scope', function ($scope) { 
+      $scope.login = function () { 
+        username = $scope.username;
+
+        IO.emit('nameMe', {username: username});
+      }
+    }]);
+
+    
+ 
+  // --------------------------------
+  // Navigational menu
+  // --------------------------------
+  APP.controller('NavController', ['$scope', '$timeout', '$location',  function ($scope, $timeout, $location) {
+    $scope.icon = true;
+    $scope.nav  = false;
+    $scope.view = 'tree';
+    $scope.username = "Lurking";
+
+    $scope.showNav = function () { 
+      $scope.nav  = true;
+      $scope.icon = false;
+    }
+
+    var timeoutId;
+    $scope.delayedNavHide = function () {
+      timeoutId = $timeout( function () {
+        $scope.nav = false;
+        $timeout( function () {
+          $scope.icon = true;
+        }, 400);
+      }, 2000);
+    }
+
+    $scope.resetDelayHide = function () {
+      $timeout.cancel(timeoutId);
+    }  
+
+
+    // --------------------------------
+    // Tree/List View control
+    // --------------------------------
+    // TODO: this code violates DRY in /views/layout.ejs
+    $scope.$on("$locationChangeStart", function (event, next, current) { 
+      if ($location.hash() === 'tree') { 
+        $scope.view = 'tree';
+      }
+      else if ($location.hash() === 'flow') { 
+        $scope.view = 'flow';
+      }
+      else {
+        $scope.view = 'forum';
+      }
+    });
+
+    // --------------------------------
+    // Username controls
+    // --------------------------------
+    // Each login watcher is fired when the login details are changed.
+    LOGIN.watchers.push(function (login) { 
+      $scope.username = login.username;
+    });
+
+  }]);
+
+  /*                      */
+  /*      Directives      */
+  /*                      */
+  // Fade animation
+
+
+  APP.directive('ngFade', function ($animate, $timeout) { 
+    return function (scope, element, attrs) {
+      scope.$watch(attrs.ngFade, function (ngFade) { 
+        if (ngFade) {
+          $animate.addClass(element, 'fade');
+          $timeout(function () { 
+            if (element.hasClass('fade') && !element.hasClass('hidden')) // Check if we're still fading
+              $animate.addClass(element, 'hidden');
+          }, 1000);
+        } else { 
+          $animate.removeClass(element, 'hidden');
+          // Required due to a CSS bug of not fading in if immediately unhidden
+          $timeout(function () { 
+            if (!element.hasClass('hidden'))
+              $animate.removeClass(element, 'fade');
+          }, 200)
+        }
+      });
+    }
+  });
+
+  // Slide Up & Down animation
+  APP.directive('ngSlide', function ($animate) { 
+    return function (scope, element, attrs) { 
+      scope.$watch(attrs.ngSlide, function (ngSlide) { 
+        if (ngSlide) {
+          $animate.addClass(element, 'slide');
+        } else { 
+          $animate.removeClass(element, 'slide');
+        }
+      });
+    }
+  });
+
+
+  </script>
 
 </body>
 </html>

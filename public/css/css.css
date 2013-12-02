@@ -80,24 +80,24 @@ footer {
 /* Nav                 */
 /* ---- ---- ---- ---- */
 nav {
-  height: 80px;
-  width: 100%;
   position: fixed;
   top: 0px;
+  height: 80px;
+  width: 100%;
   z-index: 30;
 }
-nav #view {
+nav #views {
   position: absolute;
   right: 0px;
   background-color: #ffa500;
   border-bottom-left-radius: 10px;
 }
-nav #view #tree,
-nav #view #list {
+nav #views #tree,
+nav #views #list {
   margin: 0px 8px 0px 8px;
 }
-nav #view #tree:hover,
-nav #view #list:hover {
+nav #views #tree:hover,
+nav #views #list:hover {
   background-color: #888888;
 }
 #icon {
