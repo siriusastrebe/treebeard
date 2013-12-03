@@ -4,8 +4,8 @@
   , "private": true
   , "dependencies": {
       "express": "2.5.8"
-    , "jade": ">= 0.0.1"
-    , "mongodb": ">=0.9.6"
     , "ejs": "0.8.4"
+    , "less": "1.5.0"
+    , "socket.io": "~0.9.6"
   }
 }
