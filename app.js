@@ -84,10 +84,17 @@ rootJson = {
 }
 
 firstConvoset = new Convoset();
-firstConvoset.JsonToRoot(rootJson);
+root = firstConvoset.JsonToRoot(rootJson);
+
+baby = root.addChild("Beloved Daughter", 'sirius', new Date());
+root.addChild("Beloved son", 'sirius', new Date());
+
+baby.addChild("Grandsonny", 'sirius', new Date());
+baby.addChild("Granddaughta", 'sirius', new Date());
 
 var topics = new Topics();
 topics.addTopic(firstConvoset);
+
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
 // Application Architecture
@@ -195,6 +202,6 @@ io.sockets.on('connection', function (socket) {
 // ****************************************************************
 // Deploy
 // ****************************************************************
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 
