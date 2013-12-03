@@ -43,7 +43,7 @@ function branchFromScratch (parent, text, author) {
 /*                       */
 
 var Panther = "testVariable. Delete before deploying."
-APP.controller('PostsController', ['$scope', '$timeout', '$location', function ($scope, $timeout, $location) {
+APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$location', function ($scope, $rootScope, $timeout, $location) {
   // --------------------------------
   // Defaults
   // --------------------------------
@@ -70,10 +70,24 @@ APP.controller('PostsController', ['$scope', '$timeout', '$location', function (
   // --------------------------------
   // Replying to a node
   $scope.reply = function(post) {
-    child = branchFromScratch(post, post.response, LOGIN.username);
-    post.response = "";
-    $scope.select(false);
-    IO.emit('addBranch', { topic: TOPICS, convo: child.toJson() });
+    if (LOGIN.status === 'participant') {
+      child = branchFromScratch(post, post.response, LOGIN.username);
+      post.response = "";
+      $scope.select(false);
+      IO.emit('addBranch', { topic: TOPICS, convo: child.toJson() });
+    }
+    else { 
+      $rootScope.$emit('showLogin');
+      LOGIN.watchers['addBranch'] = function (login) { 
+        if (login.status === 'participant') { 
+          console.log('B: you should only see this once.');
+          $scope.$apply( function () { 
+            $scope.reply(post);
+          });
+          delete login.watchers['addBranch'];
+        }
+      }
+    }
   };
 
   // Clicking on a node selects it and allows you to reply

@@ -2,9 +2,9 @@
 /* Default/Colors      */ 
 /* ---- ---- ---- ---- */
 @standout: #097054;
-@highlight: #FFA500;
-@inlay: #8F9;
-@mellow: #FF6;
+@orange: #FFA500;
+@teal: #8F9;
+@yellow: #FF6;
 @shading: #888;
 @white: #FFF;
 @bright: #E8F8FF;
@@ -85,18 +85,25 @@
 /* ---- ---- ---- ---- */
 body {
  background-color: @white; 
+ font-family: @fontText;
 }
 
 header { 
   height: 140px;
+  margin-top: 60px;
   padding-top: 40px;
   margin-bottom: 20px;
+  background-color: @orange;
+  .border(@borderBig);
 
   text-align: center;
 
   #banner { 
-    font-size: 60px;
+    font-size: 80px;
     font-family: @fontLarge;
+    color: @bright;
+    font-weight: bolder;
+    text-shadow: @shading -2px -2px;
   }
 
   #slogan { 
@@ -106,8 +113,9 @@ header {
 }
 
 footer { 
-  height: 200px;
+  height: 150px;
 }
+
 
 /* ---- ---- ---- ---- */
 /* Nav                 */
@@ -120,11 +128,22 @@ nav {
   width: 100%;
   z-index: 30;
 
+  #user { 
+    position: absolute;
+    left: 0px;
+
+    padding: 12px 18px 12px 12px;
+    font-size: 15px;
+    
+    background-color: @orange;
+    border-bottom-right-radius: 10px;
+  }
+
   #views {
     position: absolute;
     right: 0px;
 
-    background-color: @highlight;
+    background-color: @orange;
     border-bottom-left-radius: 10px;
 
     #tree, #list { 
@@ -141,6 +160,7 @@ nav {
   }
 }
 
+
 #icon { 
   position: fixed;
   top: 0px;
@@ -152,6 +172,153 @@ nav {
 }
 
 
+/* ---- ---- ---- ---- */
+/* login and errors    */
+/* ---- ---- ---- ---- */
+
+
+#login { 
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  
+  background-color: rgba(127, 127, 127, 0.3);
+
+  form { 
+    position: absolute;
+    top: 0px; left: 0px; right: 0px; bottom: 0px;
+    margin: auto;
+
+    width: 300px;
+    height: 100px;
+    text-align: center;
+
+    background-color: @standout;
+    .border(@borderMedium);
+
+    input { 
+      .border(@borderSmall);
+      width: 80%;
+      margin: 12px;
+      height: 26px;
+    }
+  }
+}
+
+#error {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  
+  background-color: rgba(127, 0, 0, 0.5);
+
+  form { 
+    position: absolute;
+    top: 0px; left: 0px; right: 0px; bottom: 0px;
+    margin: auto;
+
+    width: 300px;
+    height: 200px;
+    text-align: center;
+
+    background-color: @bright;
+    .border(@borderMedium);
+
+    div { 
+      margin: 12px;
+    }
+
+    input { 
+      .border(@borderSmall);
+      width: 80%;
+      margin: 12px;
+      height: 26px;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+/* ---- ---- ---- ---- */
+/*      homepage       */
+/* ---- ---- ---- ---- */
+#homepage { 
+  text-align: center;
+
+  h2 { 
+    font-size: 25px;
+    font-weight: bolder;
+    margin-bottom:15px;
+  }
+
+  #topics {
+    font-size: 20px;
+    margin-bottom: 200px;
+
+    a { 
+      color: @teal;
+      font-weight: bolder;
+    }
+
+    li {
+      margin: 12px;
+    }
+
+  }
+
+  h2#publishHeader { 
+    display: inline-block;
+    padding: 10px;
+
+    background-color: @standout;
+    .border(@borderMedium);
+
+    color: @bright;
+    text-shadow: -2px -2px @shading;
+  }
+
+  #publish { 
+    max-width: 600px;   
+    margin-left: auto;
+    margin-right: auto;
+    
+    input {
+      display: block;
+      width: 100%;
+      text-align: center;
+
+      .border(@borderSmall);
+    }
+    
+    textarea { 
+      width: 100%;
+      text-align: center;
+
+      .border(@borderSmall);
+    }
+
+    textarea:focus { 
+      text-align: left;
+    }
+  }
+}
+
+
+/* ---- ---- ---- ---- */
+/*      Posts          */
+/* ---- ---- ---- ---- */
+#posts { 
+  margin-top: 100px;
+}
 
 /* ---- ---- ---- ---- */
 /* Forum View          */
@@ -170,7 +337,7 @@ nav {
     overflow: auto;
 
     background-color: @bright;
-    border: 1px solid @inlay;
+    border: 1px solid @teal;
     .borderMedium;
 
     h2 {
@@ -192,7 +359,7 @@ nav {
       margin: 10px 15px 10px 15px;
       padding: 4px;
       
-      background-color: @mellow;
+      background-color: @yellow;
       .borderSmall;
       color: @shading;
 
@@ -243,7 +410,7 @@ nav {
     overflow: auto;
 
     background-color: @bright;
-    border: 1px solid @inlay;
+    border: 1px solid @teal;
     .borderMedium;
 
     margin-left: 10px;
@@ -269,7 +436,7 @@ nav {
     margin: 5px 10px 5px 10px;
     padding: 4px;
     
-    background-color: @mellow;
+    background-color: @yellow;
     .borderSmall;
     color: @shading;
 

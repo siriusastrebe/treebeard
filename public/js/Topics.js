@@ -27,7 +27,11 @@ var Topics = function () {
   }
 
   this.findTopic = function (key) { 
-    return topicsByKey[key];
+    if (key in topicsByKey) {
+      return topicsByKey[key];
+    } else { 
+      return false;
+    }
   }
 
   this.getTopicList = function () { 

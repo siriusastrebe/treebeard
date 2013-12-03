@@ -153,8 +153,12 @@ io.sockets.on('connection', function (socket) {
     // TODO: allow multiple topics in the same view
     // TODO: Add in a view 404 topics
     topic = topics.findTopic(data.topics);
-    json = topic.nodesToJson();
-    socket.emit('introducing', json);
+    if (topic) { 
+      json = topic.nodesToJson();
+      socket.emit('introducing', json);
+    } else { 
+      socket.emit('error', {msg: "You've entered into a black hole."});
+    }
   });
 
   function nameClient(socket, id) { 
@@ -182,7 +186,7 @@ io.sockets.on('connection', function (socket) {
     if (status) 
       socket.emit('builtTopic', {status: 'success', url: topic.slug});
     else 
-      socket.emit('builtTopic', {status: 'failure', error: 'topic by that name already exists.'});
+      socket.emit('error', {msg: 'topic by that name already exists.'});
   });
 });
 

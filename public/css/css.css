@@ -58,23 +58,32 @@
 /* ---- ---- ---- ---- */
 body {
   background-color: #ffffff;
+  font-family: verdana;
 }
 header {
   height: 140px;
+  margin-top: 60px;
   padding-top: 40px;
   margin-bottom: 20px;
+  background-color: #ffa500;
+  border-radius: 20px;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
   text-align: center;
 }
 header #banner {
-  font-size: 60px;
+  font-size: 80px;
   font-family: arial;
+  color: #e8f8ff;
+  font-weight: bolder;
+  text-shadow: #888888 -2px -2px;
 }
 header #slogan {
   font-size: 20px;
   font-family: verdana;
 }
 footer {
-  height: 200px;
+  height: 150px;
 }
 /* ---- ---- ---- ---- */
 /* Nav                 */
@@ -85,6 +94,14 @@ nav {
   height: 80px;
   width: 100%;
   z-index: 30;
+}
+nav #user {
+  position: absolute;
+  left: 0px;
+  padding: 12px 18px 12px 12px;
+  font-size: 15px;
+  background-color: #ffa500;
+  border-bottom-right-radius: 10px;
 }
 nav #views {
   position: absolute;
@@ -107,6 +124,135 @@ nav #views #list:hover {
   height: 64px;
   width: 64px;
   z-index: 29;
+}
+/* ---- ---- ---- ---- */
+/* login and errors    */
+/* ---- ---- ---- ---- */
+#login {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(127, 127, 127, 0.3);
+}
+#login form {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  margin: auto;
+  width: 300px;
+  height: 100px;
+  text-align: center;
+  background-color: #097054;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+#login form input {
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  width: 80%;
+  margin: 12px;
+  height: 26px;
+}
+#error {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(127, 0, 0, 0.5);
+}
+#error form {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  margin: auto;
+  width: 300px;
+  height: 200px;
+  text-align: center;
+  background-color: #e8f8ff;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+#error form div {
+  margin: 12px;
+}
+#error form input {
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  width: 80%;
+  margin: 12px;
+  height: 26px;
+}
+/* ---- ---- ---- ---- */
+/*      homepage       */
+/* ---- ---- ---- ---- */
+#homepage {
+  text-align: center;
+}
+#homepage h2 {
+  font-size: 25px;
+  font-weight: bolder;
+  margin-bottom: 15px;
+}
+#homepage #topics {
+  font-size: 20px;
+  margin-bottom: 200px;
+}
+#homepage #topics a {
+  color: #88ff99;
+  font-weight: bolder;
+}
+#homepage #topics li {
+  margin: 12px;
+}
+#homepage h2#publishHeader {
+  display: inline-block;
+  padding: 10px;
+  background-color: #097054;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  color: #e8f8ff;
+  text-shadow: -2px -2px #888888;
+}
+#homepage #publish {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#homepage #publish input {
+  display: block;
+  width: 100%;
+  text-align: center;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+#homepage #publish textarea {
+  width: 100%;
+  text-align: center;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+#homepage #publish textarea:focus {
+  text-align: left;
+}
+/* ---- ---- ---- ---- */
+/*      Posts          */
+/* ---- ---- ---- ---- */
+#posts {
+  margin-top: 100px;
 }
 /* ---- ---- ---- ---- */
 /* Forum View          */

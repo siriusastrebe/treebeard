@@ -9,7 +9,7 @@
 <!-- View -->
 <!--      -->
 
-<div ng-controller="PostsController">
+<div id="posts" ng-controller="PostsController">
 
   <div id="forumView" ng-show="view==='forum'">
     <div class="post" id="forum{{root.token}}" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')" ng-include="'rootRenderer'"> </div>

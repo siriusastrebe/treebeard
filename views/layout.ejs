@@ -21,7 +21,7 @@
     var IO = io.connect(),
         APP = angular.module('convo', []),
         SESSIONID = findSID(), 
-        LOGIN = {status: 'lurker', username: '', watchers: []};
+        LOGIN = {status: 'lurker', username: '', watchers: {}};
    
 
     function findSID()  {
@@ -31,15 +31,6 @@
     IO.on('connect', function () {
       IO.emit('identifyMe', {sessionID: SESSIONID});
     });
-
-    IO.on('namedYou', function (data) {
-      console.log('just got named ' + data.username);
-      LOGIN.status = 'participant';
-      LOGIN.username = data.username;
-      LOGIN.watchers.forEach( function (watcher) {
-        watcher.call(this, LOGIN);
-      });
-    });
   </script>
 
 
@@ -47,24 +38,14 @@
 
 </head>
 <body ng-app="convo">
-  <!-- Banner and Slogan -->
-  <header>
-    <div id="banner">
-      Convo
-    </div>
-    <h1 id="slogan">
-      Forums for the thoughtful
-    </h1>
-  </header>
-
 
   <!-- Nav menu -->
   <div ng-controller="NavController">
     <nav class="fadeable" ng-fade="!nav" ng-mouseleave="delayedNavHide()" ng-mouseenter="resetDelayHide()">
-      <div id="user"> 
+      <div id="user">
         {{username}}
       </div>
-      <div id="views">
+      <div id="views" ng-hide="view === 'none'">
         <a ng-href="##tree"><img id="tree" ng-class="{selected: view==='tree'}" src="/img/tree.png" /></a>
         <a ng-href="##forum"><img id="list" ng-class="{selected: view==='forum'}" src="/img/list.png" /></a>
       </div>
@@ -73,6 +54,7 @@
     <div id="icon" class="fadeable" ng-fade="!icon" ng-switch on="view" ng-click="showNav()">
       <img class="icon-switch" ng-switch-when="tree" src="/img/tree.png" />
       <img class="icon-switch" ng-switch-when="forum" src="/img/list.png" />
+      <img class="icon-switch" ng-switch-when="none" src="/img/question.png" />
       <img class="icon-switch" ng-switch-when="flow" src="" />
     </div>
   </div>
@@ -83,21 +65,74 @@
 
 
   <!-- Login -->
-  <div ng-controller="LoginController" id="login">
+  <div ng-controller="LoginController" ng-show='loginShowing' id="login">
     <form ng-submit="login()">
       <input type="text" ng-model='username' placeholder="Pick a username" />
-      <input type='submit' />
+      <input type='submit' value="login"></input>
     </form>
   </div>
 
+  <div ng-controller="ErrorController" ng-show="errorShowing" id="error">
+    <form ng-submit="continue()"> 
+      <div>{{errorMessage}}</div>
+      <div>Contact <a href="mailto:SiriusAStrebe@gmail.com">SiriusAStrebe@gmail.com</a></div>
+      <input type='submit' value="I understand..."></input>
+    </form>
+  </div>
+
+  <footer></footer>
+
   <script type="text/javascript">
 
-    APP.controller('LoginController', ['$scope', function ($scope) { 
-      $scope.login = function () { 
-        username = $scope.username;
 
-        IO.emit('nameMe', {username: username});
+
+    APP.controller('ErrorController', ['$scope', function ($scope) { 
+      $scope.errorShowing = false;
+
+      IO.on('error', function (data) { 
+        $scope.$apply( function () { 
+          $scope.errorMessage = data.msg;
+          $scope.errorShowing = true;
+        });
+      });
+
+      $scope.continue = function () { 
+        $scope.errorShowing = false;
       }
+    }]);
+
+
+
+    APP.controller('LoginController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
+      $scope.loginShowing = false;
+
+      $scope.login = function () { 
+        if ($scope.username) {
+          username = $scope.username;
+
+          IO.emit('nameMe', {username: username});
+        }
+      }
+
+      // TODO: Not certain if this belongs here, or if this controller 
+      // should just have a watcher to the login data.
+      IO.on('namedYou', function (data) {
+
+        $scope.$apply( function () { 
+          $scope.loginShowing = false;
+        });
+
+        console.log('just got named ' + data.username);
+        LOGIN.status = 'participant';
+        LOGIN.username = data.username;
+        for (func in LOGIN.watchers) { 
+          LOGIN.watchers[func].call(this, LOGIN);
+        }
+      });
+
+      $rootScope.$on('showLogin', function () { 
+        $scope.loginShowing = true;
+      });
     }]);
 
     
@@ -108,8 +143,8 @@
   APP.controller('NavController', ['$scope', '$timeout', '$location',  function ($scope, $timeout, $location) {
     $scope.icon = true;
     $scope.nav  = false;
-    $scope.view = 'tree';
     $scope.username = "Lurking";
+    $scope.view;
 
     $scope.showNav = function () { 
       $scope.nav  = true;
@@ -143,7 +178,12 @@
         $scope.view = 'flow';
       }
       else {
-        $scope.view = 'forum';
+        if (document.location.pathname === '/' || document.location.pathname === '') { 
+          $scope.view = 'none';
+        }
+        else  {
+          $scope.view = 'forum';
+        }
       }
     });
 
@@ -151,9 +191,9 @@
     // Username controls
     // --------------------------------
     // Each login watcher is fired when the login details are changed.
-    LOGIN.watchers.push(function (login) { 
+    LOGIN.watchers['updateUsername'] = function (login) { 
       $scope.username = login.username;
-    });
+    };
 
   }]);
 

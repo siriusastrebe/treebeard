@@ -20,25 +20,32 @@
 <script type="text/javascript">
   var debug;
 
-  APP.controller('TopicsController', ['$scope', function ($scope) { 
+  APP.controller('TopicsController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
+    $showPublish = false;
 
     $scope.topicSubmit = function () {
       if (LOGIN.status === 'participant') { 
         topic = newTopic($scope.title, $scope.link, $scope.contents, LOGIN.username);
         IO.emit("buildTopic", {root: topic.toJson()});
-      } else { 
-        // TODO: Show the login dialog box when you're not logged in.
-        console.log('not logged in');
+      } 
+      else { 
+        $rootScope.$emit('showLogin');
+        
+        LOGIN.watchers['submitTopic'] = function (login) { 
+          if (LOGIN.status === 'participant') {
+            console.log('A: you should only see this once')
+            $scope.$apply( function () { 
+              $scope.topicSubmit();
+            });
+            delete login['submitTopic'];
+          }
+        };
       }
     }
 
     IO.on('builtTopic', function (data) { 
       if (data.status === 'success') {
         window.location.href = "/" + data.url + "/";
-      }
-      else if (data.status === 'failure') {
-        // TODO: Add in a failure message to users.
-        console.log("can't create a new topic, " + data.error);
       }
     });
 
@@ -48,23 +55,36 @@
   }]);
 </script>
 
-<h2>Select a topic</h2>
+<!-- Banner and Slogan -->
+<header>
+  <div id="banner">
+    Treebeard
+  </div>
+  <h1 id="slogan">
+    Forums for the thoughtful
+  </h1>
+</header>
 
-<div ng-controller="TopicsController">
-  <ul>
+
+
+<div id="homepage" ng-controller="TopicsController">
+  <ul id="topics">
+    <h2>Select a topic</h2>
     <li ng-repeat="root in roots">
-      <h4><a href="/{{root.slug}}/">{{root.title}}</a></h4>
-      <h5>{{root.author}}</h5>
-      <p>{{root.contents}}</p>
+      <h4>
+        <a href="/{{root.slug}}/">{{root.title}}</a>
+        by
+        {{root.author}}
+      </h4>
     </li>
   </ul>
 
 
-  <h3>New Topic</h3>
-  <form ng-submit="topicSubmit()">
+  <h2 id="publishHeader" ng-click="showPublish = !showPublish">New Topic</h2>
+  <form id="publish" ng-show="showPublish" ng-submit="topicSubmit()">
     <input type='text' ng-model='title' placeholder='Title' />
     <input type='text' ng-model='link' placeholder='Link' />
-    <textarea ng-model='contents'></textarea>
+    <textarea ng-model='contents' placeholder='Make a bold claim'></textarea>
     <input type='submit' />
   </form>
 
