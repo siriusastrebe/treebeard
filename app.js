@@ -76,7 +76,7 @@ less.render(lessdata, function (e, css) {
 // Datasets
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
 rootJson = {
-    contents: "Click on this box and type something in. When you're satisfied, click the icon in the top right for an example of what this app is capable of."
+    contents: "Click on this box and type something in. Hitting enter will place your comment at the bottom of the list. Click the icon in the top-right and select the tree for an example of what this app is capable of."
   , author: "Stroobles"
   , title: "Demo"
   , link: "www.google.com"
