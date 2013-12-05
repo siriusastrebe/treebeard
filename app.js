@@ -86,7 +86,7 @@ app.get(csspath,  function (req, res) {
 // Datasets
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
 rootJson = {
-    contents: "Click on this box and type something in. Hitting enter will place your comment at the bottom of the list. Click the icon in the top-right and select the tree for an example of what this app is capable of."
+    contents: "Go ahead, click on this box. The icon below will help you make a reply. Play around, see what you can make."
   , author: "Stroobles"
   , title: "Demo"
   , link: "www.google.com"
