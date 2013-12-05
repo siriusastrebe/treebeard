@@ -10,7 +10,8 @@
   <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.13.0/build/cssreset/cssreset-min.css">
 
   <!-- styles -->
-  <link href="/css/css.css" rel="stylesheet">
+  <link href="/css/css.css" rel="stylesheet" />
+  <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
 
   <script type='text/javascript' src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
   <script type='text/javascript' src="//cdn.jsdelivr.net/jquery.cookie/1.4.0/jquery.cookie.js"></script>
@@ -171,8 +172,8 @@
     // --------------------------------
     // TODO: this code violates DRY in /views/layout.ejs
     $scope.$on("$locationChangeStart", function (event, next, current) { 
-      if ($location.hash() === 'tree') { 
-        $scope.view = 'tree';
+      if ($location.hash() === 'forum') { 
+        $scope.view = 'forum';
       }
       else if ($location.hash() === 'flow') { 
         $scope.view = 'flow';
@@ -182,7 +183,7 @@
           $scope.view = 'none';
         }
         else  {
-          $scope.view = 'forum';
+          $scope.view = 'tree';
         }
       }
     });
@@ -219,19 +220,6 @@
             if (!element.hasClass('hidden'))
               $animate.removeClass(element, 'fade');
           }, 200)
-        }
-      });
-    }
-  });
-
-  // Slide Up & Down animation
-  APP.directive('ngSlide', function ($animate) { 
-    return function (scope, element, attrs) { 
-      scope.$watch(attrs.ngSlide, function (ngSlide) { 
-        if (ngSlide) {
-          $animate.addClass(element, 'slide');
-        } else { 
-          $animate.removeClass(element, 'slide');
         }
       });
     }

@@ -117,6 +117,9 @@ nav #views #tree:hover,
 nav #views #list:hover {
   background-color: #888888;
 }
+nav #views .selected {
+  background-color: #e8f8ff;
+}
 #icon {
   position: fixed;
   top: 0px;
@@ -325,8 +328,9 @@ nav #views #list:hover {
 .treeView {
   position: relative;
   white-space: nowrap;
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  /* Spacing between cousins */
 }
 .treeView .node,
 .treeView .children {
@@ -334,19 +338,30 @@ nav #views #list:hover {
   vertical-align: middle;
 }
 .treeView .children {
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .treeView .node {
   white-space: normal;
   overflow: auto;
-  background-color: #e8f8ff;
+  background-color: #ffffff;
   border: 1px solid #88ff99;
   border-radius: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
+  -moz-box-shadow: 2px 2px 1px 1px #888888;
+  -webkit-box-shadow: 2px 2px 1px 1px #888888;
+  box-shadow: 2px 2px 1px 1px #888888;
   margin-left: 10px;
   width: 500px;
+  cursor: pointer;
+}
+.treeView .node:hover {
+  background-color: #f8f8f8;
+  border: 1px solid #88ff99;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
 }
 .treeView h2 {
   font-size: 20px;
@@ -359,17 +374,18 @@ nav #views #list:hover {
   color: #097054;
 }
 .treeView .details {
-  display: inline-block;
-  float: left;
-  margin: 5px 10px 5px 10px;
-  padding: 4px;
-  background-color: #ffff66;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  color: #888888;
+  display: block;
+  padding-left: 15px;
+  padding-right: 15px;
   font-size: 14px;
   font-family: century gothic;
+}
+.treeView .details h3 {
+  display: inline-block;
+}
+.treeView .details h4 {
+  display: inline-block;
+  float: right;
 }
 .treeView p {
   margin: 5px 15px 10px;
@@ -378,11 +394,34 @@ nav #views #list:hover {
   text-align: center;
 }
 .treeView textarea {
-  margin-bottom: 6px;
-  width: 80%;
+  width: 98%;
+  margin: 0px;
+  height: 60px;
+  resize: none;
+  border: 0px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  outline: none;
+}
+.treeView .iconRack {
+  position: relative;
+  width: 100%;
+  height: 40px;
+}
+.treeView .reply {
+  height: 100px;
+}
+.treeView .replyIcon {
+  position: absolute;
+  right: 20px;
+  padding: 5px;
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
+}
+.treeView .replyIcon:hover {
+  background-color: #ffff66;
 }
 .treeView .bracket {
   position: absolute;
@@ -390,7 +429,7 @@ nav #views #list:hover {
   bottom: 0px;
   display: inline-block;
   width: 6px;
-  border-left-width: 3px;
+  border-left-width: 4px;
   border-left-color: #888888;
   border-left-style: solid;
 }
@@ -422,12 +461,14 @@ nav #views #list:hover {
 .hidden {
   display: none;
 }
-.slideable {
-  -webkit-transition: height 1s;
-  -moz-transition: height 1s;
-  -o-transition: height 1s;
-  transition: height 1s;
-}
 .slide {
-  height: 0px;
+  overflow: hidden;
+  height: 0 !important;
+}
+.slideable {
+  overflow: hidden;
+  -webkit-transition: height 300ms ease;
+  -moz-transition: height 300ms ease;
+  -o-transition: height 300ms ease;
+  transition: height 300ms ease;
 }

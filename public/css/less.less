@@ -8,6 +8,7 @@
 @shading: #888;
 @white: #FFF;
 @bright: #E8F8FF;
+@hover: #F8F8F8;
 
 @fontLarge: arial;
 @fontText: verdana;
@@ -155,7 +156,7 @@ nav {
     }
 
     .selected {
-      
+      background-color: @bright;
     }
   }
 }
@@ -390,31 +391,41 @@ nav {
 /* Tree View           */
 /* ---- ---- ---- ---- */
 .treeView { 
+
   position: relative;
   white-space: nowrap;
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 
   .node, .children {
     display: inline-block;
     vertical-align: middle;
   }
 
+  /* Spacing between cousins */
   .children { 
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
   .node { 
     white-space: normal;
     overflow: auto;
 
-    background-color: @bright;
+    background-color: @white;
     border: 1px solid @teal;
     .borderMedium;
+    .shadow(2px, 2px, 1px, 1px, @shading);
 
     margin-left: 10px;
     width: 500px;
+    cursor: pointer;
+  }
+
+  .node:hover {
+    background-color: @hover;
+    border: 1px solid @teal;
+    .borderMedium;
   }
 
   h2 {
@@ -430,15 +441,18 @@ nav {
   }
 
   .details {
-    display: inline-block;
-    float: left;
+    display: block;
+    padding-left: 15px;
+    padding-right: 15px;
 
-    margin: 5px 10px 5px 10px;
-    padding: 4px;
+    h3 { 
+      display: inline-block;
+    }
     
-    background-color: @yellow;
-    .borderSmall;
-    color: @shading;
+    h4 { 
+      display: inline-block;
+      float: right;
+    }
 
     font-size: 14px;
     font-family: @fontStylish;
@@ -452,12 +466,42 @@ nav {
   form {
     text-align: center;
   }
+  
   textarea { 
-    margin-bottom: 6px;
-    width: 80%;
-    .borderSmall;
+    width: 98%;
+    margin: 0px;
+
+    height: 60px;
+
+    resize: none;
+    border: 0px;
+    .border(@borderMedium);
+
+    outline: none;
   }
 
+  .iconRack { 
+    position: relative;
+    width: 100%;
+
+    height: 40px;
+  }
+
+  .reply { 
+    height: 100px;
+  }
+
+  .replyIcon { 
+    position: absolute; 
+    right: 20px;
+
+    padding: 5px;
+    .border(@borderSmall);
+  }
+
+  .replyIcon:hover { 
+    background-color: @yellow;
+  }
 
   .bracket {
     position: absolute;
@@ -466,7 +510,7 @@ nav {
     display: inline-block;
     width: 6px;
 
-    border-left-width: 3px;
+    border-left-width: 4px;
     border-left-color: @shading;
     border-left-style: solid;
   }
@@ -485,6 +529,7 @@ nav {
     border-bottom-style: solid;
   }
 }
+
 
 /* ---- ---- ---- ---- */
 /* Animations          */
@@ -505,13 +550,17 @@ nav {
   display: none;
 }
 
-.slideable { 
-  -webkit-transition: height 1s;
-     -moz-transition: height 1s;
-       -o-transition: height 1s;
-          transition: height 1s;
+.slide { 
+  overflow: hidden;
+  height: 0 !important;
 }
 
-.slide { 
-  height: 0px;
+.slideable {
+  overflow: hidden;
+  -webkit-transition: height 300ms ease;
+  -moz-transition: height 300ms ease;
+    -o-transition: height 300ms ease;
+       transition: height 300ms ease;
 }
+
+

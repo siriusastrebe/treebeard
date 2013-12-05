@@ -21,6 +21,7 @@
  * - node.author
  * - node.children
  * - node.timestamp
+ * - node.time
  * - node.token
  * - node.type
  *
@@ -132,6 +133,7 @@ var Convoset = function () {
     this.author = author;
     this.children = [];
     this.timestamp = timestamp;
+    this.time = timestamp.getHours() + ':' + timestamp.getMinutes();
     this.token = createToken();
 
     if (!(typeof optional === 'undefined')) { 
@@ -200,7 +202,7 @@ var Convoset = function () {
   this.JsonToRoot = function (json) {
     children = [];
     processChildren(json.children, json.token, children);
-    return new Root(json.contents, json.author, json.title, json.link, json.timestamp, {children: children, token: json.token});
+    return new Root(json.contents, json.author, json.title, json.link, new Date(json.timestamp), {children: children, token: json.token});
   }
 
 
@@ -234,7 +236,7 @@ var Convoset = function () {
     processChildren(json.children, json.token, children);
     parent = findNode(json.parent);
     if (parent) 
-      return parent.addChild(json.contents, json.author, json.timestamp, {children: children, token: json.token});
+      return parent.addChild(json.contents, json.author, new Date(json.timestamp), {children: children, token: json.token});
     else
       return false;
   }

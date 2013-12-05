@@ -1,9 +1,30 @@
+<style type="text/css"> 
+  html {  
+    background: url('http://i.imgur.com/x86Mup0.jpg'); 
+    background-attachment: fixed;
+    background-position: center center;
+  } 
+
+  body {
+    background: transparent;
+  }
+</style> 
+           
+            
+
+
 <script type="text/javascript">
   var TOPICS = '<%- topicSlug %>';
+  var ConvoJson = JSON.parse(<%- JSON.stringify(json) %>);
 </script>
 
 <script type="text/javascript" src="/js/Convoset.js"></script>
 <script type="text/javascript" src="/js/PostsController.js"></script>
+
+
+
+
+
 
 <!--      -->
 <!-- View -->
@@ -12,17 +33,31 @@
 <div id="posts" ng-controller="PostsController">
 
   <div id="forumView" ng-show="view==='forum'">
-    <div class="post" id="forum{{root.token}}" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')" ng-include="'rootRenderer'"> </div>
+    <div class="post" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')" ng-include="'rootRenderer'"> </div>
 
     <ul>
       <li ng-repeat="convo in posts" ng-hide="$first" ng-include="'forumRenderer'"></li>
     </ul>
   </div>
 
+
+
+
   <div class="treeView" ng-show="view==='tree'">
-    <div class="node" id="tree{{root.token}}" ng-class="{selected: root.selected}" ng-Click="select(root, 'tree')" ng-include="'rootRenderer'"> </div>
+    <div class="node" id="tree{{root.token}}" ng-class="{selected: root.selected}" ng-Click="select(root, 'tree')" ng-enter="openReply(root, 'tree')" ng-include="'rootRenderer'"> </div>
     <ul class="children">
       <li ng-repeat="convo in root.children" ng-include="'treeRenderer'"></li>
+
+      <li class="reply slideable" ng-slide="root.replying">
+        <div class="treeView">
+          <div class="node">
+            <form ng-submit="reply(root)">
+              <textarea ng-model="root.response" ng-focus="root.replying" ng-enter="reply(root)"></textarea>
+            </form>
+          </div>
+        </div>
+      </li>
+
     </ul>
   </div>
 </div>
@@ -40,12 +75,13 @@
 
   <div class="details">
     <h3>{{root.author}}</h3>
+    <h4>{{root.time}}</h4>
   </div>
   <p>{{root.contents}}</p>
 
-  <form ng-submit="reply(root)" ng-show="root.selected">
-    <textarea ng-model="root.response" ng-enter="reply(root)" placeholder="Speak your mind..."></textarea>
-  </form>
+  <div ng-slide="root.selected" class="iconRack slideable">
+    <i ng-click="replying(root, 'tree')" class="replyIcon fa fa-share-square-o fa-lg"></i>
+  </div>
 
 </script>
 
@@ -58,11 +94,13 @@
 
     <div class="details">
       <h3>{{convo.author}}</h3>
+      <h4>{{convo.time}}</h4>
     </div>
     <p>{{convo.contents}}</p>
 
+
     <form ng-submit="reply(convo)" ng-show="convo.selected">
-      <textarea ng-model="convo.response" ng-enter="reply(convo)" placeholder="Speak your mind..."></textarea>
+      <textarea ng-model="convo.response" ng-enter="reply(convo)"></textarea>
     </form>
 
   </div>
@@ -79,20 +117,37 @@
     <div class="node" id="tree{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'tree')">
       <div class="details">
         <h3>{{convo.author}}</h3>
+        <h4>{{convo.time}}</h4>
       </div>
       
       <p>{{convo.contents}}</p>
 
-      <form ng-submit="reply(convo)" ng-show="convo.selected">
-        <textarea ng-model="convo.response" ng-enter="reply(convo)" placeholder="Speak your mind..."></textarea>
-      </form>
+      <div ng-slide="convo.selected" class="iconRack slideable">
+        <i ng-click="replying(convo, 'tree')" class="replyIcon fa fa-share-square-o fa-lg"></i>
+      </div>
+
 
     </div>
 
     <ul class="children">
       <li ng-repeat="convo in convo.children" ng-include="'treeRenderer'"></li>
+      <li class="reply slideable" ng-slide="convo.replying" ng-include="'replyRenderer'"></li>
     </ul>
 
+  </div>
+</script>
+
+
+<!--                                   ~ ~ ~ ~ ~ ~                  -->
+<!-- Angular logic for creating  -<(( Reply (ghost)))>- (Tree View) -->
+<!--                                   ~ ~ ~ ~ ~ ~                  -->
+<script type="text/ng-template" id="replyRenderer">
+  <div class="treeView">
+    <div class="node">
+      <form ng-submit="reply(convo)">
+        <textarea ng-model="convo.response" ng-focus="convo.replying" ng-enter="reply(convo)"></textarea>
+      </form>
+    </div>
   </div>
 </script>
 

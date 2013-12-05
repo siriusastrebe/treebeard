@@ -18,6 +18,7 @@ io.set('log level', 2);
 
 var lessfile = './public/css/less.less';
 var cssfile = './public/css/css.css';
+var csspath = '/css/css.css';
 
 // Supplementary JS
 var Convoset = require('./public/js/Convoset.js');
@@ -61,15 +62,24 @@ app.configure('production', function(){
 
 
 // Less css preprocessor
-var lessdata = fs.readFileSync(lessfile, 'utf8');
 
-less.render(lessdata, function (e, css) {
-  if (e) throw e;
-  fs.writeFile(cssfile, css, function (err) {
-    console.log(lessfile + ' rendered into css at ' + cssfile);
+function preprocess (callback) {
+  var lessdata = fs.readFileSync(lessfile, 'utf8');
+
+  less.render(lessdata, function (e, css) {
+    if (e) throw e;
+    fs.writeFile(cssfile, css, function (err) {
+      console.log(lessfile + ' rendered into css at ' + cssfile);
+      callback.call(this);
+    });
   });
-});
+}
 
+app.get(csspath,  function (req, res) { 
+ preprocess(function () { 
+   res.sendfile(cssfile, {root: __dirname});
+ });
+})
 
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ = 
@@ -120,9 +130,10 @@ app.get('/:topic/',  function (req, res) {
     // TODO: Add in a view 404 topics
     // TODO: allow for multiple topics
     topic = topics.findTopic(req.params.topic);
+    json = topic.nodesToJson();
     slug = topic.slug;
     res.render('index.ejs', 
-      { topicSlug: slug }
+      { topicSlug: slug, json: JSON.stringify(json)}
     );
 });
 
@@ -161,8 +172,8 @@ io.sockets.on('connection', function (socket) {
     // TODO: Add in a view 404 topics
     topic = topics.findTopic(data.topics);
     if (topic) { 
-      json = topic.nodesToJson();
-      socket.emit('introducing', json);
+//      json = topic.nodesToJson();
+//      socket.emit('introducing', json);
     } else { 
       socket.emit('error', {msg: "You've entered into a black hole."});
     }
