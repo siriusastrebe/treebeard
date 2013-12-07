@@ -33,7 +33,19 @@
 <div id="posts" ng-controller="PostsController">
 
   <div id="forumView" ng-show="view==='forum'">
-    <div class="post" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')" ng-include="'rootRenderer'"> </div>
+    <div class="post" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')"> 
+      <h2><a href="{{root.link}}">{{root.title}}</a></h2>
+
+      <div class="details">
+        <h3>{{root.author}}</h3>
+        <h4>{{root.time}}</h4>
+      </div>
+      <p>{{root.contents}}</p>
+
+      <form ng-submit="reply(root)" class="forumReply slideable" ng-slide="root.selected">
+        <textarea ng-model="root.response" ng-enter="reply(root)"></textarea>
+      </form>
+    </div>
 
     <ul>
       <li ng-repeat="convo in posts" ng-hide="$first" ng-include="'forumRenderer'"></li>
@@ -42,13 +54,12 @@
 
 
 
-
   <div class="treeView" ng-show="view==='tree'">
     <div class="node" id="tree{{root.token}}" ng-class="{selected: root.selected}" ng-Click="select(root, 'tree')" ng-enter="openReply(root, 'tree')" ng-include="'rootRenderer'"> </div>
     <ul class="children">
       <li ng-repeat="convo in root.children" ng-include="'treeRenderer'"></li>
 
-      <li class="reply slideable" ng-slide="root.replying">
+      <li class="treeReply slideable" ng-slide="root.replying">
         <div class="treeView">
           <div class="node">
             <form ng-submit="reply(root)">
@@ -80,7 +91,7 @@
   <p>{{root.contents}}</p>
 
   <div ng-slide="root.selected" class="iconRack slideable">
-    <i ng-click="replying(root, 'tree')" class="replyIcon fa fa-share-square-o fa-lg"></i>
+    <i ng-click="replying(root)" class="replyIcon fa fa-share-square-o fa-lg"></i>
   </div>
 
 </script>
@@ -98,8 +109,7 @@
     </div>
     <p>{{convo.contents}}</p>
 
-
-    <form ng-submit="reply(convo)" ng-show="convo.selected">
+    <form ng-submit="reply(convo)" class="forumReply slideable" ng-slide="convo.selected">
       <textarea ng-model="convo.response" ng-enter="reply(convo)"></textarea>
     </form>
 
@@ -123,7 +133,7 @@
       <p>{{convo.contents}}</p>
 
       <div ng-slide="convo.selected" class="iconRack slideable">
-        <i ng-click="replying(convo, 'tree')" class="replyIcon fa fa-share-square-o fa-lg"></i>
+        <i ng-click="replying(convo)" class="replyIcon fa fa-share-square-o fa-lg"></i>
       </div>
 
 
@@ -131,7 +141,7 @@
 
     <ul class="children">
       <li ng-repeat="convo in convo.children" ng-include="'treeRenderer'"></li>
-      <li class="reply slideable" ng-slide="convo.replying" ng-include="'replyRenderer'"></li>
+      <li class="treeReply slideable" ng-slide="convo.replying" ng-include="'replyRenderer'"></li>
     </ul>
 
   </div>

@@ -25,8 +25,10 @@
 
     $scope.topicSubmit = function () {
       if (LOGIN.status === 'participant') { 
-        topic = newTopic($scope.title, $scope.link, $scope.contents, LOGIN.username);
-        IO.emit("buildTopic", {root: topic.toJson()});
+        if ($scope.title && $scope.link) {
+          topic = newTopic($scope.title, $scope.link, $scope.contents, LOGIN.username);
+          IO.emit("buildTopic", {root: topic.toJson()});
+        }
       } 
       else { 
         $rootScope.$emit('showLogin');
@@ -41,6 +43,10 @@
           }
         };
       }
+    }
+
+    $scope.showLogin = function () { 
+      $rootScope.$emit('showLogin');
     }
 
     IO.on('builtTopic', function (data) { 
@@ -80,13 +86,17 @@
   </ul>
 
 
-  <h2 id="publishHeader" ng-click="showPublish = !showPublish">New Topic</h2>
-  <form id="publish" ng-show="showPublish" ng-submit="topicSubmit()">
-    <input type='text' ng-model='title' placeholder='Title' />
-    <input type='text' ng-model='link' placeholder='Link' />
-    <textarea ng-model='contents' placeholder='Make a bold claim'></textarea>
-    <input type='submit' />
-  </form>
+  <h2 id="publishHeader" class="buttbuddies" ng-click="showPublish = !showPublish">New Topic</h2>
+  <h2 id="loginButton" class="buttbuddies" ng-click="showLogin()">Login</h2>
+  <div id="publish" ng-show="showPublish">
+    <form id="publishForm" ng-submit="topicSubmit()">
+      <input type='text' ng-model='title' placeholder='Title' />
+      <input type='text' ng-model='link' placeholder='Link' />
+      <textarea ng-model='contents' placeholder='Make a bold claim'></textarea>
+      <input type='submit' />
+      <i id="closePublish" class="fa fa-times-circle fa-lg" ng-click="showPublish = false"></i>
+    </form>
+  </div>
 
 </div>
 

@@ -1,6 +1,8 @@
 /*                    */
 /*      Socket.io     */
 /*                    */
+var Convos = new Convoset();
+
 IO.on('connect', function () {
   // Get the names of each topic.
   // the TOPICS variable should be preset in the
@@ -9,33 +11,6 @@ IO.on('connect', function () {
   IO.emit('introduceMe', {topics: TOPICS});
 });
 
-
-/*                    */
-/*   Convo Wrapper    */
-/*                    */
-
-/* Convo wrapper, since our Angular implementation
- * uses methods that the tree/node model does not utilize */
-
-var Convos = new Convoset();
-
-function root (json) { 
-  convo = Convos.JsonToRoot(json);
-  return convo;
-}
-
-function branch (json) { 
-  convo = Convos.JsonToBranch(json);
-  if (convo) return convo;
-  else  {
-    console.log("There's been an error linking a user comment to a parent.");
-  }
-}
-
-function branchFromScratch (parent, text, author) { 
-  child = parent.addChild(text, author, new Date());
-  return child;
-}
 
 
 /*                       */
@@ -51,9 +26,10 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   $scope.posts = Convos.getNodes();
   $scope.selectedModel = false;
 
-  $scope.root = root(ConvoJson.root);
+  $scope.root = Convos.JsonToRoot(ConvoJson.root);
   ConvoJson.branches.map( function (convo) { 
-    branch(convo);
+    console.log(convo);
+    Convos.JsonToBranch(convo);
   });
 
   // --------------------------------
@@ -78,14 +54,17 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   // Replying to a node
   $scope.reply = function(post) {
     if (LOGIN.status === 'participant') {
-      child = branchFromScratch(post, post.response, LOGIN.username);
-      console.log(LOGIN.username);
+      json = {
+               contents: post.response,
+               author: LOGIN.username,
+               parentToken: post.token,
+             }
 
       post.response = "";
       post.replying = false;
       $scope.select(false);
 
-      IO.emit('addBranch', { topic: TOPICS, convo: child.toJson() });
+      IO.emit('addBranch', { topic: TOPICS, convo: json });
     }
     else { 
       $rootScope.$emit('showLogin');
@@ -106,9 +85,10 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
 
   // Receiving a new post
   IO.on('newBranch', function (data) { 
+    console.log('newBranch');
     console.log(data);
     $scope.$apply(function () { 
-      branch(data.convo);
+      Convos.JsonToBranch(data.convo);
     });
   });
 
@@ -151,7 +131,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   }
 
   $scope.openReply = function (post, type) { 
-    console.log('opening...');
     post.replying = true;
   }
 

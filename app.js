@@ -89,18 +89,18 @@ rootJson = {
     contents: "Go ahead, click on this box. The icon below will help you make a reply. Play around, see what you can make."
   , author: "Stroobles"
   , title: "Demo"
-  , link: "www.google.com"
+  , link: "http://www.google.com/"
   , timestamp: new Date()
 }
 
 firstConvoset = new Convoset();
 root = firstConvoset.JsonToRoot(rootJson);
 
-baby = root.addChild("Beloved Daughter", 'sirius', new Date());
-root.addChild("Beloved son", 'sirius', new Date());
+baby = root.newChild("Beloved Daughter", 'sirius', new Date());
+root.newChild("Beloved son", 'sirius', new Date());
 
-baby.addChild("Grandsonny", 'sirius', new Date());
-baby.addChild("Granddaughta", 'sirius', new Date());
+baby.newChild("Grandsonny", 'sirius', new Date());
+baby.newChild("Granddaughta", 'sirius', new Date());
 
 var topics = new Topics();
 topics.addTopic(firstConvoset);
@@ -186,15 +186,20 @@ io.sockets.on('connection', function (socket) {
   socket.on('addBranch', function (data) {
     topic = topics.findTopic(data.topic);
 
-    branch = topic.JsonToBranch(data.convo);
+    json = data.convo;
+    json.timestamp = new Date();
+    if (topic.findNode(json.parentToken)) { 
+      branch = topic.JsonToBranch(data.convo);
+      branchJson = branch.toJson();
 
-    if (!branch) { 
-      console.log("Warning: Unable to link child node to a parent");
+      // TODO: this is broadcast to every view, when it should be sent
+      // only to the views on the same topic. 
+      socket.broadcast.emit('newBranch', {convo: branchJson});
+      socket.emit('newBranch', {convo: branchJson});
+
     }
-
-    // TODO: this is broadcast to every view, when it should be sent
-    // only to the views on the same topic. 
-    socket.broadcast.emit('newBranch', data);
+    else 
+      console.log("Warning: Unable to link child node to a parent");
   });
 
   socket.on('buildTopic', function (data) {
@@ -204,7 +209,7 @@ io.sockets.on('connection', function (socket) {
     if (status) 
       socket.emit('builtTopic', {status: 'success', url: topic.slug});
     else 
-      socket.emit('error', {msg: 'topic by that name already exists.'});
+      socket.emit('error', {msg: 'Topic name has been taken. Try something else.'});
   });
 });
 

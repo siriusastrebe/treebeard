@@ -7,12 +7,13 @@
  *  - nodesToJson()       (returns JSON)
  *  - getNodes()          (returns a reference to the array containing the list of nodes)
  *  - getNodesByKey()     (returns reference to an associative array of nodes by token)
+ *  - findNode(token)     (returns a Node object)
  *  - root                (returns the root object)
  *  - slug                (returns a string)
  *
  *
  * Those node objects contain the following public methods:
- *  - addChild(contents, author, timestamp, optional)
+ *  - newChild(contents, author, timestamp, optional)
  *    optional takes the following optional parameters:
  *    - {token, children}
  *
@@ -34,47 +35,16 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 var Convoset = function () { 
+  var convoset = this;
   var nodesByKey = {};
   var nodesChronological = [];
-  var nodesPending = {};
-  var convoset = this;
+
+  var orphansOf = {};
+  var estrangedParentOf = {};
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
   /*     Helper Functions             */
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-  function findNode (token) { 
-    try { 
-      return nodesByKey[token];
-    }
-    catch (e) {
-      return false;
-    }
-  }
-
-
-  function processChildren (jsonChildren, parentToken, childrenArr) { 
-    // TODO: Discussion. Do we really need a nodesPending list? It's mostly
-    // for bookkeeping and debugging sake. It isn't used for primary functionality,
-    // only to for developers to confirm at the end of the day that we aren't
-    // recieving unlinked nodes. For the moment, I'm keeping it incase a future
-    // usecase pops up.
-    //
-    // If we're processing a parent who was pending, it must not be pending anymore. 
-    for (key in nodesPending) { 
-      if (parentToken === key)
-        delete nodesPending[key];
-    }
-
-    if (typeof jsonChildren !== 'undefined') {
-      // Return children nodes, or add them to the pending list if they don't yet exist. 
-      jsonChildren.map(function (childToken) { 
-          child = findNode(childToken);
-          if (child) childrenArr.push(child);
-          else { nodesPending[child] = parentToken }
-      });
-    }
-  }
-
   function toSlug (title) { 
     return title.toString() 
                 .toLowerCase()
@@ -113,6 +83,17 @@ var Convoset = function () {
     return nodesByKey;
   }
 
+  this.findNode = function (token) { 
+    try { 
+      return nodesByKey[token];
+    }
+    catch (e) {
+      return false;
+    }
+  }
+
+
+
 
   this.toString = function () { 
     return this.root.title;
@@ -132,41 +113,61 @@ var Convoset = function () {
     this.contents = contents;
     this.author = author;
     this.children = [];
+    this.childTokens = [];
     this.timestamp = timestamp;
     this.time = timestamp.getHours() + ':' + timestamp.getMinutes();
     this.token = createToken();
 
     if (!(typeof optional === 'undefined')) { 
-      this.children = optional.children || this.children;
+      this.childTokens = optional.childTokens || [];
+      this.children = optional.children || [];
       this.token = optional.token || this.token;
-      initNode(this, optional.childrenPending || []);
-    } else { 
-      initNode(this, []);
+    }
+
+    initNode(this);
+
+    this.newChild = function (contents, author, timestamp, optional) {
+      return new Branch(contents, author, this.token, timestamp, optional);
     }
 
 
-    this.addChild = function (contents, author, timestamp, optional) {
-      child = new Branch(contents, author, this, timestamp, optional);
-      this.children.push(child);
-      return child;
+    function createToken() { 
+      rand = Math.random().toString(36).substr(2);
+      return rand;
     }
 
-    function initNode (convo, pending) { 
-      if ((convo.token) in nodesByKey) { 
-        console.log("Duplicate key found. Double submission.");
+
+    function initNode (convo) { 
+      // Reunite missing relations
+      if (convo.token in orphansOf) { 
+        for (var i=0; i<orphansOf.length; i++) { 
+          orphan = orphansOf[convo.token][i];
+          orphan.parent = this;
+          orphansOf[convo.token].splice(i--, 1);
+        }
+      }
+
+      // Add to global node lists.
+      if (convo.token in nodesByKey) { 
+        console.log("Duplicate key found: " + convo.token);
         return false;
       }
+
       nodesByKey[convo.token] = convo;
       nodesChronological.push(convo);
       nodesChronological.sort(function (a, b) { 
         if (a['timestamp'] > b['timestamp']) return 1;
         else return -1;
       });
-    }
 
-    function createToken() { 
-      rand = Math.random().toString(36).substr(2);
-      return rand;
+      // Find all children.
+      convo.childTokens.forEach(function (token) { 
+          child = convoset.findNode(token);
+          if (child) 
+            children.push(child);
+          else 
+            estrangedParentOf[token] = this.token;
+      });
     }
   }
 
@@ -187,7 +188,7 @@ var Convoset = function () {
       return {
         contents: this.contents
       , author: this.author
-      , children: children
+      , childTokens: this.childTokens
       , timestamp: this.timestamp
       , title: this.title
       , slug: this.slug
@@ -200,9 +201,7 @@ var Convoset = function () {
   Root.prototype = Object.create(Node.prototype);
 
   this.JsonToRoot = function (json) {
-    children = [];
-    processChildren(json.children, json.token, children);
-    return new Root(json.contents, json.author, json.title, json.link, new Date(json.timestamp), {children: children, token: json.token});
+    return new Root(json.contents, json.author, json.title, json.link, new Date(json.timestamp), {childTokens: json.childTokens, token: json.token});
   }
 
 
@@ -210,19 +209,46 @@ var Convoset = function () {
   /* Branch
    * Argument parent
    */
-  function Branch (contents, author, parent, timestamp, optional) {
+  function Branch (contents, author, parentToken, timestamp, optional) {
     Node.apply(this, [contents, author, timestamp, optional]);
 
-    this.parent = parent;
     this.type = 'Branch';
+    this.parentToken = parentToken;
 
+    this.parent = convoset.findNode(this.parentToken);
+    this.parent.children.push(this);
+
+    if (this.token in estrangedParentOf) { 
+      parent = estrangedParentOf[this.token]
+
+      if (parent.token !== this.parentToken) 
+        console.log("Unauthorized adoption of orphan");
+
+      else { 
+        delete estrangedParentOf[convo.token]
+      }
+    }
+
+
+    /*
+    else { 
+      if (!(parentToken in orphansOf)) 
+        orphansOf[parentToken] = [];
+      orphansOf[parentToken].push(this);
+    }
+    */
+
+
+
+
+    
     this.toJson = function () { 
       children = this.children.map(function(node) { return node.token } );
       return {
         contents: this.contents
       , author: this.author
-      , children: children
-      , parent: parent.token
+      , childTokens: this.childTokens
+      , parentToken: this.parentToken
       , timestamp: this.timestamp
       , token: this.token
       }
@@ -232,13 +258,7 @@ var Convoset = function () {
   Branch.prototype = Object.create(Node.prototype);
 
   this.JsonToBranch = function (json) {
-    children = [];
-    processChildren(json.children, json.token, children);
-    parent = findNode(json.parent);
-    if (parent) 
-      return parent.addChild(json.contents, json.author, new Date(json.timestamp), {children: children, token: json.token});
-    else
-      return false;
+    return new Branch(json.contents, json.author, json.parentToken, new Date(json.timestamp), {childTokens: json.childTokens, token: json.token});
   }
 }
 
