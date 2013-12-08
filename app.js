@@ -121,20 +121,25 @@ app.get('/', function (req, res) {
       { roots: topics.getRootsInJson()}
 ) });
 
-app.get('/:topic/',  function (req, res) { 
+app.get('/:topic',  function (req, res) { 
     if (!(req.sessionID in sessions)) { 
       sessions[req.sessionID] = req.session;
       console.log('new session in :topic: ' + req.sessionID);
     }
 
-    // TODO: Add in a view 404 topics
-    // TODO: allow for multiple topics
     topic = topics.findTopic(req.params.topic);
-    json = topic.nodesToJson();
-    slug = topic.slug;
-    res.render('index.ejs', 
-      { topicSlug: slug, json: JSON.stringify(json)}
-    );
+    if (topic) { 
+      json = topic.nodesToJson();
+      slug = topic.slug;
+      res.render('index.ejs', 
+        { topicSlug: slug, json: JSON.stringify(json)}
+      );
+    }
+    else { 
+      res.render('404.ejs',
+        { url: req.params.topic } 
+      );
+    }
 });
 
 
