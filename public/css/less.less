@@ -4,6 +4,8 @@
 @standout: #097054;
 @orange: #FFA500;
 @teal: #8F9;
+@green: #3F4;
+@purple: #663399;
 @yellow: #FADA5E;
 @shading: #888;
 @white: #FFF;
@@ -148,11 +150,18 @@ nav {
     background-color: @orange;
     border-bottom-left-radius: 10px;
 
-    #tree, #list { 
-      margin: 0px 8px 0px 8px;
+  }
+
+  #views {
+    i {
+      color: @green;
+      text-shadow: 2px 2px @shading;
+      padding: 4px;
+      margin: 8px;
+      .border(@borderSmall);
     }
 
-    #tree:hover, #list:hover { 
+    i:hover { 
       background-color: @shading;
     }
 
@@ -195,8 +204,13 @@ nav {
   top: 0px;
   right: 0px;
 
-  height: 64px;
-  width: 64px;
+  i {
+    color: @green;
+    text-shadow: 4px 4px @shading;
+    padding: 8px;
+    margin: 4px;
+    .border(@borderSmall);
+  }
 
   opacity: 0.6;
   z-index: 29;
@@ -240,6 +254,11 @@ nav {
       margin: 12px;
       height: 26px;
     }
+  }
+
+  #key {
+    margin-right: 16px;
+    margin-left: -35px;
   }
 }
 
@@ -401,6 +420,178 @@ nav {
 }
 
 /* ---- ---- ---- ---- */
+/*      Flow View      */
+/* ---- ---- ---- ---- */
+.flow {
+  float: right;
+  margin-right: 4em;
+}
+
+.flowView { 
+  position: relative;
+  white-space: nowrap;
+  width: 100%;
+  padding-top: 3px;
+  padding-bottom: 3px;
+
+  .node, .children {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+  }
+
+  .children { 
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .node { 
+    white-space: normal;
+    overflow: auto;
+
+    background-color: @white;
+    border: 1px solid @teal;
+    .borderMedium;
+
+    margin-left: 10px;
+    min-width: 250px;
+    max-width: 550px;
+    cursor: pointer;
+  }
+
+  .node:hover {
+    background-color: @hover;
+    border: 1px solid @teal;
+    .borderMedium;
+  }
+
+  .anchor { 
+    .shadow(0px, 0px, 5px, 5px, @purple);
+  }
+
+
+  h2 {
+    font-size: 20px;
+    font-family: @fontLarge;
+    text-align: center;
+    margin: 10px 0px 5px;
+
+    a { 
+      text-decoration: none;
+      color: @standout;
+    }
+  }
+
+  .details {
+    display: block;
+    padding-left: 15px;
+    padding-right: 15px;
+
+    h3 { 
+      display: inline-block;
+    }
+    
+    h4 { 
+      display: inline-block;
+      float: right;
+    }
+
+    font-size: 14px;
+    font-family: @fontStylish;
+  }
+  
+  p { 
+    margin: 5px 15px 10px;
+  }
+
+
+  form {
+    text-align: center;
+  }
+  
+  textarea { 
+    width: 98%;
+    margin: 0px;
+
+    height: 60px;
+
+    resize: none;
+    border: 0px;
+    .border(@borderMedium);
+
+    outline: none;
+  }
+
+  .iconRack { 
+    position: relative;
+    width: 100%;
+
+    height: 40px;
+  }
+
+  .flowReply { 
+    height: 100px;
+  }
+
+  .replyIcon { 
+    position: absolute; 
+    right: 20px;
+
+    padding: 5px;
+    .border(@borderSmall);
+
+    cursor: pointer;
+  }
+
+  .replyIcon:hover { 
+    background-color: @yellow;
+  }
+
+  .debugIcon {
+    position: absolute;
+    right: 55px;
+
+    padding: 5px;
+    .border(@borderSmall);
+
+    cursor: pointer;
+  }
+
+  .debugIcon:hover {
+    background-color: @yellow;
+  }
+
+
+  .bracket {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    display: inline-block;
+    width: 6px;
+
+    border-color: @shading;
+    border-left-width: 4px;
+    border-left-style: solid;
+  }
+
+  .topBracket { 
+    top: 50%;
+    border-top-left-radius: @borderMedium;
+    border-top-width: 3px;
+    border-top-style: solid;
+  }
+
+  .botBracket { 
+    bottom: 50%;
+    border-bottom-left-radius: @borderMedium;
+    border-bottom-width: 3px;
+    border-bottom-style: solid;
+  }
+}
+
+
+
+/* ---- ---- ---- ---- */
 /* Forum View          */
 /* ---- ---- ---- ---- */
 .selected{
@@ -466,6 +657,22 @@ nav {
       margin: 5px 25px 10px;
     }
 
+    .quote { 
+      font-size: 12px;
+      margin-left: 32px;
+      font-style: italic;
+      display: inline-block;
+    }
+
+    .quote:before, .quote:after { 
+      content: "\"";
+    }
+
+    .quote:hover { 
+      background-color: @bright;
+      .border(@borderSmall);
+    }
+
     .forumReply { 
       height: 60px;
       
@@ -484,35 +691,49 @@ nav {
 /* ---- ---- ---- ---- */
 /* Tree View           */
 /* ---- ---- ---- ---- */
-.treeView { 
 
+/*    Layout    */
+.treeView { 
   position: relative;
   white-space: nowrap;
+  display: table-cell;
+  width: 100%;
+
+  .children li { 
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .children { 
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .node {
+    white-space: normal;
+    margin-left: auto;
+    margin-right: auto;
+    min-width: 100px;
+    max-width: 400px;
+  }
+}
+
+
+/*    Styling    */
+.treeView { 
   padding-top: 3px;
   padding-bottom: 3px;
-
-  .node, .children {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  /* Spacing between cousins */
-  .children { 
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
+  padding-left: 5px;
+  padding-right: 5px;
 
   .node { 
-    white-space: normal;
-    overflow: auto;
-
     background-color: @white;
     border: 1px solid @teal;
     .borderMedium;
     .shadow(2px, 2px, 1px, 1px, @shading);
 
-    margin-left: 10px;
-    width: 500px;
+    margin-top: 30px;
+    margin-bottom: 4px;
     cursor: pointer;
   }
 
@@ -583,6 +804,12 @@ nav {
 
   .treeReply { 
     height: 100px;
+    width: 350px;
+    
+    /* Required because of display: table-cell */
+    .treeView { 
+      width: inherit;
+    }
   }
 
   .replyIcon { 
@@ -599,33 +826,75 @@ nav {
     background-color: @yellow;
   }
 
-  .bracket {
+  .debugIcon {
     position: absolute;
-    top: 0px;
-    bottom: 0px;
-    display: inline-block;
-    width: 6px;
+    right: 55px;
 
-    border-color: @shading;
-    border-left-width: 4px;
-    border-left-style: solid;
+    padding: 5px;
+    .border(@borderSmall);
+
+    cursor: pointer;
   }
 
-  .topBracket { 
-    top: 50%;
+  .debugIcon:hover {
+    background-color: @yellow;
+  }
+
+
+  .bracket {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    display: inline-block;
+    height: 25px;
+
+    border-color: @teal;
+    border-top-width: 4px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-style: ridge;
     border-top-left-radius: @borderMedium;
-    border-top-width: 3px;
-    border-top-style: solid;
+    border-left-width: 3px;
+  }
+  /*
+  .topBracket { 
+    left: 50%;
+    border-top-left-radius: @borderMedium;
+    border-left-width: 3px;
   }
 
   .botBracket { 
-    bottom: 50%;
-    border-bottom-left-radius: @borderMedium;
-    border-bottom-width: 3px;
-    border-bottom-style: solid;
+    right: 50%;
+    border-top-right-radius: @borderMedium;
+    border-right-width: 3px;
   }
+  */
 }
 
+
+
+/* ---- ---- ---- ---- */
+/* Debug View          */
+/* ---- ---- ---- ---- */
+.debug {
+  position: fixed;
+  top: 0px; left: 0px; right: 0px; bottom: 0px;
+  margin: auto;
+  
+  width: 500px;
+  height: 300px;
+  padding: 20px;
+
+  background-color: @white;
+  box-shadow: 0px 0px 5px 0px @shading;
+  .border(@borderBig);
+
+  .closeDebug:hover {
+    background-color: @yellow;
+    cursor: pointer;
+  }
+}
 
 
 
@@ -713,14 +982,21 @@ nav {
 .slide { 
   overflow: hidden;
   height: 0 !important;
+  width: 0 !important;;
 }
 
-.slideable {
+.slideableH {
   overflow: hidden;
   -webkit-transition: height 300ms ease;
-  -moz-transition: height 300ms ease;
-    -o-transition: height 300ms ease;
-       transition: height 300ms ease;
+     -moz-transition: height 300ms ease;
+       -o-transition: height 300ms ease;
+          transition: height 300ms ease;
 }
 
-
+.slideableW {
+  overflow: hidden;
+  -webkit-transition: width 300ms ease;
+     -moz-transition: width 300ms ease;
+       -o-transition: width 300ms ease;
+          transition: width 300ms ease;
+}

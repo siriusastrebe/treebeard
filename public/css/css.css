@@ -110,12 +110,16 @@ nav #views {
   background-color: #ffa500;
   border-bottom-left-radius: 10px;
 }
-nav #views #tree,
-nav #views #list {
-  margin: 0px 8px 0px 8px;
+nav #views i {
+  color: #33ff44;
+  text-shadow: 2px 2px #888888;
+  padding: 4px;
+  margin: 8px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
 }
-nav #views #tree:hover,
-nav #views #list:hover {
+nav #views i:hover {
   background-color: #888888;
 }
 nav #views .selected {
@@ -146,11 +150,18 @@ nav #homeButton {
   position: fixed;
   top: 0px;
   right: 0px;
-  height: 64px;
-  width: 64px;
   opacity: 0.6;
   z-index: 29;
   cursor: pointer;
+}
+#icon i {
+  color: #33ff44;
+  text-shadow: 4px 4px #888888;
+  padding: 8px;
+  margin: 4px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
 }
 #icon:hover {
   opacity: 1;
@@ -188,6 +199,10 @@ nav #homeButton {
   width: 80%;
   margin: 12px;
   height: 26px;
+}
+#login #key {
+  margin-right: 16px;
+  margin-left: -35px;
 }
 #error {
   position: fixed;
@@ -320,6 +335,150 @@ nav #homeButton {
   margin-top: 100px;
 }
 /* ---- ---- ---- ---- */
+/*      Flow View      */
+/* ---- ---- ---- ---- */
+.flow {
+  float: right;
+  margin-right: 4em;
+}
+.flowView {
+  position: relative;
+  white-space: nowrap;
+  width: 100%;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.flowView .node,
+.flowView .children {
+  display: inline-block;
+  vertical-align: middle;
+  text-align: left;
+}
+.flowView .children {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.flowView .node {
+  white-space: normal;
+  overflow: auto;
+  background-color: #ffffff;
+  border: 1px solid #88ff99;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  margin-left: 10px;
+  min-width: 250px;
+  max-width: 550px;
+  cursor: pointer;
+}
+.flowView .node:hover {
+  background-color: #f8f8f8;
+  border: 1px solid #88ff99;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+.flowView .anchor {
+  -moz-box-shadow: 0px 0px 5px 5px #663399;
+  -webkit-box-shadow: 0px 0px 5px 5px #663399;
+  box-shadow: 0px 0px 5px 5px #663399;
+}
+.flowView h2 {
+  font-size: 20px;
+  font-family: arial;
+  text-align: center;
+  margin: 10px 0px 5px;
+}
+.flowView h2 a {
+  text-decoration: none;
+  color: #097054;
+}
+.flowView .details {
+  display: block;
+  padding-left: 15px;
+  padding-right: 15px;
+  font-size: 14px;
+  font-family: century gothic;
+}
+.flowView .details h3 {
+  display: inline-block;
+}
+.flowView .details h4 {
+  display: inline-block;
+  float: right;
+}
+.flowView p {
+  margin: 5px 15px 10px;
+}
+.flowView form {
+  text-align: center;
+}
+.flowView textarea {
+  width: 98%;
+  margin: 0px;
+  height: 60px;
+  resize: none;
+  border: 0px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  outline: none;
+}
+.flowView .iconRack {
+  position: relative;
+  width: 100%;
+  height: 40px;
+}
+.flowView .flowReply {
+  height: 100px;
+}
+.flowView .replyIcon {
+  position: absolute;
+  right: 20px;
+  padding: 5px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  cursor: pointer;
+}
+.flowView .replyIcon:hover {
+  background-color: #fada5e;
+}
+.flowView .debugIcon {
+  position: absolute;
+  right: 55px;
+  padding: 5px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  cursor: pointer;
+}
+.flowView .debugIcon:hover {
+  background-color: #fada5e;
+}
+.flowView .bracket {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  display: inline-block;
+  width: 6px;
+  border-color: #888888;
+  border-left-width: 4px;
+  border-left-style: solid;
+}
+.flowView .topBracket {
+  top: 50%;
+  border-top-left-radius: 10px;
+  border-top-width: 3px;
+  border-top-style: solid;
+}
+.flowView .botBracket {
+  bottom: 50%;
+  border-bottom-left-radius: 10px;
+  border-bottom-width: 3px;
+  border-bottom-style: solid;
+}
+/* ---- ---- ---- ---- */
 /* Forum View          */
 /* ---- ---- ---- ---- */
 .selected {
@@ -380,6 +539,22 @@ nav #homeButton {
   font-family: verdana;
   margin: 5px 25px 10px;
 }
+#forumView .post .quote {
+  font-size: 12px;
+  margin-left: 32px;
+  font-style: italic;
+  display: inline-block;
+}
+#forumView .post .quote:before,
+#forumView .post .quote:after {
+  content: "\"";
+}
+#forumView .post .quote:hover {
+  background-color: #e8f8ff;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
 #forumView .post .forumReply {
   height: 60px;
 }
@@ -395,25 +570,49 @@ nav #homeButton {
 /* ---- ---- ---- ---- */
 /* Tree View           */
 /* ---- ---- ---- ---- */
+/*    Layout    */
 .treeView {
   position: relative;
   white-space: nowrap;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  /* Spacing between cousins */
+  display: table-cell;
+  width: 100%;
 }
-.treeView .node,
-.treeView .children {
+.treeView .children li {
   display: inline-block;
-  vertical-align: middle;
+  vertical-align: top;
 }
 .treeView .children {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 .treeView .node {
   white-space: normal;
-  overflow: auto;
+  margin-left: auto;
+  margin-right: auto;
+  min-width: 100px;
+  max-width: 400px;
+}
+/*    Styling    */
+.treeView {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 5px;
+  padding-right: 5px;
+  /*
+  .topBracket { 
+    left: 50%;
+    border-top-left-radius: @borderMedium;
+    border-left-width: 3px;
+  }
+
+  .botBracket { 
+    right: 50%;
+    border-top-right-radius: @borderMedium;
+    border-right-width: 3px;
+  }
+  */
+}
+.treeView .node {
   background-color: #ffffff;
   border: 1px solid #88ff99;
   border-radius: 10px;
@@ -422,8 +621,8 @@ nav #homeButton {
   -moz-box-shadow: 2px 2px 1px 1px #888888;
   -webkit-box-shadow: 2px 2px 1px 1px #888888;
   box-shadow: 2px 2px 1px 1px #888888;
-  margin-left: 10px;
-  width: 500px;
+  margin-top: 30px;
+  margin-bottom: 4px;
   cursor: pointer;
 }
 .treeView .node:hover {
@@ -481,6 +680,11 @@ nav #homeButton {
 }
 .treeView .treeReply {
   height: 100px;
+  width: 350px;
+  /* Required because of display: table-cell */
+}
+.treeView .treeReply .treeView {
+  width: inherit;
 }
 .treeView .replyIcon {
   position: absolute;
@@ -494,27 +698,55 @@ nav #homeButton {
 .treeView .replyIcon:hover {
   background-color: #fada5e;
 }
+.treeView .debugIcon {
+  position: absolute;
+  right: 55px;
+  padding: 5px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  cursor: pointer;
+}
+.treeView .debugIcon:hover {
+  background-color: #fada5e;
+}
 .treeView .bracket {
   position: absolute;
-  top: 0px;
-  bottom: 0px;
+  left: 0px;
+  right: 0px;
   display: inline-block;
-  width: 6px;
-  border-color: #888888;
-  border-left-width: 4px;
-  border-left-style: solid;
-}
-.treeView .topBracket {
-  top: 50%;
+  height: 25px;
+  border-color: #88ff99;
+  border-top-width: 4px;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  border-bottom-width: 0px;
+  border-style: ridge;
   border-top-left-radius: 10px;
-  border-top-width: 3px;
-  border-top-style: solid;
+  border-left-width: 3px;
 }
-.treeView .botBracket {
-  bottom: 50%;
-  border-bottom-left-radius: 10px;
-  border-bottom-width: 3px;
-  border-bottom-style: solid;
+/* ---- ---- ---- ---- */
+/* Debug View          */
+/* ---- ---- ---- ---- */
+.debug {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  margin: auto;
+  width: 500px;
+  height: 300px;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0px 0px 5px 0px #888888;
+  border-radius: 20px;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+}
+.debug .closeDebug:hover {
+  background-color: #fada5e;
+  cursor: pointer;
 }
 /* ---- ---- ---- ---- */
 /* 404                 */
@@ -583,11 +815,19 @@ nav #homeButton {
 .slide {
   overflow: hidden;
   height: 0 !important;
+  width: 0 !important;
 }
-.slideable {
+.slideableH {
   overflow: hidden;
   -webkit-transition: height 300ms ease;
   -moz-transition: height 300ms ease;
   -o-transition: height 300ms ease;
   transition: height 300ms ease;
+}
+.slideableW {
+  overflow: hidden;
+  -webkit-transition: width 300ms ease;
+  -moz-transition: width 300ms ease;
+  -o-transition: width 300ms ease;
+  transition: width 300ms ease;
 }

@@ -41,7 +41,7 @@ var Topics = function () {
   this.getRoots = function () {
     return topics.map(function (convoset) {
       return convoset.root;
-    })
+    });
   }
 
   this.getRootsInJson = function () { 

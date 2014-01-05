@@ -2,6 +2,7 @@
 /*      Socket.io     */
 /*                    */
 var Convos = new Convoset();
+var debug;
 
 IO.on('connect', function () {
   // Get the names of each topic.
@@ -12,25 +13,155 @@ IO.on('connect', function () {
 });
 
 
+/*                       */
+/*    Custom Methods     */
+/*                       */
+function root (json) {
+  node = Convos.JsonToRoot(json);
+  node.activeChildren = []; 
+  node.__proto__.expand = expand;
+  return node;
+}
+
+function branch (json) {
+  node = Convos.JsonToBranch(json);
+  node.activeChildren = [];
+  node.__proto__.expand = expand;
+  return node;
+}
+
+
+function flow () { 
+  anchors = [];
+
+  ANCHORS.forEach( function (anchorToken) { 
+    anchor = new Anchor(anchorToken);
+    if (anchor.root)
+      anchors.push(anchor);
+  });
+
+  roots = anchors.map( function (anchor) { return anchor.root } );
+
+  return roots;
+}
+
+function Anchor (token) { 
+  this.anchor = Convos.findNode(token);
+  this.root = labelAncestry(this.anchor, this.anchor, 0, 0, false);
+
+  function labelAncestry (anchor, node, ups, downs, previous) {
+    // This is a reverse DFS graph starting at a node,
+    // traversing parents and any children not yet traversed.
+    
+    // These are all direct parents of Anchored.
+    if (downs === 0) {
+      if (previous) 
+        node.activeChildren.push(previous);
+
+      if (!node.anchored) { 
+        node.anchored = true;
+        node.anchor = anchor;
+      }
+      else { 
+        return false;
+      }
+    }
+
+    if (ups < 4 && node.parent) {
+      return labelAncestry (anchor, node.parent, ups+1, downs, node);
+    }
+    else { 
+      node.root = true;
+      return node; 
+    }
+  }
+}
+
+/*
+function flow () { 
+  var flow = this;
+  this.target = Convos.getNodes()[Math.floor(Convos.getNodes().length * Math.random())];
+  this.root;
+
+
+  this.reflow = function () { 
+    activate(flow.target, 6);
+
+    function activate (node, depth) { 
+      if (node.parent) { 
+        node.parent.activeChildren = [node];
+        node.expand();
+        if (depth > 0)
+          activate(node.parent, depth--);
+        else
+          flow.root = node;
+      }
+      else 
+        flow.root = node;
+    }
+  }
+};
+*/
+
+function expand () { 
+  console.log(this);
+  for (var i=0; i<this.children.length; i++) {
+    if (this.activeChildren.indexOf(this.children[i]) === -1) {
+      this.activeChildren.push(this.children[i]);
+      break;
+    }
+  }
+}
+
+
+
 
 /*                       */
 /*       Controller      */
 /*                       */
 
-var Panther = "testVariable. Delete before deploying."
 APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$location', function ($scope, $rootScope, $timeout, $location) {
   // --------------------------------
   // Defaults
   // --------------------------------
-  $scope.view = 'tree';
+  $scope.view = 'flow';
   $scope.posts = Convos.getNodes();
   $scope.selectedModel = false;
 
-  $scope.root = Convos.JsonToRoot(ConvoJson.root);
-  ConvoJson.branches.map( function (convo) { 
-    console.log(convo);
-    Convos.JsonToBranch(convo);
+  $scope.root = root(TREEJSON.root);
+
+  TREEJSON.branches.map( function (convo) { 
+    branch(convo);
   });
+
+  STATS.forEach( function (stat) { 
+    node = Convos.findNode(stat.token);
+    node.stats = stat;
+  });
+  
+
+  $scope.anchorRoots = flow();
+  debug = $scope.anchorRoots;
+
+  // --------------------------------
+  // Testing/Debugging
+  // --------------------------------
+  Convos.debug = function () { 
+    $scope.$apply( function () { 
+      $scope.root = $scope.root.children[0];
+      console.log($scope.root);
+    });
+  }
+
+  $scope.debug = function (convo) { 
+    $scope.debugView = true;
+    convo.debug = true;
+  }
+
+  $scope.closeDebug = function (convo) { 
+    $scope.debugView = false;
+    convo.debug = false;
+  }
 
   // --------------------------------
   // Tree/List View control
@@ -40,11 +171,11 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     if ($location.hash() === 'forum') { 
       $scope.view = 'forum';
     }
-    else if ($location.hash() === 'flow') { 
-      $scope.view = 'flow';
+    else if ($location.hash() === 'tree') { 
+      $scope.view = 'tree';
     }
     else {
-      $scope.view = 'tree';
+      $scope.view = 'flow';
     }
   });
 
@@ -88,7 +219,8 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     console.log('newBranch');
     console.log(data);
     $scope.$apply(function () { 
-      Convos.JsonToBranch(data.convo);
+      b = branch(data.convo);
+      b.parent.expand();
     });
   });
 
@@ -123,16 +255,52 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     else if ($scope.selectedModel !== post.token) {
       $scope.selectedModel = post;
       post.selected = true;
-      //TODO: A birdie told me you shouldn't access DOM in the controller
-      $timeout(function () {
-        $('#' + type + post.token + ' textarea').focus();
-      }, 100);
+
+      if ($scope.view === 'flow')
+        $scope.selectedModel.expand();
     }
   }
 
   $scope.openReply = function (post, type) { 
     post.replying = true;
   }
+
+  $rootScope.$on('key', function (event, key) { 
+    if (typeof document.activeElement.readOnly === 'undefined') { 
+
+      cur = $scope.selectedModel;
+      if (cur) { 
+        if (key === 'left' || key === 'right' || key === 'up') { 
+          if (cur.parent) {
+            if (key === 'up') { 
+              $scope.select(cur.parent, $scope.view);
+            }
+
+            else { 
+              siblings = cur.parent.children;
+              index = siblings.indexOf(cur);
+              
+              if (key === 'left') {
+                target = index - 1;
+                if (target === -1) target += siblings.length;
+              }
+              if (key === 'right') { 
+                target = index + 1;
+                if (target >= siblings.length) target = 0;
+              }
+
+
+              $scope.select(siblings[target], $scope.view);
+            }
+          }
+        }
+        if (key === 'down') {
+          if (cur.children.length >= 1) 
+            $scope.select(cur.children[0]);
+        }
+      }
+    }
+  });
 
 }]);
 

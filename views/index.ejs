@@ -1,6 +1,6 @@
 <style type="text/css"> 
   html {  
-    background: url('http://i.imgur.com/x86Mup0.jpg'); 
+    background: url('http://i.imgur.com/7I51f8t.jpg'); 
     background-attachment: fixed;
     background-position: center center;
   } 
@@ -15,7 +15,9 @@
 
 <script type="text/javascript">
   var TOPICS = '<%- topicSlug %>';
-  var ConvoJson = JSON.parse(<%- JSON.stringify(json) %>);
+  var TREEJSON = JSON.parse(<%- JSON.stringify(tree) %>);
+  var STATS = <%- JSON.stringify(flowStats) %>;
+  var ANCHORS = <%- JSON.stringify(anchors) %>;
 </script>
 
 <script type="text/javascript" src="/js/Convoset.js"></script>
@@ -42,7 +44,7 @@
       </div>
       <p>{{root.contents}}</p>
 
-      <form ng-submit="reply(root)" class="forumReply slideable" ng-slide="root.selected">
+      <form ng-submit="reply(root)" class="forumReply slideableH" ng-slide="root.selected">
         <textarea ng-model="root.response" ng-enter="reply(root)"></textarea>
       </form>
     </div>
@@ -59,7 +61,7 @@
     <ul class="children">
       <li ng-repeat="convo in root.children" ng-include="'treeRenderer'"></li>
 
-      <li class="treeReply slideable" ng-slide="root.replying">
+      <li class="treeReply slideableW slideableH" ng-slide="root.replying">
         <div class="treeView">
           <div class="node">
             <form ng-submit="reply(root)">
@@ -71,6 +73,20 @@
 
     </ul>
   </div>
+
+
+  <div ng-show="view==='flow'">
+    <ul>
+      <li class="flow" ng-repeat="convo in anchorRoots" ng-include="'flowRenderer'"></li>
+    </ul>
+  </div>
+
+  <div class="debugView" ng-show="debugView">
+    <ul>
+      <li ng-repeat="convo in posts" ng-include="'debugRenderer'"></li>
+    </ul>
+  </div>
+
 </div>
 
 
@@ -90,8 +106,9 @@
   </div>
   <p>{{root.contents}}</p>
 
-  <div ng-slide="root.selected" class="iconRack slideable">
-    <i ng-click="replying(root)" class="replyIcon fa fa-share-square-o fa-lg"></i>
+  <div ng-slide="root.selected" class="iconRack slideableH">
+    <i ng-click="replying(root)" class="replyIcon fa fa-comment-o fa-lg"></i>
+    <i ng-click="debug(root)" class="debugIcon fa fa-question fa-lg"></i>
   </div>
 
 </script>
@@ -107,14 +124,22 @@
       <h3>{{convo.author}}</h3>
       <h4>{{convo.time}}</h4>
     </div>
+
+    <p class="quote" ng-Click="select(convo.parent, 'forum'); $event.stopPropagation()">{{convo.parent.contents | limitTo:120}}...</p>
     <p>{{convo.contents}}</p>
 
-    <form ng-submit="reply(convo)" class="forumReply slideable" ng-slide="convo.selected">
+    <form ng-submit="reply(convo)" class="forumReply slideableH" ng-slide="convo.selected">
       <textarea ng-model="convo.response" ng-enter="reply(convo)"></textarea>
     </form>
 
   </div>
 </script>
+
+
+
+
+
+
 
 <!--                                   ~ ~ ~                    -->
 <!-- Angular logic for creating  -<(( Branches ))>- (Tree View) -->
@@ -132,8 +157,9 @@
       
       <p>{{convo.contents}}</p>
 
-      <div ng-slide="convo.selected" class="iconRack slideable">
-        <i ng-click="replying(convo)" class="replyIcon fa fa-share-square-o fa-lg"></i>
+      <div ng-slide="convo.selected" class="iconRack slideableH">
+        <i ng-click="replying(convo)" class="replyIcon fa fa-comment-o fa-lg"></i>
+        <i ng-click="debug(convo)" class="debugIcon fa fa-question fa-lg"></i>
       </div>
 
 
@@ -141,17 +167,17 @@
 
     <ul class="children">
       <li ng-repeat="convo in convo.children" ng-include="'treeRenderer'"></li>
-      <li class="treeReply slideable" ng-slide="convo.replying" ng-include="'replyRenderer'"></li>
+      <li class="treeReply slideableW slideableH" ng-slide="convo.replying" ng-include="'treeReplyRenderer'"></li>
     </ul>
 
   </div>
 </script>
 
 
-<!--                                   ~ ~ ~ ~ ~ ~                  -->
-<!-- Angular logic for creating  -<(( Reply (ghost)))>- (Tree View) -->
-<!--                                   ~ ~ ~ ~ ~ ~                  -->
-<script type="text/ng-template" id="replyRenderer">
+<!--                                  ~ ~ ~                   -->
+<!-- Angular logic for creating  -<(( Reply))>- (Tree View) -->
+<!--                                  ~ ~ ~                   -->
+<script type="text/ng-template" id="treeReplyRenderer">
   <div class="treeView">
     <div class="node">
       <form ng-submit="reply(convo)">
@@ -161,3 +187,72 @@
   </div>
 </script>
 
+
+
+
+
+
+
+
+<!--                                 ~ ~ ~                  -->
+<!-- Angular logic for creating  -<(( Flow ))>- (Flow View) -->
+<!--                                 ~ ~ ~                  -->
+<script type="text/ng-template" id="flowRenderer">
+  <div class="flowView">
+
+    <div class="bracket" ng-show="{{!convo.root}}" ng-class="{topBracket: $first, botBracket: $last}"></div>
+
+    <div class="node" id="flow{{convo.token}}" ng-class="{selected: convo.selected, anchor: convo.anchor===convo}" ng-Click="select(convo, 'flow')">
+      <div class="details">
+        <h3>{{convo.author}}</h3>
+        <h4>{{convo.time}}</h4>
+      </div>
+
+      <div id="census" ng-show="convo.census - convo.activeChildren.length > 0">{{convo.census - convo.activeChildren.length}}</div>
+      
+      <p>{{convo.contents}}</p>
+
+      <div ng-slide="convo.selected" class="iconRack slideableH">
+        <i ng-click="replying(convo)" class="replyIcon fa fa-comment-o fa-lg"></i>
+        <i ng-click="debug(convo)" class="debugIcon fa fa-question fa-lg"></i>
+      </div>
+
+    </div>
+
+    <ul class="children">
+      <li class="animate-repeat" ng-repeat="convo in convo.activeChildren" ng-include="'flowRenderer'"></li>
+      <li class="flowReply slideableH" ng-slide="convo.replying" ng-include="'flowReplyRenderer'"></li>
+    </ul>
+    
+  </div>
+</script>
+
+
+<script type="text/ng-template" id="flowReplyRenderer">
+  <div class="flowView">
+    <div class="node">
+      <form ng-submit="reply(convo)">
+        <textarea ng-model="convo.response" ng-focus="convo.replying" ng-enter="reply(convo)"></textarea>
+      </form>
+    </div>
+  </div>
+</script>
+
+
+
+<!--                              ~ ~ ~                  -->
+<!--                            Post Debug               -->
+<!--                              ~ ~ ~                  -->
+<script type="text/ng-template" id="debugRenderer">
+  <div class="debug" ng-show="convo.debug">
+    <i ng-click="closeDebug(convo)" class="closeDebug fa fa-minus-square-o fa-lg"></i>
+    <ul>
+      <li>Author: {{convo.author}}</li>
+      <li>Timestamp: {{convo.timestamp}}</li>
+      <li>RenderedTime: {{convo.time}}</li>
+      <li>Depth: {{convo.stats.depth}}</li>
+      <li>Priority: {{convo.stats.priority}}</li>
+      <li>Contents: {{convo.contents}}</li>
+    </ul>
+  </div>
+</script>

@@ -3,10 +3,11 @@
 // ****************************************************************
 // Module dependencies.
 var express = require('express')
-  , routes = require('./routes')
-  , fs = require('fs')
-  , less = require('less')
-  , socket = require('socket.io');
+  , routes =  require('./routes')
+  , fs =      require('fs')
+  , less =    require('less')
+  , socket =  require('socket.io')
+  , shibe =   require('dogerr');
 
 
 var app = module.exports = express.createServer();
@@ -86,24 +87,128 @@ app.get(csspath,  function (req, res) {
 // Datasets
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
 rootJson = {
-    contents: "Go ahead, click on this box. The icon below will help you make a reply. Play around, see what you can make."
+    contents: "Family Tree of Westeros"
   , author: "Stroobles"
-  , title: "Demo"
-  , link: "http://www.google.com/"
+  , title: "GoT family tree"
+  , link: "http://img.timeinc.net/time/2012/t100poll/t100poll_martin_george_rr.jpg"
   , timestamp: new Date()
 }
 
-firstConvoset = new Convoset();
-root = firstConvoset.JsonToRoot(rootJson);
+thrones = new Convoset();
+root = thrones.JsonToRoot(rootJson);
 
-baby = root.newChild("Beloved Daughter", 'sirius', new Date());
-root.newChild("Beloved son", 'sirius', new Date());
+lan = root.newChild("House Lannister", 'sirius', new Date());
+tywin = lan.newChild("Tywin Lannister", 'sirius', new Date());
+kevan = lan.newChild("Kevan Lannister", 'sirius', new Date());
 
-baby.newChild("Grandsonny", 'sirius', new Date());
-baby.newChild("Granddaughta", 'sirius', new Date());
+cercei = tywin.newChild("Cercei Lannister (crazy)", 'sirius', new Date());
+jamie = tywin.newChild("Jamie Lannister", 'sirius', new Date());
+
+joff = cercei.newChild("Joffery Baratheon", 'sirius', new Date());
+myrcella = cercei.newChild("Myrcella Baratheon", 'sirius', new Date());
+tommen = cercei.newChild("Tommen Baratheon", 'sirius', new Date());
+
+
+
+stark = root.newChild("House Stark", 'sirius', new Date());
+
+rick = stark.newChild("Rickard Stark", 'sirius', new Date());
+
+edd = rick.newChild("Eddard Stark", 'sirius', new Date());
+ben = rick.newChild("Benjen Stark", 'sirius', new Date());
+brandon = rick.newChild("Brandon Stark", 'sirius', new Date());
+
+robb = edd.newChild("Rob Stark", 'sirius', new Date());
+sansa = edd.newChild("Sansa Stark", 'sirius', new Date());
+arya = edd.newChild("Arya Stark", 'sirius', new Date());
+bran  = edd.newChild("Bran Stark", 'sirius', new Date());
+rickon = edd.newChild("Rickon Stark", 'sirius', new Date());
+jon = edd.newChild("Jon Snow (knows nothing)", 'sirius', new Date());
+
+
+
+
+function sew (topic) { 
+  root = topic.root;
+
+  dat = [];
+
+  dfs(root, dat);
+
+  return dat;
+ 
+  function dfs (node, forwards) { 
+    var LEAF = 500,
+        CHILD_TAX = 50,
+        INHERITANCE = .80;
+
+    var parent = forwards[forwards.length-1];
+
+    // Default values for the Root node
+    if (forwards.length === 0) {
+      parent = {depth: -1, priority: 0}
+    }
+
+    // Current node data update
+    var data = {};
+    forwards.push(data); // <---- Add this node's data to forwards
+
+    data.token = node.token
+    data.priority = parent.priority * INHERITANCE;
+    data.depth = parent.depth + 1;
+    data.distance = Number.MAX_VALUE;
+
+
+    // Leaf Priority Rank
+    if (node.children.length === 0) {
+      data.priority += LEAF;
+      data.distance = 0;
+    }
+    else {
+      // DFS often has a 'mark vertex as visited' line. This DFS
+      // can ommit this code if we start at the root.
+      node.children.forEach( function (child) { 
+          backwards = dfs(child, forwards);
+
+          // Child tax
+          data.priority -= CHILD_TAX;
+
+          if (backwards.distance < data.distance)
+            data.distance = backwards.distance + 1;
+          
+          // priority child->parent inheritance 
+          data.priority += backwards.priority / node.children.length;
+      });
+    }
+
+    return data;
+  }
+}
+
+function anchor (flowStats) { 
+  anchors = [];
+
+
+  flowStats.sort(compare);
+
+  flowStats.forEach( function (stats) { 
+    if (stats.distance === 0) { 
+      anchors.push(stats.token);
+    }
+  });
+
+  return anchors;
+
+  function compare (a, b) {
+    if (a.priority < b.priority) 
+      return -1;
+    return 1;
+  }
+}
+
 
 var topics = new Topics();
-topics.addTopic(firstConvoset);
+topics.addTopic(thrones);
 
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
@@ -129,10 +234,14 @@ app.get('/:topic',  function (req, res) {
 
     topic = topics.findTopic(req.params.topic);
     if (topic) { 
-      json = topic.nodesToJson();
+      tree = topic.nodesToJson();
       slug = topic.slug;
+
+      flowStats = sew(topic);
+      anchors = anchor(flowStats)
+
       res.render('index.ejs', 
-        { topicSlug: slug, json: JSON.stringify(json)}
+        { topicSlug: slug, tree: JSON.stringify(tree), flowStats: flowStats, anchors: anchors}
       );
     }
     else { 

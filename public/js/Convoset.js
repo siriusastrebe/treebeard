@@ -7,7 +7,8 @@
  *  - nodesToJson()       (returns JSON)
  *  - getNodes()          (returns a reference to the array containing the list of nodes)
  *  - getNodesByKey()     (returns reference to an associative array of nodes by token)
- *  - findNode(token)     (returns a Node object)
+ *  - findNode(token)     (returns a Node object or false)
+ *  - getFamily(token)    (returns an array of Node objects)
  *  - root                (returns the root object)
  *  - slug                (returns a string)
  *
@@ -16,11 +17,13 @@
  *  - newChild(contents, author, timestamp, optional)
  *    optional takes the following optional parameters:
  *    - {token, children}
+ *  - getSiblings()          (returns a list of Node objects)
  *
  * Additionally, these nodes data are publically accessible: 
  * - node.contents
  * - node.author
  * - node.children
+ * - node.census
  * - node.timestamp
  * - node.time
  * - node.token
@@ -84,16 +87,13 @@ var Convoset = function () {
   }
 
   this.findNode = function (token) { 
-    try { 
-      return nodesByKey[token];
-    }
-    catch (e) {
-      return false;
-    }
+    node = nodesByKey[token];
+
+    if (typeof node === 'undefined')
+      return false
+
+    return node;
   }
-
-
-
 
   this.toString = function () { 
     return this.root.title;
@@ -103,79 +103,224 @@ var Convoset = function () {
   this.slug;
 
 
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+  /*       Marked for deletion        */
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+  /*
+  this.getFamily = function (token) { 
+    family = [];
+    node = convoset.findNode(token);
+     
+    // descendants
+    iterator = function (depth, cutoff) {
+      return {depth: depth, cutoff: cutoff-2} }
+
+    family.concat( getDescendants(node, 4, 8, iterator) );
+    
+    // siblings
+    family.concat(node.getSiblings());
+    
+    // parents, uncles/aunts
+    parent = node.parent;
+    family.push(parent);
+    
+    function getDesendants(node, depth, cutoff, iterator) { 
+      descendants = []; 
+
+      if (typeof iterator === 'function')
+        nextParams = iterator(depth, cutoff);
+      else 
+        nextParams = {depth: depth, cutoff: cutoff};
+
+      for (var i=0; i<cutoff; i++) { 
+        child = node.children[i];
+        descendants.push(child);
+
+        if (depth > 0) {
+          descendants.concat( getChildren(child, nextParams.depth, nextParams.cutoff, iterator) );
+        }
+      };
+
+      return descendants;
+    }
+  }
+
+  this.findFlow = function () { 
+    var flow = this,
+        primary,
+        ancestors = [],
+        relatives = [];
+
+    primary = convoset.nodes[Math.floor(Math.random()*items.length)];
+    ancestors = [];
+
+      if (primary.type !== 'root') { 
+      ancestors.push(primary.parent);
+      for (var i=0; i<6; i++) { 
+        if (ancestors[i].type != 'root') { 
+          ancestors.push(ancestors[i].parent);
+        }
+      }
+
+      ancestors.forEach( function (ancestor) { 
+          if (ancestor.children.length < 12) 
+            relatives.push(ancestor.children);
+          else { 
+            relatives.push(ancestor.children.splice(0, 12));
+          }
+      });
+    }
+
+
+    this.toJson = function () {
+      primary = flow.primary
+      ancestors = flow.ancestors.map(function (a) { a.toJson() });
+      relatives = flow.relatives.map(function (r) { r.toJson() });
+
+      return {
+        primary: primary,
+        family: ancestors.concat(relatives)
+      }
+    }
+
+    return this;
+  }
+
+  */
+
+
+
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
   /*        Core Objects              */
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
   /*
    * Node is a superclass of Root and Branches... 
    */
-  function Node (contents, author, timestamp, optional) { 
+  function Node (contents, author, timestamp, parentToken, optional) { 
+    var node = this;
+
     this.contents = contents;
     this.author = author;
     this.children = [];
+    this.census = 0;
+    this.parentToken = parentToken;
     this.childTokens = [];
+    this.amberAlert = [];
     this.timestamp = timestamp;
     this.time = timestamp.getHours() + ':' + timestamp.getMinutes();
     this.token = createToken();
 
     if (!(typeof optional === 'undefined')) { 
       this.childTokens = optional.childTokens || [];
-      this.children = optional.children || [];
       this.token = optional.token || this.token;
     }
 
-    initNode(this);
+    this.updateCensus = function () { 
+      node.census = node.childTokens.length;
+    }
 
     this.newChild = function (contents, author, timestamp, optional) {
-      return new Branch(contents, author, this.token, timestamp, optional);
+      return new Branch(contents, author, timestamp, node.token, optional);
     }
 
+    this.addChild = function (node) { 
+      // Introducing
+      if (node.childTokens.indexOf(node.token) === -1) 
+        node.childTokens.push(node.token);
+      // Birthing
+      if (node.children.indexOf(node) === -1) 
+        node.children.push(node);
+      else 
+        console.log('Warning: raise the alarms! Child adopted twice.');
 
-    function createToken() { 
+      node.updateCensus();
+    }
+
+    initNode();
+    determineAncestry();
+
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    //     Housecleaning Functions      //
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+    function createToken() {
       rand = Math.random().toString(36).substr(2);
-      return rand;
+      if (convoset.findNode(rand))
+        return createToken();
+      else  
+        return rand;
     }
 
-
-    function initNode (convo) { 
-      // Reunite missing relations
-      if (convo.token in orphansOf) { 
-        for (var i=0; i<orphansOf.length; i++) { 
-          orphan = orphansOf[convo.token][i];
-          orphan.parent = this;
-          orphansOf[convo.token].splice(i--, 1);
-        }
-      }
-
+    function initNode () { 
       // Add to global node lists.
-      if (convo.token in nodesByKey) { 
-        console.log("Duplicate key found: " + convo.token);
+      if (node.token in nodesByKey) { 
+        console.log("Duplicate key found: " + node.token);
         return false;
       }
 
-      nodesByKey[convo.token] = convo;
-      nodesChronological.push(convo);
+      nodesByKey[node.token] = node;
+      nodesChronological.push(node);
       nodesChronological.sort(function (a, b) { 
         if (a['timestamp'] > b['timestamp']) return 1;
         else return -1;
       });
 
-      // Find all children.
-      convo.childTokens.forEach(function (token) { 
-          child = convoset.findNode(token);
-          if (child) 
-            children.push(child);
+      node.updateCensus();
+    }
+
+    function determineAncestry () { 
+      node.parent = convoset.findNode(node.parentToken);
+
+      if (node.parent) {
+        // Reuniting
+        amber = node.parent.amberAlert.indexOf(node.token);
+        if (amber > -1) 
+          node.parent.amberAlert.splice(alert, 1);
+        
+        // Introducing
+        if (node.parent.childTokens.indexOf(node.token) === -1)
+          node.parent.childTokens.push(node.token);
+
+        // Birthing...?
+        if (node.parent.children.indexOf(node) === -1) {
+          node.parent.children.push(node);
+        }
+        else
+          console.log("Warning: strange things are afoot. A parent aleady adopted this child.");
+      }
+
+      node.childTokens.forEach( function (childToken) {
+        child = convoset.findNode(childToken);
+        
+        if (child) {  
+          // Birthing
+          if (node.children.indexOf(child) === -1) 
+            node.children.push(child); 
           else 
-            estrangedParentOf[token] = this.token;
+            console.log("Warning: Abandon all hope. This node's already got this child.");
+          // Inspecting
+          if (child.parentToken !== node.token) 
+            console.log("Warning: Ruh roh. This child claims it's owned by a different parentToken.");
+          // Impressioning  
+          if (child.parent === false) { 
+            child.parent = node;
+          }
+          else {
+            if (child.parent !== node)
+              console.log("Warning: danger Will Robinson. This child is already owned by a different parent.");
+          }
+        }
+        else {
+          node.amberAlert.push(childToken);
+        }
       });
     }
   }
 
 
 
-  // Root
   function Root (contents, author, title, link, timestamp, optional) { 
-    Node.apply(this, [contents, author, timestamp, optional]);
+    Node.apply(this, [contents, author, timestamp, false, optional]);
 
     this.type = 'Root';
     this.title = title;
@@ -197,6 +342,16 @@ var Convoset = function () {
       }
     }
 
+    /* Unused. Marked for Deletion
+    this.getSiblings = function () { 
+      // We could make it return a list of all the roots.
+      // or false.
+      // However, this plays well with getFamily, so we're
+      // sticking with this.
+      return [];
+    }
+    */
+
   }
   Root.prototype = Object.create(Node.prototype);
 
@@ -209,38 +364,19 @@ var Convoset = function () {
   /* Branch
    * Argument parent
    */
-  function Branch (contents, author, parentToken, timestamp, optional) {
-    Node.apply(this, [contents, author, timestamp, optional]);
+  function Branch (contents, author, timestamp, parentToken, optional) {
+    Node.apply(this, [contents, author, timestamp, parentToken, optional]);
 
     this.type = 'Branch';
-    this.parentToken = parentToken;
+ 
+    /* Unused. Marked for deletion.
+    this.getSiblings = function () { 
+      generation = this.parent.children;
 
-    this.parent = convoset.findNode(this.parentToken);
-    this.parent.children.push(this);
-
-    if (this.token in estrangedParentOf) { 
-      parent = estrangedParentOf[this.token]
-
-      if (parent.token !== this.parentToken) 
-        console.log("Unauthorized adoption of orphan");
-
-      else { 
-        delete estrangedParentOf[convo.token]
-      }
-    }
-
-
-    /*
-    else { 
-      if (!(parentToken in orphansOf)) 
-        orphansOf[parentToken] = [];
-      orphansOf[parentToken].push(this);
+      position = generation.indexOf(this);
+      return generation.splice(position, 1);
     }
     */
-
-
-
-
     
     this.toJson = function () { 
       children = this.children.map(function(node) { return node.token } );
@@ -258,7 +394,7 @@ var Convoset = function () {
   Branch.prototype = Object.create(Node.prototype);
 
   this.JsonToBranch = function (json) {
-    return new Branch(json.contents, json.author, json.parentToken, new Date(json.timestamp), {childTokens: json.childTokens, token: json.token});
+    return new Branch(json.contents, json.author, new Date(json.timestamp), json.parentToken, {childTokens: json.childTokens, token: json.token});
   }
 }
 

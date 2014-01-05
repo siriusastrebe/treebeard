@@ -40,7 +40,7 @@
 
 
 </head>
-<body ng-app="convo">
+<body ng-app="convo" ng-controller="KeysController" ng-keydown="keyDown($event)">
 
   <!-- Nav menu -->
   <div ng-controller="NavController" ng-hide="view === 'none'">
@@ -54,16 +54,24 @@
         </div>
       </a>
       <div id="views">
+        <a ng-href="##tree"><i class="fa fa-sitemap fa-3x" ng-class="{selected:view==='tree'}"></i></a>
+        <a ng-href="##flow"><i class="fa fa-leaf fa-3x" ng-class="{selected: view==='flow'}"></i></a>
+        <a ng-href="##forum"><i class="fa fa-align-justify fa-3x" ng-class="{selected: view==='forum'}"></i></a>
+        <!--
         <a ng-href="##tree"><img id="tree" ng-class="{selected: view==='tree'}" src="/img/tree.png" /></a>
         <a ng-href="##forum"><img id="list" ng-class="{selected: view==='forum'}" src="/img/list.png" /></a>
+        <a ng-href="##flow"><img id="list" ng-class="{selected: view==='flow'}" src="/img/flow.png" /></a>
+        -->
       </div>
     </nav>
   
     <div id="icon" class="fadeable" ng-fade="!icon" ng-switch on="view" ng-click="showNav()">
-      <img class="icon-switch" ng-switch-when="tree" src="/img/tree.png" />
+      <i class="fa fa-sitemap fa-3x" ng-switch-when="tree"></i>
+      <i class="fa fa-leaf fa-3x" ng-switch-when="flow"></i>
+      <i class="fa fa-align-justify fa-3x" ng-switch-when="forum"></i>
+<!--      <img class="icon-switch" ng-switch-when="tree" src="/img/tree.png" />
       <img class="icon-switch" ng-switch-when="forum" src="/img/list.png" />
-      <img class="icon-switch" ng-switch-when="none" src="/img/question.png" />
-      <img class="icon-switch" ng-switch-when="flow" src="" />
+      <img class="icon-switch" ng-switch-when="flow" src="/img/flow.png" /> -->
     </div>
   </div>
 
@@ -76,7 +84,7 @@
   <div ng-controller="LoginController" ng-show='loginShowing' id="login">
     <form ng-submit="login()">
       <input type="text" ng-model='username' placeholder="Pick a username" />
-      <input type='submit' value="login"></input>
+      <input type='submit' value="Login"></input><i class="fa fa-key" id="key"></i>
     </form>
   </div>
 
@@ -92,6 +100,21 @@
 
   <script type="text/javascript">
 
+
+    APP.controller('KeysController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
+        $scope.keyDown = function (ev) { 
+          k = ev.which;
+          // Arrow, WASD, and Vim bindings
+          if (k === 37 || k === 65 || k === 72) 
+            $rootScope.$emit('key', 'left')
+          if (k === 38 || k === 87 || k === 75)
+            $rootScope.$emit('key', 'up');
+          if (k === 39 || k === 76 || k === 68)
+            $rootScope.$emit('key', 'right');
+          if (k === 40 || k === 83 || k === 74)
+            $rootScope.$emit('key', 'down');
+        }
+    }]);
 
 
     APP.controller('ErrorController', ['$scope', function ($scope) { 
@@ -185,12 +208,15 @@
       else if ($location.hash() === 'flow') { 
         $scope.view = 'flow';
       }
+      else if ($location.hash() === 'tree') { 
+        $scope.view = 'tree';
+      }
       else {
         if (document.location.pathname === '/' || document.location.pathname === '') { 
           $scope.view = 'none';
         }
         else  {
-          $scope.view = 'tree';
+          $scope.view = 'flow';
         }
       }
     });
