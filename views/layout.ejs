@@ -81,15 +81,15 @@
 
 
   <!-- Login -->
-  <div ng-controller="LoginController" ng-show='loginShowing' id="login">
-    <form ng-submit="login()">
+  <div ng-controller="LoginController" ng-show='loginShowing' id="login" ng-click="hideLogin()">
+    <form ng-submit="login()" ng-click="$event.stopPropagation()">
       <input type="text" ng-model='username' placeholder="Pick a username" />
       <input type='submit' value="Login"></input><i class="fa fa-key" id="key"></i>
     </form>
   </div>
 
-  <div ng-controller="ErrorController" ng-show="errorShowing" id="error">
-    <form ng-submit="continue()"> 
+  <div ng-controller="ErrorController" ng-show="errorShowing" id="error" ng-click="errorShowing = !errorShowing">
+    <form ng-submit="continue()" ng-click="$event.stopPropagation()"> 
       <div>{{errorMessage}}</div>
       <div>Contact <a href="mailto:SiriusAStrebe@gmail.com">SiriusAStrebe@gmail.com</a></div>
       <input type='submit' value="I understand..."></input>
@@ -113,11 +113,15 @@
             $rootScope.$emit('key', 'right');
           if (k === 40 || k === 83 || k === 74)
             $rootScope.$emit('key', 'down');
+ 
+          // Escape key binding
+          if (k === 27)
+            $rootScope.$emit('key', 'esc');
         }
     }]);
 
 
-    APP.controller('ErrorController', ['$scope', function ($scope) { 
+    APP.controller('ErrorController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
       $scope.errorShowing = false;
 
       IO.on('error', function (data) { 
@@ -130,6 +134,12 @@
       $scope.continue = function () { 
         $scope.errorShowing = false;
       }
+
+      $rootScope.$on('key', function (event, key) { 
+        if (key === 'esc' && $scope.loginShowing === true) { 
+          $scope.errorShowing = false;
+        }
+      });
     }]);
 
 
@@ -143,6 +153,10 @@
 
           IO.emit('nameMe', {username: username});
         }
+      }
+
+      $scope.hideLogin = function () { 
+        $scope.loginShowing = false;
       }
 
       // TODO: Not certain if this belongs here, or if this controller 
@@ -163,6 +177,13 @@
 
       $rootScope.$on('showLogin', function () { 
         $scope.loginShowing = true;
+      });
+
+      $rootScope.$on('key', function (event, key) { 
+        console.log('key ' + key);
+        if (key === 'esc' && $scope.loginShowing === true) { 
+          $scope.loginShowing = false;
+        }
       });
     }]);
 

@@ -1,6 +1,6 @@
 <style type="text/css"> 
   html {  
-    background: url('http://i.imgur.com/7I51f8t.jpg'); 
+    background: url('http://fc03.deviantart.net/fs70/i/2014/006/5/f/mystical_ruins_by_chris_karbach-d7149r4.jpg'); 
     background-attachment: fixed;
     background-position: center center;
   } 
@@ -16,7 +16,6 @@
 <script type="text/javascript">
   var TOPICS = '<%- topicSlug %>';
   var TREEJSON = JSON.parse(<%- JSON.stringify(tree) %>);
-  var STATS = <%- JSON.stringify(flowStats) %>;
   var ANCHORS = <%- JSON.stringify(anchors) %>;
 </script>
 
@@ -34,8 +33,9 @@
 
 <div id="posts" ng-controller="PostsController">
 
-  <div id="forumView" ng-show="view==='forum'">
-    <div class="post" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')"> 
+ <div id="forumView" ng-show="view==='forum'">
+    <input id="query" type="search" ng-model="query"></input>
+    <div class="post" ng-show="convoFilter(root)" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')"> 
       <h2><a href="{{root.link}}">{{root.title}}</a></h2>
 
       <div class="details">
@@ -50,7 +50,7 @@
     </div>
 
     <ul>
-      <li ng-repeat="convo in posts" ng-hide="$first" ng-include="'forumRenderer'"></li>
+      <li ng-repeat="convo in posts | filter:convoFilter" ng-include="'forumRenderer'"></li>
     </ul>
   </div>
 
@@ -118,14 +118,14 @@
 <!-- Angular logic for creating posts -<((Forum View))>- -->
 <!--                                       ~ ~ ~ ~       --> 
 <script type="text/ng-template" id="forumRenderer">
-  <div class="post" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')">
+  <div class="post" ng-if="convo.type !== 'Root'" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')" ng-mouseenter="convo.hover = true" ng-mouseleave="convo.hover = false">
 
     <div class="details">
       <h3>{{convo.author}}</h3>
       <h4>{{convo.time}}</h4>
     </div>
 
-    <p class="quote" ng-Click="select(convo.parent, 'forum'); $event.stopPropagation()">{{convo.parent.contents | limitTo:120}}...</p>
+    <p class="quote slideableH" ng-slide="convo.hover" ng-Click="select(convo.parent, 'forum'); $event.stopPropagation()">{{convo.parent.contents | limitTo:120}}...</p>
     <p>{{convo.contents}}</p>
 
     <form ng-submit="reply(convo)" class="forumReply slideableH" ng-slide="convo.selected">

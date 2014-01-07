@@ -489,9 +489,16 @@ nav #homeButton {
 #forumView {
   position: relative;
 }
+#forumView #query {
+  display: block;
+  margin: auto;
+  margin-bottom: 50px;
+  min-width: 300px;
+  width: 60%;
+}
 #forumView .post {
   width: 100%;
-  margin: 5px 0px 5px 0px;
+  margin: 0px 0px 0px 0px;
   padding: 0px;
   overflow: auto;
   background-color: #ffffff;
@@ -540,20 +547,25 @@ nav #homeButton {
   margin: 5px 25px 10px;
 }
 #forumView .post .quote {
+  display: inline-block;
   font-size: 12px;
   margin-left: 32px;
+  margin-right: 32px;
+  padding-left: 1em;
+  padding-right: 1em;
   font-style: italic;
-  display: inline-block;
+  height: 1.5em;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
 }
 #forumView .post .quote:before,
 #forumView .post .quote:after {
   content: "\"";
 }
 #forumView .post .quote:hover {
-  background-color: #e8f8ff;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
+  background-color: #fada5e;
+  cursor: pointer;
 }
 #forumView .post .forumReply {
   height: 60px;
@@ -598,19 +610,6 @@ nav #homeButton {
   padding-bottom: 3px;
   padding-left: 5px;
   padding-right: 5px;
-  /*
-  .topBracket { 
-    left: 50%;
-    border-top-left-radius: @borderMedium;
-    border-left-width: 3px;
-  }
-
-  .botBracket { 
-    right: 50%;
-    border-top-right-radius: @borderMedium;
-    border-right-width: 3px;
-  }
-  */
 }
 .treeView .node {
   background-color: #ffffff;
@@ -722,8 +721,23 @@ nav #homeButton {
   border-right-width: 0px;
   border-bottom-width: 0px;
   border-style: ridge;
+}
+.treeView .topBracket {
+  left: 50%;
   border-top-left-radius: 10px;
   border-left-width: 3px;
+}
+.treeView .botBracket {
+  right: 50%;
+  border-top-right-radius: 10px;
+  border-right-width: 3px;
+}
+.treeView .bracket.topBracket.botBracket {
+  width: 0px;
+  border-left-width: 0px;
+  border-right-width: 3px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
 }
 /* ---- ---- ---- ---- */
 /* Debug View          */

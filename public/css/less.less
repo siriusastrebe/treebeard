@@ -601,9 +601,18 @@ nav {
 #forumView { 
   position: relative;
   
+  #query { 
+    display: block;
+    margin: auto;
+    margin-bottom: 50px; 
+
+    min-width: 300px;
+    width: 60%;
+  }
+
   .post {
     width: 100%;
-    margin: 5px 0px 5px 0px;
+    margin: 0px 0px 0px 0px;
     padding: 0px;
     overflow: auto;
 
@@ -658,10 +667,17 @@ nav {
     }
 
     .quote { 
-      font-size: 12px;
-      margin-left: 32px;
-      font-style: italic;
       display: inline-block;
+      font-size: 12px;
+
+      margin-left: 32px;
+      margin-right: 32px;
+      padding-left: 1em;
+      padding-right: 1em;
+
+      font-style: italic;
+      height: 1.5em;
+      .border(@borderSmall);
     }
 
     .quote:before, .quote:after { 
@@ -669,8 +685,8 @@ nav {
     }
 
     .quote:hover { 
-      background-color: @bright;
-      .border(@borderSmall);
+      background-color: @yellow;
+      cursor: pointer;
     }
 
     .forumReply { 
@@ -854,10 +870,8 @@ nav {
     border-right-width: 0px;
     border-bottom-width: 0px;
     border-style: ridge;
-    border-top-left-radius: @borderMedium;
-    border-left-width: 3px;
   }
-  /*
+  
   .topBracket { 
     left: 50%;
     border-top-left-radius: @borderMedium;
@@ -869,7 +883,14 @@ nav {
     border-top-right-radius: @borderMedium;
     border-right-width: 3px;
   }
-  */
+
+  .bracket.topBracket.botBracket { 
+    width: 0px;
+    border-left-width: 0px;
+    border-right-width: 3px;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+  }
 }
 
 

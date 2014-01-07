@@ -6,8 +6,7 @@ var express = require('express')
   , routes =  require('./routes')
   , fs =      require('fs')
   , less =    require('less')
-  , socket =  require('socket.io')
-  , shibe =   require('dogerr');
+  , socket =  require('socket.io');
 
 
 var app = module.exports = express.createServer();
@@ -131,6 +130,52 @@ jon = edd.newChild("Jon Snow (knows nothing)", 'sirius', new Date());
 function sew (topic) { 
   root = topic.root;
 
+  dfs(root);
+ 
+  function dfs (node) { 
+    var LEAF = 500,
+        CHILD_TAX = -10,
+        INHERITANCE = .80;
+
+    parent = node.parent;
+    if (parent === false)  
+      var parent = { priority: 0, depth: 0 };
+
+    // Current node data update
+    node.priority = parent.priority * INHERITANCE;
+    node.depth = parent.depth + 1;
+    node.distance = Number.MAX_VALUE;
+
+    // Leaf Priority Rank
+    if (node.children.length === 0) {
+      node.priority += LEAF;
+      node.distance = 0;
+    }
+    else {
+      // DFS often has a 'mark vertex as visited' line. This DFS
+      // can ommit this code if we start at the root.
+      node.children.forEach( function (child) { 
+          backwards = dfs(child);
+
+          // Child tax
+          node.priority += CHILD_TAX;
+
+          if (backwards.distance < node.distance)
+            node.distance = backwards.distance + 1;
+          
+          // priority child->parent inheritance 
+          node.priority += backwards.priority / node.children.length;
+      });
+    }
+
+    return node;
+  }
+}
+
+/*
+function sew (topic) { 
+  root = topic.root;
+
   dat = [];
 
   dfs(root, dat);
@@ -184,20 +229,35 @@ function sew (topic) {
     return data;
   }
 }
+*/
 
-function anchor (flowStats) { 
+
+function anchor (topic) { 
+  // Sew the topic (Update priorities) before searching for anchors.
+  sew(topic);
+  
   anchors = [];
+  // TODO: I could make this way more efficient
+  nodes = topic.getNodes();
 
-
-  flowStats.sort(compare);
-
-  flowStats.forEach( function (stats) { 
-    if (stats.distance === 0) { 
-      anchors.push(stats.token);
+  nodes.forEach( function (node) { 
+    if (node.distance === 0) { 
+      anchors.push(node);
     }
   });
 
   return anchors;
+}
+
+function reanchor (topic, anchor) { 
+  if (anchor.children.length > 0) {
+    sew(topic);
+    if (anchor.children.length > 0) {
+      anchor.children.sort(compare);
+      return anchor.children[0];
+    }
+  }
+  else return anchor;
 
   function compare (a, b) {
     if (a.priority < b.priority) 
@@ -205,6 +265,8 @@ function anchor (flowStats) {
     return 1;
   }
 }
+
+
 
 
 var topics = new Topics();
@@ -234,14 +296,14 @@ app.get('/:topic',  function (req, res) {
 
     topic = topics.findTopic(req.params.topic);
     if (topic) { 
-      tree = topic.nodesToJson();
-      slug = topic.slug;
+      sew(topic);
 
-      flowStats = sew(topic);
-      anchors = anchor(flowStats)
+      slug = topic.slug;
+      anchors = anchor(topic).map(function (a) { return a.token; });
+      tree = JSON.stringify(topic.nodesToJson());
 
       res.render('index.ejs', 
-        { topicSlug: slug, tree: JSON.stringify(tree), flowStats: flowStats, anchors: anchors}
+        { topicSlug: slug, tree: tree, anchors: anchors}
       );
     }
     else { 

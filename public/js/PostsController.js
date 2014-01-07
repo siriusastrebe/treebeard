@@ -77,7 +77,7 @@ function Anchor (token) {
   }
 }
 
-/*
+/* Marked for deletion
 function flow () { 
   var flow = this;
   this.target = Convos.getNodes()[Math.floor(Convos.getNodes().length * Math.random())];
@@ -134,12 +134,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     branch(convo);
   });
 
-  STATS.forEach( function (stat) { 
-    node = Convos.findNode(stat.token);
-    node.stats = stat;
-  });
-  
-
   $scope.anchorRoots = flow();
   debug = $scope.anchorRoots;
 
@@ -164,7 +158,7 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   }
 
   // --------------------------------
-  // Tree/List View control
+  // Tree/List/Flow View control
   // --------------------------------
   // Triggered on pageload in addition to any url changes.
   $scope.$on("$locationChangeStart", function (event, next, current) { 
@@ -224,6 +218,7 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     });
   });
 
+
   // TODO: I've moved the transfer of convo data to the preprocessor.
   // When you connect, you may be 'behind' on some convos. Instead of 
   // broadcasting willy nilly, I'll need for the client to request for an 
@@ -235,8 +230,29 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
 //        branch(convo);
 //      });
 //    });
+//
   });
 
+
+  // --------------------------------
+  // Search Filter
+  // --------------------------------
+  $scope.query = "";
+
+  $scope.convoFilter = function (convo) { 
+    included = false;
+
+    query = $scope.query.toLowerCase();
+
+    if (convo.contents.toLowerCase().indexOf(query) > -1 ||
+        convo.author.toLowerCase().indexOf(query) > -1 ||
+        convo.time === query) {
+      console.log(convo);
+      included = true;
+    }
+
+    return included;
+  }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // User Interface
