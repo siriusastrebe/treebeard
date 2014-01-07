@@ -135,11 +135,16 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   });
 
   $scope.anchorRoots = flow();
-  debug = $scope.anchorRoots;
 
   // --------------------------------
   // Testing/Debugging
   // --------------------------------
+  $scope.$watch( 
+    function () { return DEBUG }, 
+    function (dev, o) { $scope.development = dev }
+  );
+  
+
   Convos.debug = function () { 
     $scope.$apply( function () { 
       $scope.root = $scope.root.children[0];
@@ -237,17 +242,21 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   // --------------------------------
   // Search Filter
   // --------------------------------
-  $scope.query = "";
+  $scope.search = {query: ""};
 
   $scope.convoFilter = function (convo) { 
     included = false;
 
-    query = $scope.query.toLowerCase();
+    query = $scope.search.query;
+
+    console.log(query);
+    
+    // For efficiency
+    if (query.length === 0) { return true };
 
     if (convo.contents.toLowerCase().indexOf(query) > -1 ||
         convo.author.toLowerCase().indexOf(query) > -1 ||
         convo.time === query) {
-      console.log(convo);
       included = true;
     }
 
@@ -365,4 +374,4 @@ APP.directive('ngSlide', function ($animate, $timeout) {
       });
     }
   } 
-})
+});

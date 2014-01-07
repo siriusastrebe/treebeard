@@ -21,8 +21,17 @@
   <script type='text/javascript' src="/socket.io/socket.io.js"></script>
 
   <script type="text/javascript">
+    var APP = angular.module( 'convo', [],
+        // This is here because recursively using ng-templates
+        // will cause an infinite digest error if the depth of the
+        // recursion exceeds the digest limit. This allows a max
+        // depth of ~ 47.
+        function ($rootScopeProvider) {
+          $rootScopeProvider.digestTtl(50);
+        }
+    );
+
     var IO = io.connect(),
-        APP = angular.module('convo', []),
         SESSIONID = findSID(), 
         LOGIN = {status: 'lurker', username: '', watchers: {}};
    
