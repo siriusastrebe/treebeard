@@ -98,7 +98,7 @@ header {
   margin-bottom: 20px;
   background-color: @orange;
   .border(@borderBig);
-  box-shadow: 3px 3px 8px @teal;
+  box-shadow: 3px 3px @shading;
 
   text-align: center;
 
@@ -149,7 +149,6 @@ nav {
 
     background-color: @orange;
     border-bottom-left-radius: 10px;
-
   }
 
   #views {
@@ -739,8 +738,6 @@ nav {
 .treeView { 
   padding-top: 3px;
   padding-bottom: 3px;
-  padding-left: 5px;
-  padding-right: 5px;
 
   .node { 
     background-color: @white;
@@ -748,7 +745,6 @@ nav {
     .borderMedium;
     .shadow(2px, 2px, 1px, 1px, @shading);
 
-    margin-top: 30px;
     margin-bottom: 4px;
     cursor: pointer;
   }
@@ -857,6 +853,50 @@ nav {
   }
 
 
+  .bracket { 
+    position: relative;
+    width: 100%;
+    display: block;
+    height: 25px;
+
+    border-color: @teal;
+    border-top-width: 4px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-style: ridge;
+  }
+  
+  .leftBracket {
+    left: 50%;
+    width: 50%;
+
+    border-top-left-radius: @borderMedium;
+    border-left-width: 3px;
+  }
+
+  .rightBracket { 
+    left: 0%;
+    width: 50%;
+
+    border-top-right-radius: @borderMedium;
+    border-right-width: 3px;
+  }
+
+  .leftBracket.rightBracket { 
+    left: 50%;
+    width: 0px;
+
+    border-top-left-radius: @borderSmall;
+    border-left-width: 3px;
+
+    border-top-right-radius: @borderSmall;
+    border-right-width: 3px;
+  }
+
+
+
+/*
   .bracket {
     position: absolute;
     left: 0px;
@@ -891,6 +931,7 @@ nav {
     border-top-right-radius: 0;
     border-top-left-radius: 0;
   }
+*/
 }
 
 
@@ -1020,4 +1061,26 @@ nav {
      -moz-transition: width 300ms ease;
        -o-transition: width 300ms ease;
           transition: width 300ms ease;
+}
+
+
+/* Using max-height as a transition is a trick when you don't want to specify a height on the element being transitioned. */
+.slidehide {
+  max-height: 2000px;
+  opacity: 1;
+  transition: max-height 0.75s ease-in-out, opacity 0.75s ease-in-out;
+}
+
+.slidehide.ng-hide {
+  opacity: 0!important;
+  max-height: 0px!important;
+  padding: 0px!important;
+  margin: 0px!important;
+  border: 0px!important;
+
+  display: block!important;
+}
+
+.ng-hide.colorhide { 
+  background-color: @yellow!important;
 }

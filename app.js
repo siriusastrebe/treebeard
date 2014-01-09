@@ -102,6 +102,7 @@ kevan = lan.newChild("Kevan Lannister", 'sirius', new Date());
 
 cercei = tywin.newChild("Cercei Lannister (crazy)", 'sirius', new Date());
 jamie = tywin.newChild("Jamie Lannister", 'sirius', new Date());
+tyrion = twin.newChild("Tyrion Lannister", 'sirius', new Date());
 
 joff = cercei.newChild("Joffery Baratheon", 'sirius', new Date());
 myrcella = cercei.newChild("Myrcella Baratheon", 'sirius', new Date());

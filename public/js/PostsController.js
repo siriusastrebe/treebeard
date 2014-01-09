@@ -103,6 +103,7 @@ function flow () {
 };
 */
 
+
 function expand () { 
   console.log(this);
   for (var i=0; i<this.children.length; i++) {
@@ -244,12 +245,31 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   // --------------------------------
   $scope.search = {query: ""};
 
+  $scope.$watch('search', 
+      function (newVal, oldVal) { 
+        $scope.posts.forEach( function (post) { 
+          if ($scope.convoFilter(post))
+            post.filtered = false;
+          else
+            post.filtered = true;
+        });
+      },
+      true
+  );
+
   $scope.convoFilter = function (convo) { 
+    // Generally you would expect the filter to be explicitly declared
+    // inline. Unfortunately, if I do this,  convoFilter is called every 
+    // time there's a digest cycle in angular. With large datasets, that's 
+    // incredibly inefficient. Not to mention, a digest cycle is called on 
+    // each mouseenter and mouseleave of a forumView post, increasing client
+    // side overhead by a huge margin through normal use. I'm pissed.
+    //
+    // Anyways, I've implemented a $watch on 'search' so that it only runs
+    // a check on the entire post dataset when you update the search query.
     included = false;
 
-    query = $scope.search.query;
-
-    console.log(query);
+    query = $scope.search.query.toLowerCase();
     
     // For efficiency
     if (query.length === 0) { return true };
@@ -272,7 +292,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
       $scope.selectedModel.selected = false;
       $scope.selectedModel.replying = false;
     }
-
 
     if (post === false) {
       $scope.selectedModel = false;

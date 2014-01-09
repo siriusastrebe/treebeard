@@ -36,7 +36,7 @@
 
  <div id="forumView" ng-if="view==='forum'">
     <input id="query" type="search" ng-model="search.query"></input>
-    <div class="post" ng-show="convoFilter(root)" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')"> 
+    <div class="post slidehide colorhide" ng-hide="root.filtered" ng-class="{selected: root.selected}" ng-Click="select(root, 'forum')"> 
       <h2><a href="{{root.link}}">{{root.title}}</a></h2>
 
       <div class="details">
@@ -51,7 +51,7 @@
     </div>
 
     <ul>
-      <li ng-repeat="convo in posts | filter:convoFilter" ng-include="'forumRenderer'"></li>
+      <li ng-repeat="convo in posts" ng-include="'forumRenderer'"></li>
     </ul>
   </div>
 
@@ -119,7 +119,7 @@
 <!-- Angular logic for creating posts -<((Forum View))>- -->
 <!--                                       ~ ~ ~ ~       --> 
 <script type="text/ng-template" id="forumRenderer">
-  <div class="post" ng-if="convo.type !== 'Root'" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')" ng-mouseenter="convo.hover = true" ng-mouseleave="convo.hover = false">
+  <div class="post slidehide colorhide" ng-hide="convo.filtered" ng-if="convo.type !== 'Root'" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')" ng-mouseenter="convo.hover=true" ng-mouseleave="convo.hover=false">
 
     <div class="details">
       <h3>{{convo.author}}</h3>
@@ -148,7 +148,7 @@
 <script type="text/ng-template" id="treeRenderer">
   <div class="treeView">
 
-    <div class="bracket" ng-class="{topBracket: $first, botBracket: $last}"></div>
+    <div class="bracket" ng-class="{leftBracket: $first, rightBracket: $last}"></div>
 
     <div class="node" id="tree{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'tree')">
       <div class="details">

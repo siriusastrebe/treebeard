@@ -69,7 +69,7 @@ header {
   border-radius: 20px;
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
-  box-shadow: 3px 3px 8px #88ff99;
+  box-shadow: 3px 3px #888888;
   text-align: center;
 }
 header #banner {
@@ -608,8 +608,42 @@ nav #homeButton {
 .treeView {
   padding-top: 3px;
   padding-bottom: 3px;
-  padding-left: 5px;
-  padding-right: 5px;
+  /*
+  .bracket {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    display: inline-block;
+    height: 25px;
+
+    border-color: @teal;
+    border-top-width: 4px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-style: ridge;
+  }
+  
+  .topBracket { 
+    left: 50%;
+    border-top-left-radius: @borderMedium;
+    border-left-width: 3px;
+  }
+
+  .botBracket { 
+    right: 50%;
+    border-top-right-radius: @borderMedium;
+    border-right-width: 3px;
+  }
+
+  .bracket.topBracket.botBracket { 
+    width: 0px;
+    border-left-width: 0px;
+    border-right-width: 3px;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+  }
+*/
 }
 .treeView .node {
   background-color: #ffffff;
@@ -620,7 +654,6 @@ nav #homeButton {
   -moz-box-shadow: 2px 2px 1px 1px #888888;
   -webkit-box-shadow: 2px 2px 1px 1px #888888;
   box-shadow: 2px 2px 1px 1px #888888;
-  margin-top: 30px;
   margin-bottom: 4px;
   cursor: pointer;
 }
@@ -710,10 +743,9 @@ nav #homeButton {
   background-color: #fada5e;
 }
 .treeView .bracket {
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  display: inline-block;
+  position: relative;
+  width: 100%;
+  display: block;
   height: 25px;
   border-color: #88ff99;
   border-top-width: 4px;
@@ -722,22 +754,25 @@ nav #homeButton {
   border-bottom-width: 0px;
   border-style: ridge;
 }
-.treeView .topBracket {
+.treeView .leftBracket {
   left: 50%;
+  width: 50%;
   border-top-left-radius: 10px;
   border-left-width: 3px;
 }
-.treeView .botBracket {
-  right: 50%;
+.treeView .rightBracket {
+  left: 0%;
+  width: 50%;
   border-top-right-radius: 10px;
   border-right-width: 3px;
 }
-.treeView .bracket.topBracket.botBracket {
+.treeView .leftBracket.rightBracket {
+  left: 50%;
   width: 0px;
-  border-left-width: 0px;
+  border-top-left-radius: 5px;
+  border-left-width: 3px;
+  border-top-right-radius: 5px;
   border-right-width: 3px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
 }
 /* ---- ---- ---- ---- */
 /* Debug View          */
@@ -844,4 +879,21 @@ nav #homeButton {
   -moz-transition: width 300ms ease;
   -o-transition: width 300ms ease;
   transition: width 300ms ease;
+}
+/* Using max-height as a transition is a trick when you don't want to specify a height on the element being transitioned. */
+.slidehide {
+  max-height: 2000px;
+  opacity: 1;
+  transition: max-height 0.75s ease-in-out, opacity 0.75s ease-in-out;
+}
+.slidehide.ng-hide {
+  opacity: 0!important;
+  max-height: 0px!important;
+  padding: 0px!important;
+  margin: 0px!important;
+  border: 0px!important;
+  display: block!important;
+}
+.ng-hide.colorhide {
+  background-color: #fada5e !important;
 }
