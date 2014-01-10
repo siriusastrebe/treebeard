@@ -15,6 +15,13 @@ var app = module.exports = express.createServer();
 
 var io = socket.listen(app);
 io.set('log level', 2);
+io.set('transports', [
+    'websocket'
+  , 'flashsocket'
+  , 'htmlfile'
+  , 'xhr-polling'
+  , 'jsonp-polling'
+]);
 
 var lessfile = './public/css/less.less';
 var cssfile = './public/css/css.css';
@@ -102,7 +109,7 @@ kevan = lan.newChild("Kevan Lannister", 'sirius', new Date());
 
 cercei = tywin.newChild("Cercei Lannister (crazy)", 'sirius', new Date());
 jamie = tywin.newChild("Jamie Lannister", 'sirius', new Date());
-tyrion = twin.newChild("Tyrion Lannister", 'sirius', new Date());
+tyrion = tywin.newChild("Tyrion Lannister", 'sirius', new Date());
 
 joff = cercei.newChild("Joffery Baratheon", 'sirius', new Date());
 myrcella = cercei.newChild("Myrcella Baratheon", 'sirius', new Date());

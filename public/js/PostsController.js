@@ -125,7 +125,7 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   // --------------------------------
   // Defaults
   // --------------------------------
-  $scope.view = 'flow';
+  $scope.view = 'tree';
   $scope.posts = Convos.getNodes();
   $scope.selectedModel = false;
 
@@ -174,9 +174,10 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     else if ($location.hash() === 'tree') { 
       $scope.view = 'tree';
     }
-    else {
+    else if ($location.hash() === 'flow') {
       $scope.view = 'flow';
     }
+    else $scope.view = 'tree';
   });
 
   // --------------------------------

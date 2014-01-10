@@ -132,7 +132,10 @@
 
       IO.on('error', function (data) { 
         $scope.$apply( function () { 
-          $scope.errorMessage = data.msg;
+          if (data.msg !== 'undefined') 
+            $scope.errorMessage = data.msg;
+          else
+            $scope.errorMessage = data;
           $scope.errorShowing = true;
         });
       });
@@ -238,14 +241,7 @@
       else if ($location.hash() === 'tree') { 
         $scope.view = 'tree';
       }
-      else {
-        if (document.location.pathname === '/' || document.location.pathname === '') { 
-          $scope.view = 'none';
-        }
-        else  {
-          $scope.view = 'flow';
-        }
-      }
+      else $scope.view = 'tree';
     });
 
     // --------------------------------
