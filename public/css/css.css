@@ -711,12 +711,9 @@ nav #homeButton {
   height: 40px;
 }
 .treeView .treeReply {
+  margin-top: 25px;
   height: 100px;
   width: 350px;
-  /* Required because of display: table-cell */
-}
-.treeView .treeReply .treeView {
-  width: inherit;
 }
 .treeView .replyIcon {
   position: absolute;
@@ -775,7 +772,7 @@ nav #homeButton {
   border-right-width: 3px;
 }
 /* ---- ---- ---- ---- */
-/* Debug View          */
+/* Debug Info          */
 /* ---- ---- ---- ---- */
 .debug {
   position: fixed;
