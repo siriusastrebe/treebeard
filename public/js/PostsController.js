@@ -19,14 +19,12 @@ IO.on('connect', function () {
 function root (json) {
   node = Convos.JsonToRoot(json);
   node.activeChildren = []; 
-  node.__proto__.expand = expand;
   return node;
 }
 
 function branch (json) {
   node = Convos.JsonToBranch(json);
   node.activeChildren = [];
-  node.__proto__.expand = expand;
   return node;
 }
 
@@ -101,7 +99,7 @@ function flow () {
     }
   }
 };
-*/
+
 
 
 function expand () { 
@@ -114,6 +112,7 @@ function expand () {
   }
 }
 
+*/
 
 
 
@@ -221,7 +220,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     console.log(data);
     $scope.$apply(function () { 
       b = branch(data.convo);
-      b.parent.expand();
     });
   });
 
@@ -300,9 +298,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     else if ($scope.selectedModel !== post.token) {
       $scope.selectedModel = post;
       post.selected = true;
-
-      if ($scope.view === 'flow')
-        $scope.selectedModel.expand();
     }
   }
 

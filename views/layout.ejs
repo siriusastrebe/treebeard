@@ -241,7 +241,14 @@
       else if ($location.hash() === 'tree') { 
         $scope.view = 'tree';
       }
-      else $scope.view = 'tree';
+      else {
+        if (document.location.pathname === '/' || document.location.pathname === '') { 
+          $scope.view = 'none';
+        }
+        else  {
+          $scope.view = 'tree';
+        }
+      }
     });
 
     // --------------------------------
