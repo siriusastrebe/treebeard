@@ -7,6 +7,7 @@
 @green: #3F4;
 @purple: #663399;
 @yellow: #FADA5E;
+@blue: #4488FF;
 @shading: #888;
 @white: #FFF;
 @bright: #E8F8FF;
@@ -161,11 +162,14 @@ nav {
     }
 
     i:hover { 
-      background-color: @shading;
+      color: @yellow;
     }
 
     .selected {
       background-color: @bright;
+
+      border-radius: 50%;
+      padding: 0.15em;
     }
   }
 
@@ -209,6 +213,11 @@ nav {
     padding: 8px;
     margin: 4px;
     .border(@borderSmall);
+  }
+
+  i:active { 
+    color: @yellow;
+    text-shadow: 0px 0px 20px @yellow !important;
   }
 
   opacity: 0.6;
@@ -418,6 +427,12 @@ nav {
   margin-top: 100px;
 }
 
+.selected {
+  .shadow(0px, 0px, 8px, 2px, #88F);
+}
+
+
+
 /* ---- ---- ---- ---- */
 /*      Flow View      */
 /* ---- ---- ---- ---- */
@@ -593,9 +608,6 @@ nav {
 /* ---- ---- ---- ---- */
 /* Forum View          */
 /* ---- ---- ---- ---- */
-.selected{
-  .shadow(0px, 0px, 8px, 2px, #88F);
-}
 
 #forumView { 
   position: relative;
@@ -607,6 +619,10 @@ nav {
 
     min-width: 300px;
     width: 60%;
+  }
+
+  .post:hover .quote { 
+    height: 1.5em;
   }
 
   .post {
@@ -666,8 +682,8 @@ nav {
     }
 
     .quote { 
-      display: inline-block;
       font-size: 12px;
+      display: inline-block;
 
       margin-left: 32px;
       margin-right: 32px;
@@ -675,8 +691,14 @@ nav {
       padding-right: 1em;
 
       font-style: italic;
-      height: 1.5em;
+      height: 0em;
+      overflow: hidden;
       .border(@borderSmall);
+
+      -webkit-transition: height 300ms ease;
+         -moz-transition: height 300ms ease;
+           -o-transition: height 300ms ease;
+              transition: height 300ms ease;
     }
 
     .quote:before, .quote:after { 

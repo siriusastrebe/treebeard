@@ -120,10 +120,12 @@ nav #views i {
   -webkit-border-radius: 5px;
 }
 nav #views i:hover {
-  background-color: #888888;
+  color: #fada5e;
 }
 nav #views .selected {
   background-color: #e8f8ff;
+  border-radius: 50%;
+  padding: 0.15em;
 }
 nav #homeButton {
   height: 40px;
@@ -162,6 +164,10 @@ nav #homeButton {
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
+}
+#icon i:active {
+  color: #fada5e;
+  text-shadow: 0px 0px 20px #fada5e !important;
 }
 #icon:hover {
   opacity: 1;
@@ -334,6 +340,11 @@ nav #homeButton {
 #posts {
   margin-top: 100px;
 }
+.selected {
+  -moz-box-shadow: 0px 0px 8px 2px #8888ff;
+  -webkit-box-shadow: 0px 0px 8px 2px #8888ff;
+  box-shadow: 0px 0px 8px 2px #8888ff;
+}
 /* ---- ---- ---- ---- */
 /*      Flow View      */
 /* ---- ---- ---- ---- */
@@ -481,11 +492,6 @@ nav #homeButton {
 /* ---- ---- ---- ---- */
 /* Forum View          */
 /* ---- ---- ---- ---- */
-.selected {
-  -moz-box-shadow: 0px 0px 8px 2px #8888ff;
-  -webkit-box-shadow: 0px 0px 8px 2px #8888ff;
-  box-shadow: 0px 0px 8px 2px #8888ff;
-}
 #forumView {
   position: relative;
 }
@@ -495,6 +501,9 @@ nav #homeButton {
   margin-bottom: 50px;
   min-width: 300px;
   width: 60%;
+}
+#forumView .post:hover .quote {
+  height: 1.5em;
 }
 #forumView .post {
   width: 100%;
@@ -547,17 +556,22 @@ nav #homeButton {
   margin: 5px 25px 10px;
 }
 #forumView .post .quote {
-  display: inline-block;
   font-size: 12px;
+  display: inline-block;
   margin-left: 32px;
   margin-right: 32px;
   padding-left: 1em;
   padding-right: 1em;
   font-style: italic;
-  height: 1.5em;
+  height: 0em;
+  overflow: hidden;
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
+  -webkit-transition: height 300ms ease;
+  -moz-transition: height 300ms ease;
+  -o-transition: height 300ms ease;
+  transition: height 300ms ease;
 }
 #forumView .post .quote:before,
 #forumView .post .quote:after {

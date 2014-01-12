@@ -9,7 +9,7 @@ IO.on('connect', function () {
   // the TOPICS variable should be preset in the
   // html portion.
   
-  IO.emit('introduceMe', {topics: TOPICS});
+  IO.emit('introduceMe', {topics: TOPICS, anchors: ANCHORS});
 });
 
 
@@ -135,6 +135,7 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   });
 
   $scope.anchorRoots = flow();
+  debug = $scope.anchorRoots;
 
   // --------------------------------
   // Testing/Debugging
@@ -221,6 +222,11 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     $scope.$apply(function () { 
       b = branch(data.convo);
     });
+  });
+
+  // Reanchor command
+  IO.on('reanchorThese', function (data) { 
+      console.log(data);
   });
 
 

@@ -119,14 +119,14 @@
 <!-- Angular logic for creating posts -<((Forum View))>- -->
 <!--                                       ~ ~ ~ ~       --> 
 <script type="text/ng-template" id="forumRenderer">
-  <div class="post slidehide colorhide" ng-hide="convo.filtered" ng-if="convo.type !== 'Root'" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')" ng-mouseenter="convo.hover=true" ng-mouseleave="convo.hover=false">
+  <div class="post slidehide colorhide" ng-hide="convo.filtered" ng-if="convo.type !== 'Root'" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')">
 
     <div class="details">
       <h3>{{convo.author}}</h3>
       <h4>{{convo.time}}</h4>
     </div>
 
-    <p class="quote slideableH" ng-slide="convo.hover" ng-Click="select(convo.parent, 'forum'); $event.stopPropagation()">{{convo.parent.contents | limitTo:120}}...</p>
+    <p class="quote" ng-Click="select(convo.parent, 'forum'); $event.stopPropagation()">{{convo.parent.contents | limitTo:120}}...</p>
     <p>{{convo.contents}}</p>
 
     <form ng-submit="reply(convo)" class="forumReply slideableH" ng-slide="convo.selected">

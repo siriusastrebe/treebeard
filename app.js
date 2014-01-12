@@ -277,8 +277,8 @@ function reanchor (topic, anchor) {
 
 
 
-var topics = new Topics();
-topics.addTopic(thrones);
+var TOPICS = new Topics();
+TOPICS.addTopic(thrones);
 
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
@@ -293,7 +293,7 @@ app.get('/', function (req, res) {
     }
       
     res.render('home.ejs', 
-      { roots: topics.getRootsInJson()}
+      { roots: TOPICS.getRootsInJson()}
 ) });
 
 app.get('/:topic',  function (req, res) { 
@@ -302,7 +302,7 @@ app.get('/:topic',  function (req, res) {
       console.log('new session in :topic: ' + req.sessionID);
     }
 
-    topic = topics.findTopic(req.params.topic);
+    topic = TOPICS.findTopic(req.params.topic);
     if (topic) { 
       sew(topic);
 
@@ -351,16 +351,18 @@ io.sockets.on('connection', function (socket) {
 
   // 
   socket.on('introduceMe', function (data) { 
-    console.log('socket introduceMe');
-    // TODO: allow multiple topics in the same view
-    // TODO: Add in a view 404 topics
-    topic = topics.findTopic(data.topics);
-    if (topic) { 
-//      json = topic.nodesToJson();
-//      socket.emit('introducing', json);
-    } else { 
-      socket.emit('error', {msg: "You've entered into a black hole."});
-    }
+    console.log('introduce me');
+    console.log(data);
+    setInterval(function () { 
+      anchors = [];
+      
+      topic = TOPICS.findTopic(data.topics);
+
+      data.anchors.forEach( function (anchor) { 
+        anchors.push(reanchor(topic, topic.findNode(anchor)).token);
+      });
+      socket.emit('reanchorThese', {anchors: anchors});
+    }, 10000);
   });
 
   function nameClient(socket, id) { 
