@@ -128,14 +128,13 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   $scope.posts = Convos.getNodes();
   $scope.selectedModel = false;
 
-  $scope.root = root(TREEJSON.root);
+  $scope.roots = [root(TREEJSON.root)];
 
   TREEJSON.branches.map( function (convo) { 
     branch(convo);
   });
 
   $scope.anchorRoots = flow();
-  debug = $scope.anchorRoots;
 
   // --------------------------------
   // Testing/Debugging
@@ -148,8 +147,8 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
 
   Convos.debug = function () { 
     $scope.$apply( function () { 
-      $scope.root = $scope.root.children[0];
-      console.log($scope.root);
+      $scope.roots = $scope.roots[0].children[0];
+      console.log($scope.roots);
     });
   }
 
@@ -249,11 +248,12 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   // Search Filter
   // --------------------------------
   $scope.search = {query: ""};
+  debug = $scope;
 
   $scope.$watch('search', 
       function (newVal, oldVal) { 
         $scope.posts.forEach( function (post) { 
-          if ($scope.convoFilter(post))
+          if ($scope.convoFilter(post))  
             post.filtered = false;
           else
             post.filtered = true;
@@ -396,3 +396,4 @@ APP.directive('ngSlide', function ($animate, $timeout) {
     }
   } 
 });
+

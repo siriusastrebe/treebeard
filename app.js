@@ -133,6 +133,45 @@ rickon = edd.newChild("Rickon Stark", 'sirius', new Date());
 jon = edd.newChild("Jon Snow (knows nothing)", 'sirius', new Date());
 
 
+binaryJson = {
+    contents: 'Zero'
+  , author: "Michael Sloan, Haskell God"
+  , title: "Stress test, 512 element Binary Tree"
+  , timestamp: new Date()
+}
+
+binary = new Convoset();
+
+binaryRoot = binary.JsonToRoot(binaryJson);
+
+counter = 1;
+queue = [];
+
+function binMaker (node, depth, max) { 
+
+  queue.push([node, depth, max]);
+  queue.push([node, depth, max]);
+
+}
+
+function binBreadth (queue) { 
+  while (queue.length > 0) {
+
+    console.log(counter);
+
+    child = queue[0][0].newChild('#' + counter++ + ' level-' + queue[0][1], '', new Date ());
+
+    if (queue[0][1] < queue[0][2])  
+      binMaker(child, queue[0][1]+1, queue[0][2]);
+    
+    queue.splice(0, 1);
+  }
+}
+
+
+binMaker(binaryRoot, 1, 8);
+binBreadth(queue);
+
 
 
 function sew (topic) { 
@@ -180,64 +219,6 @@ function sew (topic) {
   }
 }
 
-/*
-function sew (topic) { 
-  root = topic.root;
-
-  dat = [];
-
-  dfs(root, dat);
-
-  return dat;
- 
-  function dfs (node, forwards) { 
-    var LEAF = 500,
-        CHILD_TAX = 50,
-        INHERITANCE = .80;
-
-    var parent = forwards[forwards.length-1];
-
-    // Default values for the Root node
-    if (forwards.length === 0) {
-      parent = {depth: -1, priority: 0}
-    }
-
-    // Current node data update
-    var data = {};
-    forwards.push(data); // <---- Add this node's data to forwards
-
-    data.token = node.token
-    data.priority = parent.priority * INHERITANCE;
-    data.depth = parent.depth + 1;
-    data.distance = Number.MAX_VALUE;
-
-
-    // Leaf Priority Rank
-    if (node.children.length === 0) {
-      data.priority += LEAF;
-      data.distance = 0;
-    }
-    else {
-      // DFS often has a 'mark vertex as visited' line. This DFS
-      // can ommit this code if we start at the root.
-      node.children.forEach( function (child) { 
-          backwards = dfs(child, forwards);
-
-          // Child tax
-          data.priority -= CHILD_TAX;
-
-          if (backwards.distance < data.distance)
-            data.distance = backwards.distance + 1;
-          
-          // priority child->parent inheritance 
-          data.priority += backwards.priority / node.children.length;
-      });
-    }
-
-    return data;
-  }
-}
-*/
 
 
 function anchor (topic) { 
@@ -279,6 +260,7 @@ function reanchor (topic, anchor) {
 
 var TOPICS = new Topics();
 TOPICS.addTopic(thrones);
+TOPICS.addTopic(binary);
 
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
@@ -310,7 +292,7 @@ app.get('/:topic',  function (req, res) {
       anchors = anchor(topic).map(function (a) { return a.token; });
       tree = JSON.stringify(topic.nodesToJson());
 
-      res.render('index.ejs', 
+      res.render('posts.ejs', 
         { topicSlug: slug, tree: tree, anchors: anchors}
       );
     }
@@ -349,20 +331,8 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
-  // 
+  // Creating a new connection
   socket.on('introduceMe', function (data) { 
-    console.log('introduce me');
-    console.log(data);
-    setInterval(function () { 
-      anchors = [];
-      
-      topic = TOPICS.findTopic(data.topics);
-
-      data.anchors.forEach( function (anchor) { 
-        anchors.push(reanchor(topic, topic.findNode(anchor)).token);
-      });
-      socket.emit('reanchorThese', {anchors: anchors});
-    }, 10000);
   });
 
   function nameClient(socket, id) { 
@@ -370,7 +340,7 @@ io.sockets.on('connection', function (socket) {
   }
 
   socket.on('addBranch', function (data) {
-    topic = topics.findTopic(data.topic);
+    topic = TOPICS.findTopic(data.topic);
 
     json = data.convo;
     json.timestamp = new Date();
@@ -391,7 +361,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('buildTopic', function (data) {
     topic = new Convoset();
     topic.JsonToRoot(data.root);
-    status = topics.addTopic(topic);
+    status = TOPICS.addTopic(topic);
     if (status) 
       socket.emit('builtTopic', {status: 'success', url: topic.slug});
     else 
@@ -406,4 +376,3 @@ io.sockets.on('connection', function (socket) {
 // ****************************************************************
 app.listen(process.env.PORT || 3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
-
