@@ -427,7 +427,8 @@ nav #homeButton {
 .flowView textarea {
   width: 98%;
   margin: 0px;
-  height: 60px;
+  height: 80px;
+  width: 300px;
   resize: none;
   border: 0px;
   border-radius: 10px;
@@ -441,6 +442,7 @@ nav #homeButton {
   height: 40px;
 }
 .flowView .flowReply {
+  width: 320px;
   height: 100px;
 }
 .flowView .replyIcon {
@@ -890,6 +892,13 @@ nav #homeButton {
   -moz-transition: width 300ms ease;
   -o-transition: width 300ms ease;
   transition: width 300ms ease;
+}
+.slideable {
+  overflow: hidden;
+  -webkit-transition: width 300ms ease, height 300ms ease;
+  -moz-transition: width 300ms ease, height 300ms ease;
+  -o-transition: width 300ms ease, height 300ms ease;
+  transition: width 300ms ease, height 300ms ease;
 }
 /* Using max-height as a transition is a trick when you don't want to specify a height on the element being transitioned. */
 .slidehide {

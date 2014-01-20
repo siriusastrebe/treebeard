@@ -102,7 +102,7 @@
 
       <ul class="children">
         <li ng-repeat="convo in convo.children" ng-include="'treeRenderer'"></li>
-        <li class="treeReply slideableW slideableH" ng-slide="convo.replying" ng-include="'treeReplyRenderer'"></li>
+        <li class="treeReply slideable" ng-slide="convo.replying" ng-include="'treeReplyRenderer'"></li>
       </ul>
 
     </div>
@@ -110,7 +110,7 @@
 
   <script type="text/ng-template" id="treeReplyRenderer">
     <div class="treeView">
-      <div class="bracket rightBracket" ng-class="{leftBracket: convo.parent.children.length===0}">
+<!--      <div class="bracket rightBracket" ng-class="{leftBracket: convo.parent.children.length===0}"> -->
       <div class="node">
         <form ng-submit="reply(convo)">
           <textarea ng-model="convo.response" ng-focus="convo.replying" ng-enter="reply(convo)"></textarea>
@@ -136,7 +136,7 @@
 
       <div class="bracket" ng-if="!convo.root" ng-class="{topBracket: $first, botBracket: $last}"></div>
 
-      <div class="node" id="flow{{convo.token}}" ng-class="{selected: convo.selected, anchor: convo.anchor===convo}" ng-Click="select(convo, 'flow')">
+      <div class="node" id="flow{{convo.token}}" ng-class="{selected: convo.selected, root: convo.root, anchor: convo.anchor}" ng-Click="select(convo, 'flow')">
     
         <h2 ng-if="convo.type === 'Root'"><a href="{{convo.link}}">{{convo.title}}</a></h2>
 
@@ -158,7 +158,7 @@
 
       <ul class="children">
         <li class="animate-repeat" ng-repeat="convo in convo.activeChildren" ng-include="'flowRenderer'"></li>
-        <li class="flowReply slideableH" ng-slide="convo.replying" ng-include="'flowReplyRenderer'"></li>
+        <li class="flowReply slideable" ng-slide="convo.replying" ng-include="'flowReplyRenderer'"></li>
       </ul>
     
     </div>
@@ -168,7 +168,7 @@
   <script type="text/ng-template" id="flowReplyRenderer">
     <div class="flowView">
     
-      <div class="bracket botBracket" ng-class="{topBracket: convo.parent.children === 0}"></div>
+      <!-- <div class="bracket botBracket" ng-class="{topBracket: convo.parent.children === 0}"></div> -->
 
       <div class="node">
         <form ng-submit="reply(convo)">
@@ -197,7 +197,8 @@
       <ul>
         <li>Author: {{convo.author}}</li>
         <li>Timestamp: {{convo.timestamp}}</li>
-        <li>RenderedTime: {{convo.time}}</li>
+        <li>Rendered Time: {{convo.time}}</li>
+        <li>Token: {{convo.token}}</li>
         <li>Depth: {{convo.stats.depth}}</li>
         <li>Priority: {{convo.stats.priority}}</li>
         <li>Contents: {{convo.contents}}</li>

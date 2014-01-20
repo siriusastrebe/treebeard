@@ -4,6 +4,7 @@
 var Convos = new Convoset();
 var debug;
 
+
 IO.on('connect', function () {
   // Get the names of each topic.
   // the TOPICS variable should be preset in the
@@ -29,6 +30,7 @@ function branch (json) {
 }
 
 
+/*
 function flow () { 
   anchors = [];
 
@@ -74,6 +76,7 @@ function Anchor (token) {
     }
   }
 }
+*/
 
 /* Marked for deletion
 function flow () { 
@@ -114,6 +117,155 @@ function expand () {
 
 */
 
+var FlowMachine = function (anchors, convoset) {
+  var FM = this,
+      anchorChains = {},
+      anchorRoots = {};
+
+  this.convoset = convoset;
+  this.flows = [];
+  this.roots = [];
+  this.redraw = redraw();
+
+  
+  anchors.forEach( function (anchor) {
+    flow = new Flow (anchor);
+
+    FM.flows.push(flow);
+    if (flow.attached === false)
+      FM.roots.push(flow.root);
+  });
+
+  redraw();
+  
+  return this;
+
+
+  function redraw () { 
+    // reset
+    FM.convoset.getNodes().forEach (function (node) { 
+      node.activeChildren.length = 0;
+      node.anchor = null;
+      delete node.root;
+      delete node.anchor;
+    });
+    
+    // activate each
+    FM.flows.forEach (function (flow) { 
+      // Discussion: This doesn't confirm that the nodes
+      // will be drawn; it puts faith that the root will
+      // contain it already
+      for (var i=0; i < flow.chain.length - 1; i++) { 
+        parent = flow.chain[i+1];
+        child = flow.chain[i];
+
+        if (parent.activeChildren.indexOf(child) === -1) { 
+          if (parent.children.indexOf(child) !== -1) { 
+            parent.activeChildren.push(child);
+          }
+          else  
+            console.log("Error: Chain for " + parent.contents + " is adding " + child.contents + ", but isn't a child.");
+        }
+      }
+
+      if (!flow.attached) 
+        flow.root.root = true;
+
+      flow.chain[0].anchor = true;
+    });
+  }
+
+
+  function Flow (anchor) {
+    var flow = this;
+
+    this.anchor = anchor;
+    this.root;
+    this.chain = [];
+    this.type = 'Flow';
+    this.attached = false;
+    this.reRoot = function (node) { reRoot(node) };
+    this.forgeChain = function () { 
+        this.root = forgeChain (anchor, 0) } 
+
+    this.reAnchor = function (node) {
+      // TODO: this
+      return node;
+    }
+
+    this.root = forgeChain(anchor, 0);
+    
+    return this;
+
+
+
+    // Helper Functions
+    function reRoot (node) { 
+      index = flow.chain.indexOf(node);
+      if (index >= 0) { 
+        position = FM.roots.indexOf(flow.root);
+
+        flow.root = node;
+        flow.chain.splice(index+1);
+
+        FM.roots.splice(position, 1, flow.root);
+
+      }
+      else {
+        console.log("Error: Can't reRoot " + node.contents + " to a node not in the chain.");
+      }
+    }
+
+    function forgeChain (node, distance) { 
+      // Bookkeeping
+      flow.chain.push(node);
+
+      // Case 1: Any chain link intersects with the root of a different anchor
+      if (node.token in anchorRoots && distance > 0) {
+        // Adopt this as our root
+        flow.attached = true;
+        console.log(flow.anchor.contents + ' adopted onto anchor ' + node.contents);
+        return anchorRoots[node.token];
+      }
+
+      if (distance < 2 && node.parent) { 
+        // Our root isn't here, move up
+        track(node.token, flow);
+        return forgeChain(node.parent, distance+1);
+      }
+
+      else {
+        // We've found our root
+        // Case 2: This is a root intersecting another's chain
+        if (node.token in anchorChains) { 
+          anchorChains[node.token].forEach(function (flo) { 
+            if (flo.root !== node) { 
+              flo.attached = true;
+              flo.reRoot(node);
+              console.log('reRooting ' + flo.anchor.contents + ' to '  + node.contents);
+            }
+          });
+        }
+
+        anchorRoots[node.token] = flow;
+        console.log('anchoring ' + flow.anchor.contents + ' to ' + node.contents);
+
+        return node;
+      }
+    }
+  }
+
+  function track (token, flow) { 
+    if (!(token in anchorChains))
+      anchorChains[token] = [flow];
+    else
+      anchorChains[token].push(flow);
+  }
+}
+
+
+
+
 
 
 /*                       */
@@ -134,7 +286,16 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     branch(convo);
   });
 
-  $scope.anchorRoots = flow();
+  var Anchors = ANCHORS.map(function (token) {
+    var node = Convos.findNode(token);
+    if (node) return node
+    else console.log('Warning: Anchor ' + token + ' doesnt exist.');
+  });
+
+
+  flows = new FlowMachine (Anchors, Convos);
+  debug = flows;
+  $scope.anchorRoots = flows.roots;
 
   // --------------------------------
   // Testing/Debugging
@@ -248,7 +409,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   // Search Filter
   // --------------------------------
   $scope.search = {query: ""};
-  debug = $scope;
 
   $scope.$watch('search', 
       function (newVal, oldVal) { 
