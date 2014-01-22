@@ -30,6 +30,121 @@ function branch (json) {
 }
 
 
+
+function FlowMachine () { 
+  var FM = this;
+
+  this.flowLength = 3;
+
+  this.roots = [];
+  this.flows = [];
+  this.anchors = [];
+
+  this.init = function (anchors) {
+    FM.anchors = anchors;
+
+    anchors.forEach(function (anchor) { 
+      var flow = new Flow(anchor);
+      flow.forgeChain();
+
+      FM.flows.push(flow);
+    });
+
+    findCommonLinks(FM.flows);
+    
+    FM.flows.forEach( function (flow) { 
+      if (!flow.attached) {
+
+        FM.roots.push(flow.root);
+        flow.root.root = true;
+
+        if (flow.chain.length > 1) 
+          attachChain(flow.root, flow.chain, flow.chain.length-2);
+
+        flow.attachments.forEach( function (attachment) {
+          attachChain(flow.root, attachment[0].chain, attachment[1]-1);
+        });
+      }
+    });
+
+
+    function attachChain(node, chain, index) { 
+      if (node.children.indexOf(chain[index]) === -1)
+        console.log("Error: node " + node.contents + " doesn't have children of this link " + chain[index].contents);
+
+      if (node.activeChildren.indexOf(chain[index]) === -1) 
+        node.activeChildren.push(chain[index]);
+
+      if (index > 0)
+        attachChain(chain[index], chain, index-1);
+      else if (index === 0)
+        chain[0].anchor = true;
+    }
+  }
+
+  this.addFlow;
+  this.extendFlow;
+  this.removeFlow;
+
+  function Flow (anchor) { 
+    var flow = this;
+    this.chain = [];
+    this.attached = false;
+    this.attachments = [];
+    this.anchor = anchor;
+    this.root;
+
+    this.forgeChain = function () { 
+      flow.chain.length = 0;
+
+      flow.root = link(flow.anchor, 0)
+      
+      function link (node, distance) { 
+        flow.chain.push(node);
+
+        if (node.parent && distance < FM.flowLength) 
+          return link(node.parent, distance + 1);
+        else
+          return node;
+      }
+    }
+  }
+
+  function findCommonLinks (flows) { 
+    flows.sort(depthSortDescending);
+
+    function depthSortDescending (a, b) { 
+      return (a.chain[0].depth < b.chain[0].depth);
+    }
+
+    flows.forEach( function (flow) { 
+      flow.attached = false;
+      flow.attachments = [];
+    });
+
+    for (var a=0; a<flows.length; a++) { 
+      if (flows[a].attached) continue;
+
+      for (var b=a+1; b<flows.length; b++) { 
+        if (flows[b].attached) continue;
+
+        aChain = flows[a].chain;
+        bChain = flows[b].chain;
+        aChainTop = aChain[aChain.length-1];
+
+        if (aChainTop.depth < bChain[0].depth) { 
+          commonLink = bChain[0].depth - aChainTop.depth;
+          if (aChainTop === bChain[commonLink]) { 
+            flows[b].attached = true;
+            flows[a].attachments.push([flows[b], commonLink]);
+          }
+        }
+      }
+    }
+  }
+}
+
+
 /*
 function flow () { 
   anchors = [];
@@ -117,6 +232,7 @@ function expand () {
 
 */
 
+/*
 var FlowMachine = function (anchors, convoset) {
   var FM = this,
       anchorChains = {},
@@ -262,6 +378,7 @@ var FlowMachine = function (anchors, convoset) {
       anchorChains[token].push(flow);
   }
 }
+*/
 
 
 
@@ -293,7 +410,8 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   });
 
 
-  flows = new FlowMachine (Anchors, Convos);
+  flows = new FlowMachine ();
+  flows.init(Anchors);
   debug = flows;
   $scope.anchorRoots = flows.roots;
 

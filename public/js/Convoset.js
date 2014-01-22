@@ -200,20 +200,24 @@ var Convoset = function () {
   function Node (contents, author, timestamp, parentToken, optional) { 
     var node = this;
 
-    this.contents = contents;
+    this.depth = false;
     this.author = author;
-    this.children = [];
-    this.census = 0;
+    this.contents = contents;
+    this.timestamp = timestamp;
     this.parentToken = parentToken;
+    this.token = createToken();
+    this.children = [];
     this.childTokens = [];
     this.amberAlert = [];
-    this.timestamp = timestamp;
+    this.census = 0;
     this.time = timestamp.getHours() + ':' + timestamp.getMinutes();
-    this.token = createToken();
 
     if (!(typeof optional === 'undefined')) { 
       this.childTokens = optional.childTokens || [];
       this.token = optional.token || this.token;
+      this.depth = optional.depth || optional.depth;
+      if (this.depth === false && node.type === 'Root')
+        this.depth = 0;
     }
 
     this.updateCensus = function () { 
@@ -282,11 +286,14 @@ var Convoset = function () {
           node.parent.childTokens.push(node.token);
 
         // Birthing...?
-        if (node.parent.children.indexOf(node) === -1) {
+        if (node.parent.children.indexOf(node) === -1) 
           node.parent.children.push(node);
-        }
         else
           console.log("Warning: strange things are afoot. A parent aleady adopted this child.");
+
+        // Depth
+        if (!node.depth && node.parent.depth) 
+          node.depth = node.parent.depth+1;
       }
 
       node.childTokens.forEach( function (childToken) {
@@ -320,12 +327,14 @@ var Convoset = function () {
 
 
   function Root (contents, author, title, link, timestamp, optional) { 
+    this.type = 'Root';
+
     Node.apply(this, [contents, author, timestamp, false, optional]);
 
-    this.type = 'Root';
     this.title = title;
     this.link = link;
     this.slug = toSlug(this.title);
+
     updateRoot(this);
 
     this.toJson = function () { 
@@ -339,6 +348,7 @@ var Convoset = function () {
       , slug: this.slug
       , link: this.link
       , token: this.token
+      , depth: this.depth
       }
     }
 
@@ -356,7 +366,7 @@ var Convoset = function () {
   Root.prototype = Object.create(Node.prototype);
 
   this.JsonToRoot = function (json) {
-    return new Root(json.contents, json.author, json.title, json.link, new Date(json.timestamp), {childTokens: json.childTokens, token: json.token});
+    return new Root(json.contents, json.author, json.title, json.link, new Date(json.timestamp), {childTokens: json.childTokens, token: json.token, depth: json.depth});
   }
 
 
@@ -387,6 +397,7 @@ var Convoset = function () {
       , parentToken: this.parentToken
       , timestamp: this.timestamp
       , token: this.token
+      , depth: this.depth
       }
     }
 
@@ -394,7 +405,7 @@ var Convoset = function () {
   Branch.prototype = Object.create(Node.prototype);
 
   this.JsonToBranch = function (json) {
-    return new Branch(json.contents, json.author, new Date(json.timestamp), json.parentToken, {childTokens: json.childTokens, token: json.token});
+    return new Branch(json.contents, json.author, new Date(json.timestamp), json.parentToken, {childTokens: json.childTokens, token: json.token, depth: json.depth});
   }
 }
 

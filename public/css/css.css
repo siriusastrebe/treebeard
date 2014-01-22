@@ -790,6 +790,15 @@ nav #homeButton {
 /* ---- ---- ---- ---- */
 /* Debug Info          */
 /* ---- ---- ---- ---- */
+.debugView {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 100%;
+}
 .debug {
   position: fixed;
   top: 0px;
@@ -805,6 +814,9 @@ nav #homeButton {
   border-radius: 20px;
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
+}
+.debug .closeDebug {
+  float: right;
 }
 .debug .closeDebug:hover {
   background-color: #fada5e;
