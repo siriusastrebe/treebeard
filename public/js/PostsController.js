@@ -114,7 +114,7 @@ function FlowMachine () {
     flows.sort(depthSortDescending);
 
     function depthSortDescending (a, b) { 
-      return (a.chain[0].depth < b.chain[0].depth);
+      return b.anchor.depth - a.anchor.depth;
     }
 
     flows.forEach( function (flow) { 
@@ -131,6 +131,8 @@ function FlowMachine () {
         aChain = flows[a].chain;
         bChain = flows[b].chain;
         aChainTop = aChain[aChain.length-1];
+
+        if (bChain[0].depth < aChainTop.depth) break;
 
         if (aChainTop.depth < bChain[0].depth) { 
           commonLink = bChain[0].depth - aChainTop.depth;
