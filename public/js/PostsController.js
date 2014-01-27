@@ -45,7 +45,6 @@ function FlowMachine () {
 
     anchors.forEach(function (anchor) { 
       var flow = new Flow(anchor);
-      flow.forgeChain();
 
       FM.flows.push(flow);
     });
@@ -53,37 +52,65 @@ function FlowMachine () {
     findCommonLinks(FM.flows);
     
     FM.flows.forEach( function (flow) { 
-      if (!flow.attached) {
+      if (flow.attached === false) {
 
         FM.roots.push(flow.root);
+        //TODO: I don't like this line
         flow.root.root = true;
 
         if (flow.chain.length > 1) 
           attachChain(flow.root, flow.chain, flow.chain.length-2);
 
         flow.attachments.forEach( function (attachment) {
-          attachChain(flow.root, attachment[0].chain, attachment[1]-1);
+          attachChain(flow.root, attachment.guest.chain, attachment.link-1);
         });
       }
     });
+  }
 
 
-    function attachChain(node, chain, index) { 
-      if (node.children.indexOf(chain[index]) === -1)
-        console.log("Error: node " + node.contents + " doesn't have children of this link " + chain[index].contents);
+  this.addFlow = function (anchor) { 
+    flow = new Flow(anchor)
 
-      if (node.activeChildren.indexOf(chain[index]) === -1) 
-        node.activeChildren.push(chain[index]);
+    FM.flows.push(flow);
 
-      if (index > 0)
-        attachChain(chain[index], chain, index-1);
-      else if (index === 0)
-        chain[0].anchor = true;
+    FM.findCommonLinks(FM.flows);
+    
+    if (flow.attached === false) {
+      FM.roots.push(flow.root);
+      //TODO: I don't like this line
+      flow.root.root = true;
+
+      // TODO: this line either
+      if (flow.chain.length > 1)
+        attachChain(flow.root, flow.chain, flow.chain.length-2);
+    }
+    else { 
+      attachChainflow(flow.attached.host, flow.chain, flow.attached.link-1);
     }
   }
 
-  this.addFlow;
-  this.extendFlow;
+  this.extendFlow = function (flow, newAnchor) { 
+    if (flow.anchor.indexOf(newAnchor) === -1)
+      console.log("Error, can't extend this flow to a child it doesn't own");
+
+    if (flows.attached !== false) { 
+      // Case 1: It's extended too far from its attachment and needs to split
+      if (flows.attached.link >== FM.flowLength) {
+        host = flows.attached.host;
+
+        for (var i=0; i<host.attachments.length; i++) {
+          if (host.attachments[i].guest === flow) {
+            host.attachments[i].splice(i, 1);
+            break;
+          }
+        }
+
+        flows.attached = false;
+      }
+    }
+  }
+
   this.removeFlow;
 
   function Flow (anchor) { 
@@ -93,6 +120,8 @@ function FlowMachine () {
     this.attachments = [];
     this.anchor = anchor;
     this.root;
+
+    flow.forgeChain();
 
     this.forgeChain = function () { 
       flow.chain.length = 0;
@@ -109,6 +138,21 @@ function FlowMachine () {
       }
     }
   }
+
+
+  function attachChain(node, chain, index) { 
+    if (node.children.indexOf(chain[index]) === -1)
+      console.log("Error: node " + node.contents + " doesn't have children of this link " + chain[index].contents);
+
+    if (node.activeChildren.indexOf(chain[index]) === -1) 
+      node.activeChildren.push(chain[index]);
+
+    if (index > 0)
+      attachChain(chain[index], chain, index-1);
+    else if (index === 0)
+      chain[0].anchor = true;
+  }
+
 
   function findCommonLinks (flows) { 
     flows.sort(depthSortDescending);
@@ -134,12 +178,11 @@ function FlowMachine () {
 
         if (bChain[0].depth < aChainTop.depth) break;
 
-        if (aChainTop.depth < bChain[0].depth) { 
-          commonLink = bChain[0].depth - aChainTop.depth;
-          if (aChainTop === bChain[commonLink]) { 
-            flows[b].attached = true;
-            flows[a].attachments.push([flows[b], commonLink]);
-          }
+        commonLink = bChain[0].depth - aChainTop.depth;
+
+        if (aChainTop === bChain[commonLink]) { 
+          flows[b].attached = {host: flows[a], link: commonLink};
+          flows[a].attachments.push({guest: flows[b], link: commonLink});
         }
       }
     }
@@ -420,6 +463,9 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   // --------------------------------
   // Testing/Debugging
   // --------------------------------
+  $scope.debugConvo;
+  $scope.debugView = false;
+
   $scope.$watch( 
     function () { return DEBUG }, 
     function (dev, o) { $scope.development = dev }
@@ -434,13 +480,16 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   }
 
   $scope.debug = function (convo) { 
-    $scope.debugView = true;
-    convo.debug = true;
+    if ($scope.debugView === false) { 
+      $scope.debugView = true;
+      convo.debug = true;
+      $scope.debugConvo = convo;
+    }
   }
 
-  $scope.closeDebug = function (convo) { 
+  $scope.closeDebug = function () { 
     $scope.debugView = false;
-    convo.debug = false;
+    $scope.debugConvo = false;
   }
 
   // --------------------------------

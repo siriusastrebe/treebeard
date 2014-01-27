@@ -184,7 +184,7 @@
   <!--      Debug info      -->
   <!--                      -->
 
-  <div class="debugView" ng-show="debugView" ng-click="closeDebug(convo)">
+  <div class="debugView" ng-show="debugView" ng-click="closeDebug()">
     <ul>
       <li ng-repeat="convo in posts" ng-include="'debugRenderer'"></li>
     </ul>
@@ -193,7 +193,7 @@
 
   <script type="text/ng-template" id="debugRenderer">
     <div class="debug" ng-show="convo.debug" ng-click="$event.stopPropagation()">
-      <i ng-click="closeDebug(convo)" class="closeDebug fa fa-minus-square-o fa-lg"></i>
+      <i ng-click="closeDebug()" class="closeDebug fa fa-minus-square-o fa-lg"></i>
       <ul>
         <li>Author: {{convo.author}}</li>
         <li>Timestamp: {{convo.timestamp}}</li>
