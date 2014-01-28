@@ -29,109 +29,58 @@ function branch (json) {
   return node;
 }
 
+function computeFlow (anchors) {
+  var seen = {};
+  var maxDepth = 10;
+  anchors.forEach( function (anchor) {
 
 
-function FlowMachine () { 
+function FlowMachine (anchors) { 
   var FM = this;
 
-  this.flowLength = 3;
+  this.chainLength = 3;
 
   this.roots = [];
+  this.chains = [];
   this.flows = [];
   this.anchors = [];
 
-  this.init = function (anchors) {
-    FM.anchors = anchors;
-
-    anchors.forEach(function (anchor) { 
-      var flow = new Flow(anchor);
-
-      FM.flows.push(flow);
+  function init (anchors) { 
+    anchors.forEach( function (anchor) {
+      FM.chains.push( new Chain (anchor) );
     });
 
-    findCommonLinks(FM.flows);
-    
-    FM.flows.forEach( function (flow) { 
-      if (flow.attached === false) {
+    findCommonLinks(flow.chains);
 
-        FM.roots.push(flow.root);
-        //TODO: I don't like this line
-        flow.root.root = true;
-
-        if (flow.chain.length > 1) 
-          attachChain(flow.root, flow.chain, flow.chain.length-2);
-
-        flow.attachments.forEach( function (attachment) {
-          attachChain(flow.root, attachment.guest.chain, attachment.link-1);
-        });
+    FM.chains.forEach (function (chain) { 
+      if (chain.attached !== false) {
+        flow = new Flow(chain);
       }
     });
   }
 
 
-  this.addFlow = function (anchor) { 
-    flow = new Flow(anchor)
+  function Chain (anchor) { 
+    var chain = this;
+    this.links = [];
+    this.anchor = anchor;
+    this.top;
 
-    FM.flows.push(flow);
-
-    FM.findCommonLinks(FM.flows);
-    
-    if (flow.attached === false) {
-      FM.roots.push(flow.root);
-      //TODO: I don't like this line
-      flow.root.root = true;
-
-      // TODO: this line either
-      if (flow.chain.length > 1)
-        attachChain(flow.root, flow.chain, flow.chain.length-2);
-    }
-    else { 
-      attachChainflow(flow.attached.host, flow.chain, flow.attached.link-1);
-    }
-  }
-
-  this.extendFlow = function (flow, newAnchor) { 
-    if (flow.anchor.indexOf(newAnchor) === -1)
-      console.log("Error, can't extend this flow to a child it doesn't own");
-
-    if (flows.attached !== false) { 
-      // Case 1: It's extended too far from its attachment and needs to split
-      if (flows.attached.link >== FM.flowLength) {
-        host = flows.attached.host;
-
-        for (var i=0; i<host.attachments.length; i++) {
-          if (host.attachments[i].guest === flow) {
-            host.attachments[i].splice(i, 1);
-            break;
-          }
-        }
-
-        flows.attached = false;
-      }
-    }
-  }
-
-  this.removeFlow;
-
-  function Flow (anchor) { 
-    var flow = this;
-    this.chain = [];
     this.attached = false;
     this.attachments = [];
-    this.anchor = anchor;
-    this.root;
 
-    flow.forgeChain();
 
-    this.forgeChain = function () { 
-      flow.chain.length = 0;
+    this.forge();
 
-      flow.root = link(flow.anchor, 0)
+    this.forge = function () { 
+      chain.links.length = 0;
+
+      chain.top = link(flow.anchor, 0)
       
       function link (node, distance) { 
-        flow.chain.push(node);
+        chain.links.push(node);
 
-        if (node.parent && distance < FM.flowLength) 
+        if (node.parent && distance < FM.chainLength) 
           return link(node.parent, distance + 1);
         else
           return node;
@@ -139,41 +88,26 @@ function FlowMachine () {
     }
   }
 
-
-  function attachChain(node, chain, index) { 
-    if (node.children.indexOf(chain[index]) === -1)
-      console.log("Error: node " + node.contents + " doesn't have children of this link " + chain[index].contents);
-
-    if (node.activeChildren.indexOf(chain[index]) === -1) 
-      node.activeChildren.push(chain[index]);
-
-    if (index > 0)
-      attachChain(chain[index], chain, index-1);
-    else if (index === 0)
-      chain[0].anchor = true;
-  }
-
-
-  function findCommonLinks (flows) { 
-    flows.sort(depthSortDescending);
+  function findCommonLinks (chains) { 
+    chains.sort(depthSortDescending);
 
     function depthSortDescending (a, b) { 
       return b.anchor.depth - a.anchor.depth;
     }
 
-    flows.forEach( function (flow) { 
-      flow.attached = false;
-      flow.attachments = [];
+    chains.forEach( function (chain) { 
+      chain.attached = false;
+      chain.attachments = [];
     });
 
-    for (var a=0; a<flows.length; a++) { 
-      if (flows[a].attached) continue;
+    for (var a=0; a<chains.length; a++) { 
+      if (chains[a].attached) continue;
 
-      for (var b=a+1; b<flows.length; b++) { 
-        if (flows[b].attached) continue;
+      for (var b=a+1; b<chains.length; b++) { 
+        if (chains[b].attached) continue;
 
-        aChain = flows[a].chain;
-        bChain = flows[b].chain;
+        aChain = chains[a].links;
+        bChain = chains[b].links;
         aChainTop = aChain[aChain.length-1];
 
         if (bChain[0].depth < aChainTop.depth) break;
@@ -181,10 +115,41 @@ function FlowMachine () {
         commonLink = bChain[0].depth - aChainTop.depth;
 
         if (aChainTop === bChain[commonLink]) { 
-          flows[b].attached = {host: flows[a], link: commonLink};
-          flows[a].attachments.push({guest: flows[b], link: commonLink});
+          chains[b].attached = {host: chains[a], link: commonLink};
+          chains[a].attachments.push({guest: chains[b], link: commonLink});
         }
       }
+    }
+  }
+
+
+  function Flow (chain) { 
+    var flow = this;
+    this.chains = [];
+    this.root;
+
+    this.chains.push(chain);
+    this.chains.attachmentsforEach( function (attachment) {
+      this.chains.push(attachment.guest);
+    });
+
+    function Flow
+
+    function FlowNode (chain, node, index) { 
+      this.flowdaddy = false;
+      if (chain[index] < FM.chainLength-1)
+        this.flowdaddy = chain[index+1]
+
+      this.flowbabies = [];
+
+      this.anchor = false;
+      if (chain.anchor === node)
+        this.anchor = true;
+
+      this.root = false;
+      if (chain.root === node) 
+        this.root = true;
+
     }
   }
 }
@@ -455,10 +420,9 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   });
 
 
-  flows = new FlowMachine ();
-  flows.init(Anchors);
-  debug = flows;
-  $scope.anchorRoots = flows.roots;
+  fm = new FlowMachine (Anchors);
+  debug = fm;
+  $scope.flows = fm.flows.map( function (flow) { return flow.root });
 
   // --------------------------------
   // Testing/Debugging
@@ -466,7 +430,7 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   $scope.debugConvo;
   $scope.debugView = false;
 
-  $scope.$watch( 
+    $scope.$watch( 
     function () { return DEBUG }, 
     function (dev, o) { $scope.development = dev }
   );

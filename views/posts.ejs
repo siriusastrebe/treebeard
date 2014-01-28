@@ -126,7 +126,7 @@
 
   <div ng-if="view==='flow'">
     <ul>
-      <li class="flow" ng-repeat="convo in anchorRoots" ng-include="'flowRenderer'"></li>
+      <li class="flow" ng-repeat="flow in flows" ng-include="'flowRenderer'"></li>
     </ul>
   </div>
 
@@ -134,31 +134,31 @@
   <script type="text/ng-template" id="flowRenderer">
   <div class="flowView">
 
-      <div class="bracket" ng-if="!convo.root" ng-class="{topBracket: $first, botBracket: $last}"></div>
+      <div class="bracket" ng-if="!flow.root" ng-class="{topBracket: $first, botBracket: $last}"></div>
 
-      <div class="node" id="flow{{convo.token}}" ng-class="{selected: convo.selected, root: convo.root, anchor: convo.anchor}" ng-Click="select(convo, 'flow')">
+      <div class="node" id="flow{{flow.node.token}}" ng-class="{selected: flow.selected, root: flow.root, anchor: flow.anchor}" ng-Click="select(flow, 'flow')">
     
-        <h2 ng-if="convo.type === 'Root'"><a href="{{convo.link}}">{{convo.title}}</a></h2>
+        <h2 ng-if="flow.node.type === 'Root'"><a href="{{convo.link}}">{{convo.title}}</a></h2>
 
         <div class="details">
-          <h3>{{convo.author}}</h3>
-          <h4>{{convo.time}}</h4>
+          <h3>{{flow.node.author}}</h3>
+          <h4>{{flow.node.time}}</h4>
         </div>
 
-        <div id="census" ng-show="convo.census - convo.activeChildren.length > 0">{{convo.census - convo.activeChildren.length}}</div>
+        <div id="census" ng-show="flow.node.census - flow.flowbabies.length > 0">{{flow.node.census - flow.flowbabies.length}}</div>
       
-        <p>{{convo.contents}}</p>
+        <p>{{flow.node.contents}}</p>
 
-        <div ng-slide="convo.selected" class="iconRack slideableH">
-          <i ng-click="replying(convo)" class="replyIcon fa fa-comment-o fa-lg"></i>
-          <i ng-click="debug(convo)" ng-show="development" class="debugIcon fa fa-question fa-lg"></i>
+        <div ng-slide="flow.selected" class="iconRack slideableH">
+          <i ng-click="replying(flow.node)" class="replyIcon fa fa-comment-o fa-lg"></i>
+          <i ng-click="debug(flow.node)" ng-show="development" class="debugIcon fa fa-question fa-lg"></i>
         </div>
 
       </div>
 
       <ul class="children">
-        <li class="animate-repeat" ng-repeat="convo in convo.activeChildren" ng-include="'flowRenderer'"></li>
-        <li class="flowReply slideable" ng-slide="convo.replying" ng-include="'flowReplyRenderer'"></li>
+        <li class="animate-repeat" ng-repeat="flow in flow.flowbabies" ng-include="'flowRenderer'"></li>
+        <li class="flowReply slideable" ng-slide="flow.node.replying" ng-include="'flowReplyRenderer'"></li>
       </ul>
     
     </div>
@@ -168,11 +168,11 @@
   <script type="text/ng-template" id="flowReplyRenderer">
     <div class="flowView">
     
-      <!-- <div class="bracket botBracket" ng-class="{topBracket: convo.parent.children === 0}"></div> -->
+      <!-- <div class="bracket botBracket" ng-class="{topBracket: flow.node.parent.children === 0}"></div> -->
 
       <div class="node">
-        <form ng-submit="reply(convo)">
-          <textarea ng-model="convo.response" ng-focus="convo.replying" ng-enter="reply(convo)"></textarea>
+        <form ng-submit="reply(flow.node)">
+          <textarea ng-model="flow.node.response" ng-focus="flow.node.replying" ng-enter="reply(flow.node)"></textarea>
         </form>
       </div>
 
