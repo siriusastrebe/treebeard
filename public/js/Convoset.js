@@ -114,7 +114,7 @@ var Convoset = function () {
     this.contents = contents;
     this.timestamp = timestamp;
     this.parentToken = parentToken;
-    this.token = createToken();
+    this.token = createToken(convoset);
     this.children = [];
     this.childTokens = [];
     this.amberAlert = [];
@@ -326,8 +326,8 @@ var Convoset = function () {
 
 function Cluster (convoset, rootNode, token) {
   this.convoset = convoset;
-  this.rootNode = rootNode || convoset.root;
-  this.token = token || createToken();
+  this.rootNode = rootNode || this.convoset.root;
+  this.token = token || createToken(this.convoset);
      
   this.promoteRoot;
   // Moves the Root to one of its children
@@ -350,7 +350,7 @@ function Cluster (convoset, rootNode, token) {
     return json;
   }
 
-  this.initialize (json) { 
+  this.initialize = function (json) { 
     this.convoset = json.convoset;
     this.token = json.token;
     this.rootNode = new ClusterNode(convoset.findNode(json.root.token), json.root.babies);
@@ -371,7 +371,7 @@ function Cluster (convoset, rootNode, token) {
     } 
 
     this.toJson = function () { 
-      var token: this.node.token;
+      var token = this.node.token;
       var babies = this.babies.map( function (baby) { 
         return baby.toJson();
       });
@@ -381,7 +381,7 @@ function Cluster (convoset, rootNode, token) {
 }
 
 
-function createToken() {
+function createToken(convoset) {
   rand = Math.random().toString(36).substr(2);
   if (convoset.findNode(rand))
     return createToken();
@@ -395,6 +395,6 @@ function createToken() {
 
 /* Exporting (Require in Node.js) */
 if (typeof module !== 'undefined') {
-  module.exports = Convoset;
-  module.exports = Cluster;
+  module.exports.Convoset = Convoset;
+  module.exports.Cluster = Cluster;
 }

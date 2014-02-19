@@ -100,7 +100,7 @@ rootJson = {
   , timestamp: new Date()
 }
 
-thrones = new Convoset();
+thrones = new Convoset.Convoset();
 root = thrones.JsonToRoot(rootJson);
 
 lan = root.newChild("House Lannister", 'sirius', new Date());
@@ -140,7 +140,7 @@ binaryJson = {
   , timestamp: new Date()
 }
 
-binary = new Convoset();
+binary = new Convoset.Convoset();
 
 binaryRoot = binary.JsonToRoot(binaryJson);
 
@@ -179,32 +179,6 @@ TOPICS.addTopic(binary);
 
 
 
-
-
-function Cluster () { 
-  this.rootNode;
-
-  this.promoteRoot;
-  // Moves the Root to one of its children
-  // Siblings of that child are returned
-  // as a potential split, or can be discarded
-
-  this.addArm;
-  // Sticks a new child and descendants on to
-  // this cluster.
-
-  this.splitArm;
-  // takes a chain of nodes and removes it from
-  // this cluster. Returns the chain.
-
-  function ClusterNode { 
-    this.node;
-    this.babies = [];
-  }
-}
-
-
-
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
 // Application Architecture
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
@@ -228,14 +202,11 @@ app.get('/:topic',  function (req, res) {
 
     topic = TOPICS.findTopic(req.params.topic);
     if (topic) { 
-      sew(topic);
-
       slug = topic.slug;
-      anchors = anchor(topic).map(function (a) { return a.token; });
       tree = JSON.stringify(topic.nodesToJson());
 
       res.render('posts.ejs', 
-        { topicSlug: slug, tree: tree, anchors: anchors}
+        { topicSlug: slug, tree: tree}
       );
     }
     else { 
@@ -301,7 +272,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('buildTopic', function (data) {
-    topic = new Convoset();
+    topic = new Convoset.Convoset();
     topic.JsonToRoot(data.root);
     status = TOPICS.addTopic(topic);
     if (status) 
