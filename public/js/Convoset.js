@@ -350,16 +350,32 @@ function Cluster (convoset, rootNode, token) {
     return json;
   }
 
-  function ClusterNode (node) {
+  this.initialize (json) { 
+    this.convoset = json.convoset;
+    this.token = json.token;
+    this.rootNode = new ClusterNode(convoset.findNode(json.root.token), json.root.babies);
+  }
+
+  function ClusterNode (node, babies) {
     this.node = node;
     this.babies = [];
 
+    if (babies) {
+      babies = parseBabies(babies);
+    } 
+    
+    function parseBabies (babiesJson) {
+      babiesJson.forEach( function (babyJson) { 
+        babies.push( new ClusterNode(babyJson.token, babyJson.babies) );
+      });
+    } 
+
     this.toJson = function () { 
       var token: this.node.token;
-      var children = this.babies.map( function (baby) { 
+      var babies = this.babies.map( function (baby) { 
         return baby.toJson();
       });
-      return {token: token, children: children};
+      return {token: token, babies: babies};
     }
   }
 }
