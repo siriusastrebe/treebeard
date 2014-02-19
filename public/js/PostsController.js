@@ -29,10 +29,12 @@ function branch (json) {
   return node;
 }
 
+/*
 function computeFlow (anchors) {
   var seen = {};
   var maxDepth = 10;
   anchors.forEach( function (anchor) {
+*/
 
 
 function FlowMachine (anchors) { 
@@ -44,6 +46,8 @@ function FlowMachine (anchors) {
   this.chains = [];
   this.flows = [];
   this.anchors = [];
+
+  init(anchors);
 
   function init (anchors) { 
     anchors.forEach( function (anchor) {
@@ -133,8 +137,6 @@ function FlowMachine (anchors) {
       this.chains.push(attachment.guest);
     });
 
-    function Flow
-
     function FlowNode (chain, node, index) { 
       this.flowdaddy = false;
       if (chain[index] < FM.chainLength-1)
@@ -149,7 +151,6 @@ function FlowMachine (anchors) {
       this.root = false;
       if (chain.root === node) 
         this.root = true;
-
     }
   }
 }

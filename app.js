@@ -173,94 +173,36 @@ binMaker(binaryRoot, 1, 8);
 binBreadth(queue);
 
 
-
-function sew (topic) { 
-  root = topic.root;
-
-  dfs(root);
- 
-  function dfs (node) { 
-    var LEAF = 500,
-        CHILD_TAX = -10,
-        INHERITANCE = .80;
-
-    parent = node.parent;
-    if (parent === false)  
-      var parent = { priority: 0, depth: 0 };
-
-    // Current node data update
-    node.priority = parent.priority * INHERITANCE;
-    node.depth = parent.depth + 1;
-    node.distance = Number.MAX_VALUE;
-
-    // Leaf Priority Rank
-    if (node.children.length === 0) {
-      node.priority += LEAF;
-      node.distance = 0;
-    }
-    else {
-      // DFS often has a 'mark vertex as visited' line. This DFS
-      // can ommit this code if we start at the root.
-      node.children.forEach( function (child) { 
-          backwards = dfs(child);
-
-          // Child tax
-          node.priority += CHILD_TAX;
-
-          if (backwards.distance < node.distance)
-            node.distance = backwards.distance + 1;
-          
-          // priority child->parent inheritance 
-          node.priority += backwards.priority / node.children.length;
-      });
-    }
-
-    return node;
-  }
-}
-
-
-
-function anchor (topic) { 
-  // Sew the topic (Update priorities) before searching for anchors.
-  sew(topic);
-  
-  anchors = [];
-  // TODO: I could make this way more efficient
-  nodes = topic.getNodes();
-
-  nodes.forEach( function (node) { 
-    if (node.distance === 0) { 
-      anchors.push(node);
-    }
-  });
-
-  return anchors;
-}
-
-function reanchor (topic, anchor) { 
-  if (anchor.children.length > 0) {
-    sew(topic);
-    if (anchor.children.length > 0) {
-      anchor.children.sort(compare);
-      return anchor.children[0];
-    }
-  }
-  else return anchor;
-
-  function compare (a, b) {
-    if (a.priority < b.priority) 
-      return -1;
-    return 1;
-  }
-}
-
-
-
-
 var TOPICS = new Topics();
 TOPICS.addTopic(thrones);
 TOPICS.addTopic(binary);
+
+
+
+
+
+function Cluster () { 
+  this.rootNode;
+
+  this.promoteRoot;
+  // Moves the Root to one of its children
+  // Siblings of that child are returned
+  // as a potential split, or can be discarded
+
+  this.addArm;
+  // Sticks a new child and descendants on to
+  // this cluster.
+
+  this.splitArm;
+  // takes a chain of nodes and removes it from
+  // this cluster. Returns the chain.
+
+  function ClusterNode { 
+    this.node;
+    this.babies = [];
+  }
+}
+
 
 
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =

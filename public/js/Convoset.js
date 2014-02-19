@@ -42,9 +42,6 @@ var Convoset = function () {
   var nodesByKey = {};
   var nodesChronological = [];
 
-  var orphansOf = {};
-  var estrangedParentOf = {};
-
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
   /*     Helper Functions             */
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -103,94 +100,6 @@ var Convoset = function () {
   this.slug;
 
 
-
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-  /*       Marked for deletion        */
-  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-  /*
-  this.getFamily = function (token) { 
-    family = [];
-    node = convoset.findNode(token);
-     
-    // descendants
-    iterator = function (depth, cutoff) {
-      return {depth: depth, cutoff: cutoff-2} }
-
-    family.concat( getDescendants(node, 4, 8, iterator) );
-    
-    // siblings
-    family.concat(node.getSiblings());
-    
-    // parents, uncles/aunts
-    parent = node.parent;
-    family.push(parent);
-    
-    function getDesendants(node, depth, cutoff, iterator) { 
-      descendants = []; 
-
-      if (typeof iterator === 'function')
-        nextParams = iterator(depth, cutoff);
-      else 
-        nextParams = {depth: depth, cutoff: cutoff};
-
-      for (var i=0; i<cutoff; i++) { 
-        child = node.children[i];
-        descendants.push(child);
-
-        if (depth > 0) {
-          descendants.concat( getChildren(child, nextParams.depth, nextParams.cutoff, iterator) );
-        }
-      };
-
-      return descendants;
-    }
-  }
-
-  this.findFlow = function () { 
-    var flow = this,
-        primary,
-        ancestors = [],
-        relatives = [];
-
-    primary = convoset.nodes[Math.floor(Math.random()*items.length)];
-    ancestors = [];
-
-      if (primary.type !== 'root') { 
-      ancestors.push(primary.parent);
-      for (var i=0; i<6; i++) { 
-        if (ancestors[i].type != 'root') { 
-          ancestors.push(ancestors[i].parent);
-        }
-      }
-
-      ancestors.forEach( function (ancestor) { 
-          if (ancestor.children.length < 12) 
-            relatives.push(ancestor.children);
-          else { 
-            relatives.push(ancestor.children.splice(0, 12));
-          }
-      });
-    }
-
-
-    this.toJson = function () {
-      primary = flow.primary
-      ancestors = flow.ancestors.map(function (a) { a.toJson() });
-      relatives = flow.relatives.map(function (r) { r.toJson() });
-
-      return {
-        primary: primary,
-        family: ancestors.concat(relatives)
-      }
-    }
-
-    return this;
-  }
-
-  */
-
-
-
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
   /*        Core Objects              */
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -247,14 +156,6 @@ var Convoset = function () {
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
     //     Housecleaning Functions      //
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-    function createToken() {
-      rand = Math.random().toString(36).substr(2);
-      if (convoset.findNode(rand))
-        return createToken();
-      else  
-        return rand;
-    }
-
     function initNode () { 
       // Add to global node lists.
       if (node.token in nodesByKey) { 
@@ -273,6 +174,19 @@ var Convoset = function () {
     }
 
     function determineAncestry () { 
+      // So this is what I'm thinking...
+      // There isn't a strong reason to do this "ARE MY PARENTS ALIVE?"
+      // "WHAT ABOUT MY KIDS?" dance every time there's a new node.
+      // Instead, I think it's best to have a backlog of nodes that are
+      // still being waited for, by which nodes and by what relationship.
+      // 
+      // After nodes have been processed, it does a double-check on the
+      // nodes being waited on. A socket request is sent to the server asking
+      // for a copy of each node that isn't in the list.
+      //
+      // Every couple of seconds, this socket request is repeated. If a node
+      // simply does not exist on the server, then it's simply ignored. A log
+      // is kept server side of the details of said node.
       node.parent = convoset.findNode(node.parentToken);
 
       if (node.parent) {
@@ -410,7 +324,61 @@ var Convoset = function () {
 }
 
 
+function Cluster (convoset, rootNode, token) {
+  this.convoset = convoset;
+  this.rootNode = rootNode || convoset.root;
+  this.token = token || createToken();
+     
+  this.promoteRoot;
+  // Moves the Root to one of its children
+  // Siblings of that child are returned
+  // as a potential split, or can be discarded
+
+  this.addArm;
+  // Sticks a new child and descendants on to
+  // this cluster.
+
+  this.splitArm;
+  // takes a chain of nodes and removes it from
+  // this cluster. Returns the chain.
+
+  this.toJson = function () { 
+    var json = {};
+    json.root = this.rootNode.toJson();
+    json.convoset = this.convoset;
+    json.token = this.token;
+    return json;
+  }
+
+  function ClusterNode (node) {
+    this.node = node;
+    this.babies = [];
+
+    this.toJson = function () { 
+      var token: this.node.token;
+      var children = this.babies.map( function (baby) { 
+        return baby.toJson();
+      });
+      return {token: token, children: children};
+    }
+  }
+}
+
+
+function createToken() {
+  rand = Math.random().toString(36).substr(2);
+  if (convoset.findNode(rand))
+    return createToken();
+  else  
+    return rand;
+}
+
+
+
+
+
 /* Exporting (Require in Node.js) */
 if (typeof module !== 'undefined') {
   module.exports = Convoset;
+  module.exports = Cluster;
 }
