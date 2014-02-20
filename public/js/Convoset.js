@@ -324,15 +324,46 @@ var Convoset = function () {
 }
 
 
-function Cluster (convoset, rootNode, token) {
+
+function Cluster (convoset, rootClode, token) {
+  var cluster = this;
   this.convoset = convoset;
-  this.rootNode = rootNode || this.convoset.root;
+  this.rootClode = rootClode || this.convoset.root;
   this.token = token || createToken(this.convoset);
      
-  this.promoteRoot;
-  // Moves the Root to one of its children
-  // Siblings of that child are returned
-  // as a potential split, or can be discarded
+
+  this.promoteRoot = function (node) { 
+    // Moves the Root to one of its children
+    // Siblings of that child are returned
+    // as a potential split, or can be discarded
+    var index,
+        promotedClode = false,
+        splits = [],
+        root = cluster.rootCode;
+        
+
+    for (var i=0; i<root.babies.length; i++) { 
+      if (root.babies[i].node !== node)
+        splits.push(root.babies[i]);
+      else { 
+        promotedClode = root.babies[i];
+      }
+    }
+     
+    if (promotedClode === false) {
+      console.log("Error: can't promote a node of a cluster if it isn't a child of the root.");
+      return;
+    }
+
+    cluster.rootClode = root.babies[i];
+
+    return splits;
+  }
+
+  this.promoteRootJson = function (node) { 
+    return {command: 'promoteRoot', args: {node: node.token}};
+  } 
+
 
   this.addArm;
   // Sticks a new child and descendants on to
@@ -342,18 +373,28 @@ function Cluster (convoset, rootNode, token) {
   // takes a chain of nodes and removes it from
   // this cluster. Returns the chain.
 
+  this.command = function (json) { 
+    if (json.command === 'promoteRoot') { 
+      node = cluster.convoset.findNode(json.args.node);
+      if (node) 
+        cluster.promoteRoot(node);
+      else
+        console.log("Command promoteRoot failed; cannot find a node by token " + json.args.node);
+    }
+  }
+
   this.toJson = function () { 
     var json = {};
-    json.root = this.rootNode.toJson();
+    json.root = this.rootClode.toJson();
     json.convoset = this.convoset;
     json.token = this.token;
     return json;
   }
 
-  this.initialize = function (json) { 
+  this.fromJson = function (json) { 
     this.convoset = json.convoset;
     this.token = json.token;
-    this.rootNode = new ClusterNode(convoset.findNode(json.root.token), json.root.babies);
+    this.rootClode = new ClusterNode(convoset.findNode(json.root.token), json.root.babies);
   }
 
   function ClusterNode (node, babies) {
@@ -388,7 +429,6 @@ function createToken(convoset) {
   else  
     return rand;
 }
-
 
 
 
