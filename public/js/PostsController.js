@@ -161,10 +161,14 @@ function FlowMachine (anchors) {
 /*       Controller      */
 /*                       */
 
+window.$scope;
+
 APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$location', function ($scope, $rootScope, $timeout, $location) {
   // --------------------------------
   // Defaults
   // --------------------------------
+  window.$scope = $scope;
+
   $scope.view = 'tree';
   $scope.posts = Convos.getNodes();
   $scope.selectedModel = false;
@@ -190,7 +194,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   Convos.debug = function () { 
     $scope.$apply( function () { 
       $scope.roots = $scope.roots[0].children[0];
-      console.log($scope.roots);
     });
   }
 
@@ -261,8 +264,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
 
   // Receiving a new post
   IO.on('newBranch', function (data) { 
-    console.log('newBranch');
-    console.log(data);
     $scope.$apply(function () { 
       b = branch(data.convo);
     });
@@ -270,7 +271,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
 
   // Reanchor command
   IO.on('reanchorThese', function (data) { 
-      console.log(data);
   });
 
 
