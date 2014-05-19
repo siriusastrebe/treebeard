@@ -131,6 +131,8 @@
       $scope.errorShowing = false;
 
       IO.on('error', function (data) { 
+        console.log(data);
+        /*
         $scope.$apply( function () { 
           if (data.msg !== 'undefined') 
             $scope.errorMessage = data.msg;
@@ -138,6 +140,7 @@
             $scope.errorMessage = data;
           $scope.errorShowing = true;
         });
+        */
       });
 
       $scope.continue = function () { 
