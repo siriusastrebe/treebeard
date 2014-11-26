@@ -157,8 +157,6 @@ function binMaker (node, depth, max) {
 function binBreadth (queue) { 
   while (queue.length > 0) {
 
-    console.log(counter);
-
     child = queue[0][0].newChild('#' + counter++ + ' level-' + queue[0][1], '', new Date ());
 
     if (queue[0][1] < queue[0][2])  
@@ -242,10 +240,6 @@ io.sockets.on('connection', function (socket) {
       console.log('session ' + id + ' now has the name ' + sessions[id].username);
       nameClient(socket, id);
     });
-  });
-
-  // Creating a new connection
-  socket.on('introduceMe', function (data) { 
   });
 
   function nameClient(socket, id) { 

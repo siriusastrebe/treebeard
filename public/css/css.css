@@ -602,16 +602,16 @@ nav #homeButton {
 .treeView {
   position: relative;
   white-space: nowrap;
-}
-.treeView .children {
-  padding-left: 5px;
-  padding-right: 5px;
-  text-align: center;
+  display: table-cell;
+  width: 100%;
 }
 .treeView .children li {
   display: inline-block;
   vertical-align: top;
-  text-align: left;
+}
+.treeView .children {
+  padding-left: 5px;
+  padding-right: 5px;
 }
 .treeView .node {
   white-space: normal;
