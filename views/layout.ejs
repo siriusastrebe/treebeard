@@ -33,8 +33,8 @@
 
     var IO = io.connect(),
         SESSIONID = findSID(), 
-        LOGIN = {status: 'lurker', username: '', watchers: {}};
-   
+        LOGIN = {status: 'lurker', username: 'AnnonymousAndy', watchers: {}};
+ 
 
     function findSID()  {
       return $.cookie('connect.sid'); 
@@ -66,11 +66,6 @@
         <a ng-href="##tree"><i class="fa fa-sitemap fa-3x" ng-class="{selected:view==='tree'}"></i></a>
         <a ng-href="##flow"><i class="fa fa-leaf fa-3x" ng-class="{selected: view==='flow'}"></i></a>
         <a ng-href="##forum"><i class="fa fa-align-justify fa-3x" ng-class="{selected: view==='forum'}"></i></a>
-        <!--
-        <a ng-href="##tree"><img id="tree" ng-class="{selected: view==='tree'}" src="/img/tree.png" /></a>
-        <a ng-href="##forum"><img id="list" ng-class="{selected: view==='forum'}" src="/img/list.png" /></a>
-        <a ng-href="##flow"><img id="list" ng-class="{selected: view==='flow'}" src="/img/flow.png" /></a>
-        -->
       </div>
     </nav>
   
@@ -105,8 +100,6 @@
   <footer></footer>
 
   <script type="text/javascript">
-
-
     APP.controller('KeysController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
         $scope.keyDown = function (ev) { 
           k = ev.which;
@@ -152,7 +145,6 @@
     }]);
 
 
-
     APP.controller('LoginController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
       $scope.loginShowing = false;
 
@@ -195,7 +187,6 @@
         }
       });
     }]);
-
     
  
   // --------------------------------
@@ -265,8 +256,6 @@
   /*      Directives      */
   /*                      */
   // Fade animation
-
-
   APP.directive('ngFade', function ($animate, $timeout) { 
     return function (scope, element, attrs) {
       scope.$watch(attrs.ngFade, function (ngFade) { 
