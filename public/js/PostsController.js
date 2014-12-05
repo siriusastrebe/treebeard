@@ -4,9 +4,6 @@
 var Convos = new Convoset();
 var debug;
 
-IO.on('connect', function () {
-});
-
 
 /*                       */
 /*    Custom Methods     */
@@ -33,25 +30,25 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   // --------------------------------
   // Defaults
   // --------------------------------
-  window.$scope = $scope;
+  var PostsController = $scope;
 
-  $scope.view = 'tree';
-  $scope.posts = Convos.getNodes();
-  $scope.selectedModel = false;
+  $scope.view = 'flow';
 
-  $scope.roots = [root(TREEJSON.root)];
-
-  TREEJSON.branches.map( function (convo) { 
-    branch(convo);
+  $scope.root = [];
+  Syc.connect(IO, function () {
+    USERNAMES = Syc.list('usernames');
+    TREE = Syc.list('Tree');
+    $scope.root = Syc.list('Tree')['got']
   });
 
   // --------------------------------
   // Testing/Debugging
   // --------------------------------
+  /*
   $scope.debugConvo;
   $scope.debugView = false;
 
-    $scope.$watch( 
+  $scope.$watch( 
     function () { return DEBUG }, 
     function (dev, o) { $scope.development = dev }
   );
@@ -75,7 +72,7 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     $scope.debugView = false;
     $scope.debugConvo = false;
   }
-
+  */
   // --------------------------------
   // Tree/List/Flow View control
   // --------------------------------
@@ -90,115 +87,40 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     else if ($location.hash() === 'flow') {
       $scope.view = 'flow';
     }
-    else $scope.view = 'tree';
+    else $scope.view = 'flow';
   });
 
   // --------------------------------
   // Node manipulation
   // --------------------------------
   // Replying to a node
-  $scope.reply = function(post) {
-    if (LOGIN.status === 'participant') {
-      json = {
-               contents: post.response,
-               author: LOGIN.username,
-               parentToken: post.token,
-             }
-
-      post.response = "";
-      post.replying = false;
-      $scope.select(false);
-
-      IO.emit('addBranch', { topic: TOPICS, convo: json });
-    }
-    else { 
-      $rootScope.$emit('showLogin');
-      LOGIN.watchers['addBranch'] = function (login) { 
-        if (login.status === 'participant') { 
-          $scope.$apply( function () { 
-            $scope.reply(post);
-          });
-          delete login.watchers['addBranch'];
-        }
-      }
-    }
-  };
-
-  $scope.replying = function (post, type) { 
-    post.replying = true;
+  $scope.action = { 
+      replying: undefined,
+      selection: undefined,
+      message: ''
   }
 
-  // Receiving a new post
-  IO.on('newBranch', function (data) { 
-    $scope.$apply(function () { 
-      b = branch(data.convo);
-    });
-  });
-
-  // --------------------------------
-  // Search Filter
-  // --------------------------------
-  $scope.search = {query: ""};
-
-  $scope.$watch('search', 
-      function (newVal, oldVal) { 
-        $scope.posts.forEach( function (post) { 
-          if ($scope.convoFilter(post))  
-            post.filtered = false;
-          else
-            post.filtered = true;
-        });
-      },
-      true
-  );
-
-  $scope.convoFilter = function (convo) { 
-    // Generally you would expect the filter to be explicitly declared
-    // inline. Unfortunately, if I do this,  convoFilter is called every 
-    // time there's a digest cycle in angular. With large datasets, that's 
-    // incredibly inefficient. Not to mention, a digest cycle is called on 
-    // each mouseenter and mouseleave of a forumView post, increasing client
-    // side overhead by a huge margin through normal use. I'm pissed.
-    //
-    // Anyways, I've implemented a $watch on 'search' so that it only runs
-    // a check on the entire post dataset when you update the search query.
-    included = false;
-
-    query = $scope.search.query.toLowerCase();
-    
-    // For efficiency
-    if (query.length === 0) { return true };
-
-    if (convo.contents.toLowerCase().indexOf(query) > -1 ||
-        convo.author.toLowerCase().indexOf(query) > -1 ||
-        convo.time === query) {
-      included = true;
+  $scope.reply = function (parent) {
+    var item = {
+        contents: $scope.action.message,
+        author: LOGIN.username,
+        children: []
     }
 
-    return included;
+    if (!parent.children) parent.children = [];
+    parent.children.push(item);
+
+    $scope.action.replying = undefined;
+    $scope.action.selection = undefined;
+    $scope.action.message = ''
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // User Interface
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Clicking on a node selects it and allows you to reply
-  $scope.select = function (post, type) { 
-    if ($scope.selectedModel !== false && $scope.selectedModel !== post) {
-      $scope.selectedModel.selected = false;
-      $scope.selectedModel.replying = false;
-    }
-
-    if (post === false) {
-      $scope.selectedModel = false;
-    }
-    else if ($scope.selectedModel !== post.token) {
-      $scope.selectedModel = post;
-      post.selected = true;
-    }
+  $scope.openReply = function (item) { 
+    $scope.action.replying = item;
   }
 
-  $scope.openReply = function (post, type) { 
-    post.replying = true;
+  $scope.select = function (item) { 
+    $scope.action.selection = item;
   }
 
   $rootScope.$on('key', function (event, key) { 
@@ -238,6 +160,50 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
     }
   });
 
+  // --------------------------------
+  // Search Filter
+  // --------------------------------
+  /*
+  $scope.search = {query: ""};
+
+  $scope.$watch('search', 
+      function (newVal, oldVal) { 
+        $scope.posts.forEach( function (post) { 
+          if ($scope.convoFilter(post))  
+            post.filtered = false;
+          else
+            post.filtered = true;
+        });
+      },
+      true
+  );
+
+  $scope.convoFilter = function (convo) { 
+    // Generally you would expect the filter to be explicitly declared
+    // inline. Unfortunately, if I do this,  convoFilter is called every 
+    // time there's a digest cycle in angular. With large datasets, that's 
+    // incredibly inefficient. Not to mention, a digest cycle is called on 
+    // each mouseenter and mouseleave of a forumView post, increasing client
+    // side overhead by a huge margin through normal use. I'm pissed.
+    //
+    // Anyways, I've implemented a $watch on 'search' so that it only runs
+    // a check on the entire post dataset when you update the search query.
+    included = false;
+
+    query = $scope.search.query.toLowerCase();
+    
+    // For efficiency
+    if (query.length === 0) { return true };
+
+    if (convo.contents.toLowerCase().indexOf(query) > -1 ||
+        convo.author.toLowerCase().indexOf(query) > -1 ||
+        convo.time === query) {
+      included = true;
+    }
+
+    return included;
+  }
+  */
 }]);
 
 

@@ -1,30 +1,9 @@
-<style type="text/css"> 
-  html {  
-    background: url('http://i.imgur.com/LCtQiMW.jpg'); 
-    background-attachment: fixed;
-    background-position: center center;
-  } 
-
-  body {
-    background: transparent;
-  }
-</style> 
-           
-            
-
-
 <script type="text/javascript">
-  var TOPICS = '<%- topicSlug %>';
-  var TREEJSON = JSON.parse(<%- JSON.stringify(tree) %>);
   var DEBUG = true;
 </script>
 
 <script type="text/javascript" src="/js/Convoset.js"></script>
 <script type="text/javascript" src="/js/PostsController.js"></script>
-
-
-
-
 
 
 <div id="posts" ng-controller="PostsController">
@@ -71,7 +50,7 @@
 
   <div class="treeView" ng-if="view==='tree'">
     <ul>
-      <li ng-repeat="convo in roots" ng-include="'treeRenderer'"></li>
+      <li ng-repeat="convo in root" ng-include="'treeRenderer'"></li>
     </ul>
   </div>
 
@@ -125,7 +104,7 @@
 
   <div ng-if="view==='flow'">
     <ul>
-      <li class="flow" ng-repeat="flow in roots" ng-include="'flowRenderer'"></li>
+      <li class="flow" ng-repeat="flow in root track by flow['syc-object-id']" ng-include="'flowRenderer'"></li>
     </ul>
   </div>
 
@@ -133,31 +112,23 @@
   <script type="text/ng-template" id="flowRenderer">
   <div class="flowView">
 
-      <div class="bracket" ng-if="!flow.root" ng-class="{topBracket: $first, botBracket: $last}"></div>
+      <div class="bracket" ng-class="{topBracket: $first, botBracket: $last}"></div>
 
-      <div class="node" id="flow{{flow.token}}" ng-class="{selected: flow.selected, root: flow.root, anchor: flow.anchor}" ng-Click="select(flow, 'flow')">
-    
-        <h2 ng-if="flow.type === 'Root'"><a href="{{flow.link}}">{{flow.title}}</a></h2>
-
+      <div class="node" ng-class="{selected: action.selection===flowe}" ng-Click="select(flow)">
         <div class="details">
           <h3>{{flow.author}}</h3>
           <h4>{{flow.time}}</h4>
         </div>
-
-        <!-- <div id="census" ng-show="flow.census - flow.flowbabies.length > 0">{{flow.census - flow.flowbabies.length}}</div> -->
-      
         <p>{{flow.contents}}</p>
-
-        <div ng-slide="flow.selected" class="iconRack slideableH">
-          <i ng-click="replying(flow)" class="replyIcon fa fa-comment-o fa-lg"></i>
+        <div ng-slide="action.selection===flow" class="iconRack slideableH">
+          <i ng-click="openReply(flow)" class="replyIcon fa fa-comment-o fa-lg"></i>
           <i ng-click="debug(flow)" ng-show="development" class="debugIcon fa fa-question fa-lg"></i>
         </div>
-
       </div>
 
       <ul class="children">
-        <li class="animate-repeat" ng-repeat="flow in flow.children" ng-include="'flowRenderer'"></li>
-        <li class="flowReply slideable" ng-slide="flow.replying" ng-include="'flowReplyRenderer'"></li>
+        <li class="animate-repeat" ng-repeat="flow in flow.children track by flow['syc-object-id']" ng-include="'flowRenderer'"></li>
+        <li class="flowReply slideable" ng-slide="action.replying===flow" ng-include="'flowReplyRenderer'"></li>
       </ul>
     
     </div>
@@ -171,7 +142,7 @@
 
       <div class="node">
         <form ng-submit="reply(flow)">
-          <textarea ng-model="flow.response" ng-focus="flow.replying" ng-enter="reply(flow)"></textarea>
+          <textarea ng-model="action.message" ng-focus="action.replying===flow" ng-enter="reply(flow)"></textarea>
         </form>
       </div>
 
@@ -195,8 +166,7 @@
       <i ng-click="closeDebug()" class="closeDebug fa fa-minus-square-o fa-lg"></i>
       <ul>
         <li>Author: {{convo.author}}</li>
-        <li>Timestamp: {{convo.timestamp}}</li>
-        <li>Rendered Time: {{convo.time}}</li>
+        <li>Timestamp: {{convo.time}}</li>
         <li>Token: {{convo.token}}</li>
         <li>Depth: {{convo.depth}}</li>
         <li>Contents: {{convo.contents}}</li>

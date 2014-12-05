@@ -20,10 +20,24 @@
 }
 /* Shadow */
 /* ---- ---- ---- ---- */
+/* Background          */
+/* ---- ---- ---- ---- */
+html {
+  background: url('http://i.imgur.com/LCtQiMW.jpg');
+  background-attachment: fixed;
+  background-position: center center;
+}
+body {
+  background: transparent;
+}
+/* ---- ---- ---- ---- */
 /* Responsive Layout   */
 /* ---- ---- ---- ---- */
 @media (max-width: 959px) {
   header {
+    width: 100%;
+  }
+  #homepage {
     width: 100%;
   }
   #forumView {
@@ -38,6 +52,9 @@
     margin-left: auto;
     margin-right: auto;
     width: 960px;
+  }
+  #homepage {
+    width: 800px;
   }
   #forumView {
     margin-left: auto;
@@ -57,19 +74,13 @@
 /* Header and Footer   */
 /* ---- ---- ---- ---- */
 body {
-  background-color: #ffffff;
   font-family: verdana;
 }
 header {
   height: 140px;
-  margin-top: 60px;
+  margin-top: 40px;
   padding-top: 40px;
   margin-bottom: 20px;
-  background-color: #ffa500;
-  border-radius: 20px;
-  -moz-border-radius: 20px;
-  -webkit-border-radius: 20px;
-  box-shadow: 3px 3px #888888;
   text-align: center;
 }
 header #banner {
@@ -128,22 +139,16 @@ nav #views .selected {
   padding: 0.15em;
 }
 nav #homeButton {
-  height: 40px;
-  width: 200px;
   position: absolute;
   left: 0px;
   right: 0px;
   margin: auto;
-  background-color: #ffa500;
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
-  box-shadow: 0px 0px 0px 2px #fada5e;
   text-align: center;
   padding-top: 10px;
-  font-size: 30px;
+  text-shadow: -2px -2px 0px #888888;
+  font-size: 50px;
   font-family: arial;
   font-weight: bolder;
-  text-shadow: #888888 2px 2px;
   letter-spacing: 2px;
   color: #e8f8ff;
   text-decoration: none;
@@ -249,6 +254,13 @@ nav #homeButton {
 /* ---- ---- ---- ---- */
 #homepage {
   text-align: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  margin: auto;
+  border-radius: 20px;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  box-shadow: -1px -1px 1px 0px #888888;
+  padding: 10px;
 }
 #homepage h2 {
   font-size: 25px;
@@ -257,10 +269,10 @@ nav #homeButton {
 }
 #homepage #topics {
   font-size: 20px;
-  margin-bottom: 200px;
+  margin-bottom: 100px;
 }
 #homepage #topics a {
-  color: #88ff99;
+  color: #55dd88;
   font-weight: bolder;
   text-decoration: none;
 }
@@ -268,6 +280,7 @@ nav #homeButton {
   margin: 12px;
 }
 #homepage .buttbuddies {
+  width: 200px;
   display: inline-block;
   padding: 10px;
   background-color: #097054;
@@ -275,13 +288,12 @@ nav #homeButton {
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
   color: #e8f8ff;
-  text-shadow: -2px -2px #888888;
-  box-shadow: 0px 0px 2px 2px #88ff99;
+  text-shadow: -1px -1px #888888;
+  box-shadow: 1px 1px 1px 0px #888888;
   cursor: pointer;
 }
 #homepage .buttbuddies:hover {
   color: #fada5e;
-  box-shadow: 0px 0px 2px 0px #fada5e;
 }
 #homepage #publish {
   position: fixed;
@@ -301,7 +313,7 @@ nav #homeButton {
   width: 700px;
   height: 200px;
   padding-top: 40px;
-  background-color: #ffa500;
+  background-color: #33ff44;
   border-radius: 20px;
   -moz-border-radius: 20px;
   -webkit-border-radius: 20px;
@@ -349,7 +361,6 @@ nav #homeButton {
 /*      Flow View      */
 /* ---- ---- ---- ---- */
 .flow {
-  float: right;
   margin-right: 4em;
 }
 .flowView {
@@ -373,36 +384,19 @@ nav #homeButton {
   white-space: normal;
   overflow: auto;
   background-color: #ffffff;
-  border: 1px solid #88ff99;
   border-radius: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
+  box-shadow: -1px -1px 1px 0px #888888;
   margin-left: 10px;
   min-width: 250px;
-  max-width: 550px;
+  max-width: 400px;
+  min-height: 50px;
+  max-height: 225px;
   cursor: pointer;
 }
 .flowView .node:hover {
-  background-color: #f8f8f8;
-  border: 1px solid #88ff99;
-  border-radius: 10px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
-}
-.flowView .anchor {
-  -moz-box-shadow: 0px 0px 5px 5px #663399;
-  -webkit-box-shadow: 0px 0px 5px 5px #663399;
-  box-shadow: 0px 0px 5px 5px #663399;
-}
-.flowView h2 {
-  font-size: 20px;
-  font-family: arial;
-  text-align: center;
-  margin: 10px 0px 5px;
-}
-.flowView h2 a {
-  text-decoration: none;
-  color: #097054;
+  background-color: #f8f9fa;
 }
 .flowView .details {
   display: block;
@@ -419,31 +413,30 @@ nav #homeButton {
   float: right;
 }
 .flowView p {
-  margin: 5px 15px 10px;
+  margin: 4px 12px 8px 12px;
 }
 .flowView form {
   text-align: center;
 }
 .flowView textarea {
-  width: 98%;
+  width: 240px;
   margin: 0px;
-  height: 80px;
-  width: 300px;
+  padding: 4px;
   resize: none;
   border: 0px;
+  outline: none;
   border-radius: 10px;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
-  outline: none;
+}
+.flowView .flowReply {
+  height: 80px;
+  width: 260px;
 }
 .flowView .iconRack {
   position: relative;
   width: 100%;
   height: 40px;
-}
-.flowView .flowReply {
-  width: 320px;
-  height: 100px;
 }
 .flowView .replyIcon {
   position: absolute;
@@ -475,21 +468,21 @@ nav #homeButton {
   bottom: 0px;
   display: inline-block;
   width: 6px;
-  border-color: #888888;
+  border-color: #fada5e;
   border-left-width: 4px;
-  border-left-style: solid;
+  border-left-style: groove;
 }
 .flowView .topBracket {
   top: 50%;
   border-top-left-radius: 10px;
   border-top-width: 3px;
-  border-top-style: solid;
+  border-top-style: groove;
 }
 .flowView .botBracket {
   bottom: 50%;
   border-bottom-left-radius: 10px;
   border-bottom-width: 3px;
-  border-bottom-style: solid;
+  border-bottom-style: groove;
 }
 /* ---- ---- ---- ---- */
 /* Forum View          */
@@ -674,7 +667,7 @@ nav #homeButton {
   cursor: pointer;
 }
 .treeView .node:hover {
-  background-color: #f8f8f8;
+  background-color: #f8f9fa;
   border: 1px solid #88ff99;
   border-radius: 10px;
   -moz-border-radius: 10px;
@@ -847,28 +840,6 @@ nav #homeButton {
   width: 600px;
   display: inline-block;
   box-shadow: 10px 10px 5px 5px #888888;
-}
-#homeButton {
-  height: 40px;
-  width: 200px;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  margin: auto;
-  background-color: #ffa500;
-  border-bottom-right-radius: 10px;
-  border-bottom-left-radius: 10px;
-  box-shadow: 0px 0px 0px 2px #fada5e;
-  text-align: center;
-  padding-top: 10px;
-  font-size: 30px;
-  font-family: arial;
-  font-weight: bolder;
-  text-shadow: #888888 2px 2px;
-  letter-spacing: 2px;
-  color: #e8f8ff;
-  text-decoration: none;
 }
 /* ---- ---- ---- ---- */
 /* Animations          */

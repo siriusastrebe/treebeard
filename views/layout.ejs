@@ -19,6 +19,7 @@
   <script type='text/javascript' src="//cdn.jsdelivr.net/jquery.cookie/1.4.0/jquery.cookie.js"></script>
   <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.js'></script>
   <script type='text/javascript' src="/socket.io/socket.io.js"></script>
+  <script type='text/javascript' src="/syc.js"></script>
 
   <script type="text/javascript">
     var APP = angular.module( 'convo', [],
@@ -33,12 +34,21 @@
 
     var IO = io.connect(),
         SESSIONID = findSID(), 
-        LOGIN = {status: 'lurker', username: 'AnnonymousAndy', watchers: {}};
- 
+        LOGIN = {status: 'participant', username: randomUsername()},
+        USERNAMES,
+        TREE;
 
-    function findSID()  {
+ 
+    function findSID ()  {
       return $.cookie('connect.sid'); 
     }
+
+    function randomUsername () { 
+      var names = ['Annonymous Andy', 'Bad Betty', 'Catty Cathy', 'Debbie Downer', 'Even Steven', 'Fat Freddie', 'George', 'Halitosis Haley', 'Irridescent Indie', 'Jerky Jerry', 'Killer Kat', 'Lemon', 'Matt Damon', 'Nutters', 'Oprah', 'Porcupine', 'Q-tip', 'Ronny', 'Stewie', 'Tux', 'Capt\' undie', 'Voluptua', 'Wanda', 'Xena the Princess Warrior', 'Yodle', 'Zombocom'];
+
+      return names[Math.floor(Math.random() * names.length)];
+    }
+
 
     IO.on('connect', function () {
       IO.emit('identifyMe', {sessionID: SESSIONID});
@@ -55,7 +65,7 @@
   <div ng-controller="NavController" ng-hide="view === 'none'">
     <nav class="fadeable" ng-fade="!nav" ng-mouseleave="delayedNavHide()" ng-mouseenter="resetDelayHide()">
       <div id="user">
-        {{username}}
+        <a ng-click="changeUsername()">{{username}}</a>
       </div>
       <a href="/">
         <div id="homeButton"> 
@@ -100,6 +110,16 @@
   <footer></footer>
 
   <script type="text/javascript">
+    APP.service('TreeService', function () {
+        this.Trees = {};
+        
+        var _this = this;
+        
+        this.plantTree = function (name, tree) { 
+            _this.Trees[name] = tree;
+        }
+    });
+    
     APP.controller('KeysController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
         $scope.keyDown = function (ev) { 
           k = ev.which;
@@ -144,37 +164,20 @@
       });
     }]);
 
-
     APP.controller('LoginController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
       $scope.loginShowing = false;
 
       $scope.login = function () { 
-        if ($scope.username) {
-          username = $scope.username;
-
-          IO.emit('nameMe', {username: username});
-        }
-      }
+         username = $scope.username;
+         LOGIN.username = username;
+         USERNAMES.push(username);
+         $rootScope.$emit('changedUsername');
+         $scope.loginShowing = false;
+      };
 
       $scope.hideLogin = function () { 
         $scope.loginShowing = false;
       }
-
-      // TODO: Not certain if this belongs here, or if this controller 
-      // should just have a watcher to the login data.
-      IO.on('namedYou', function (data) {
-
-        $scope.$apply( function () { 
-          $scope.loginShowing = false;
-        });
-
-        console.log('just got named ' + data.username);
-        LOGIN.status = 'participant';
-        LOGIN.username = data.username;
-        for (func in LOGIN.watchers) { 
-          LOGIN.watchers[func].call(this, LOGIN);
-        }
-      });
 
       $rootScope.$on('showLogin', function () { 
         $scope.loginShowing = true;
@@ -187,21 +190,31 @@
         }
       });
     }]);
-    
+
+
  
   // --------------------------------
   // Navigational menu
   // --------------------------------
-  APP.controller('NavController', ['$scope', '$timeout', '$location',  function ($scope, $timeout, $location) {
+  APP.controller('NavController', ['$scope', '$timeout', '$location', '$rootScope', function ($scope, $timeout, $location, $rootScope) {
     $scope.icon = true;
     $scope.nav  = false;
-    $scope.username = "Lurking";
+
     $scope.view;
 
     $scope.showNav = function () { 
       $scope.nav  = true;
       $scope.icon = false;
     }
+
+    $scope.username = LOGIN.username;
+
+    $scope.changeUsername = function () { 
+      $rootScope.$emit('showLogin');
+    }
+    $rootScope.$on('changedUsername', function () {
+      $scope.username = LOGIN.username;
+    });
 
     var timeoutId;
     $scope.delayedNavHide = function () {
@@ -216,7 +229,6 @@
     $scope.resetDelayHide = function () {
       $timeout.cancel(timeoutId);
     }  
-
 
     // --------------------------------
     // Tree/List View control
@@ -233,23 +245,14 @@
         $scope.view = 'tree';
       }
       else {
-        if (document.location.pathname === '/' || document.location.pathname === '') { 
+        if (document.location.pathname === '/' || document.location.pathname === '') {
           $scope.view = 'none';
         }
         else  {
-          $scope.view = 'tree';
+          $scope.view = 'flow';
         }
       }
     });
-
-    // --------------------------------
-    // Username controls
-    // --------------------------------
-    // Each login watcher is fired when the login details are changed.
-    LOGIN.watchers['updateUsername'] = function (login) { 
-      $scope.username = login.username;
-    };
-
   }]);
 
   /*                      */

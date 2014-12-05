@@ -1,62 +1,24 @@
-<script type="text/javascript" src="/js/Convoset.js"></script>
-
 <script type="text/javascript">
-  function newTopic (title, link, contents, author) {
-
-    set = new Convoset();
-
-    json = {
-      title: title,
-      link: link,
-      contents: contents,
-      author: author,
-      timestamp: new Date(), 
-    }
-    return set.JsonToRoot(json);
-  }
-</script>
-
-
-<script type="text/javascript">
-  var debug;
-
   APP.controller('TopicsController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
     $showPublish = false;
 
     $scope.topicSubmit = function () {
-      if (LOGIN.status === 'participant') { 
-        if ($scope.title && $scope.link) {
-          topic = newTopic($scope.title, $scope.link, $scope.contents, LOGIN.username);
-          IO.emit("buildTopic", {root: topic.toJson()});
-        }
-      } 
-      else { 
-        $rootScope.$emit('showLogin');
-        
-        LOGIN.watchers['submitTopic'] = function (login) { 
-          if (LOGIN.status === 'participant') {
-            console.log('A: you should only see this once')
-            $scope.$apply( function () { 
-              $scope.topicSubmit();
-            });
-            delete login['submitTopic'];
-          }
-        };
+      var tree = Syc.list('Tree');
+
+      var branch = {
+          author: LOGIN.username,
+          contents: $scope.contents,
+          children: []
       }
+
+      tree[$scope.title] = [branch]
     }
 
     $scope.showLogin = function () { 
       $rootScope.$emit('showLogin');
     }
 
-    IO.on('builtTopic', function (data) { 
-      if (data.status === 'success') {
-        window.location.href = "/" + data.url + "/";
-      }
-    });
-
-    $scope.roots = <%- roots %>; 
-    debug = $scope.roots;
+    $scope.roots = tree;
 
   }]);
 </script>
@@ -75,10 +37,9 @@
 
 <div id="homepage" ng-controller="TopicsController">
   <ul id="topics">
-    <h2>Select a topic</h2>
     <li ng-repeat="root in roots">
       <h4>
-        <a href="/{{root.slug}}/">{{root.title}}</a>
+        <a href="/{{root.contents}}/">{{root.title}}</a>
         by
         {{root.author}}
       </h4>
@@ -88,10 +49,10 @@
 
   <h2 id="publishHeader" class="buttbuddies" ng-click="showPublish = !showPublish">New Topic</h2>
   <h2 id="loginButton" class="buttbuddies" ng-click="showLogin()">Login</h2>
+
   <div id="publish" ng-show="showPublish">
     <form id="publishForm" ng-submit="topicSubmit()">
       <input type='text' ng-model='title' placeholder='Title' />
-      <input type='text' ng-model='link' placeholder='Link' />
       <textarea ng-model='contents' placeholder='Make a bold claim'></textarea>
       <input type='submit' />
       <i id="closePublish" class="fa fa-times-circle fa-lg" ng-click="showPublish = false"></i>
@@ -99,9 +60,3 @@
   </div>
 
 </div>
-
-
-
-
-
-

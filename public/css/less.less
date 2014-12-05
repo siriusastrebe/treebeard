@@ -4,6 +4,7 @@
 @standout: #097054;
 @orange: #FFA500;
 @teal: #8F9;
+@darkTeal: #5D8;
 @green: #3F4;
 @purple: #663399;
 @yellow: #FADA5E;
@@ -11,7 +12,7 @@
 @shading: #888;
 @white: #FFF;
 @bright: #E8F8FF;
-@hover: #F8F8F8;
+@hover: #F8F9FA;
 
 @fontLarge: arial;
 @fontText: verdana;
@@ -42,11 +43,30 @@
   box-shadow:         @arguments;
 }
 
+
+/* ---- ---- ---- ---- */
+/* Background          */
+/* ---- ---- ---- ---- */
+html {  
+  background: url('http://i.imgur.com/LCtQiMW.jpg'); 
+  background-attachment: fixed;
+  background-position: center center;
+} 
+
+body { 
+  background: transparent;
+}
+
+
 /* ---- ---- ---- ---- */
 /* Responsive Layout   */
 /* ---- ---- ---- ---- */
 @media (max-width: (@wide-width - 1)) { 
   header { 
+    width: 100%;
+  }
+
+  #homepage { 
     width: 100%;
   }
 
@@ -66,6 +86,10 @@
     width: @wide-width;
   }
 
+  #homepage {
+    width: 800px;
+  }
+
   #forumView { 
     margin-left: auto;
     margin-right: auto;
@@ -80,6 +104,7 @@
 }
 
 
+
 /* ---- ---- ---- ---- */
 /* Specific Elements   */
 /* ---- ---- ---- ---- */
@@ -88,18 +113,14 @@
 /* Header and Footer   */
 /* ---- ---- ---- ---- */
 body {
- background-color: @white; 
  font-family: @fontText;
 }
 
 header { 
   height: 140px;
-  margin-top: 60px;
+  margin-top: 40px;
   padding-top: 40px;
   margin-bottom: 20px;
-  background-color: @orange;
-  .border(@borderBig);
-  box-shadow: 3px 3px @shading;
 
   text-align: center;
 
@@ -174,26 +195,17 @@ nav {
   }
 
   #homeButton { 
-    height: 40px;
-    width: 200px;
-
     position: absolute;
     left: 0px; right: 0px;
     margin: auto;
 
-    background-color: @orange;
-    border-bottom-right-radius: @borderMedium;
-    border-bottom-left-radius: @borderMedium;
-
-    box-shadow: 0px 0px 0px 2px @yellow;
-  
     text-align: center;
     padding-top: 10px;
 
-    font-size: 30px;
+    text-shadow: -2px -2px 0px @shading;
+    font-size: 50px;
     font-family: @fontLarge;
     font-weight: bolder;
-    text-shadow: @shading 2px 2px;
     letter-spacing: 2px;
 
     color: @bright; 
@@ -316,6 +328,13 @@ nav {
 /* ---- ---- ---- ---- */
 #homepage { 
   text-align: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  margin: auto;
+  .border(@borderBig);
+  box-shadow: -1px -1px 1px 0px @shading;
+  
+  padding: 10px;
+
 
   h2 { 
     font-size: 25px;
@@ -325,10 +344,10 @@ nav {
 
   #topics {
     font-size: 20px;
-    margin-bottom: 200px;
+    margin-bottom: 100px;
 
     a { 
-      color: @teal;
+      color: @darkTeal;
       font-weight: bolder;
       text-decoration: none;
     }
@@ -340,6 +359,7 @@ nav {
   }
 
   .buttbuddies { 
+    width: 200px;
     display: inline-block;
     padding: 10px;
 
@@ -347,17 +367,14 @@ nav {
     .border(@borderMedium);
 
     color: @bright;
-    text-shadow: -2px -2px @shading;
-
-    box-shadow: 0px 0px 2px 2px @teal;
+    text-shadow: -1px -1px @shading;
+    box-shadow: 1px 1px 1px 0px @shading;
 
     cursor: pointer;
   }
 
   .buttbuddies:hover { 
     color: @yellow;
-    box-shadow: 0px 0px 2px 0px @yellow;
-
   }
 
   #publish { 
@@ -380,7 +397,7 @@ nav {
       height: 200px;
       padding-top: 40px;
 
-      background-color: @orange;
+      background-color: @green;
       .border(@borderBig);
       
       input {
@@ -437,7 +454,6 @@ nav {
 /*      Flow View      */
 /* ---- ---- ---- ---- */
 .flow {
-  float: right;
   margin-right: 4em;
 }
 
@@ -464,36 +480,20 @@ nav {
     overflow: auto;
 
     background-color: @white;
-    border: 1px solid @teal;
     .borderMedium;
+
+    box-shadow: -1px -1px 1px 0px @shading;
 
     margin-left: 10px;
     min-width: 250px;
-    max-width: 550px;
+    max-width: 400px;
+    min-height: 50px;
+    max-height: 225px;
     cursor: pointer;
   }
 
   .node:hover {
     background-color: @hover;
-    border: 1px solid @teal;
-    .borderMedium;
-  }
-
-  .anchor { 
-    .shadow(0px, 0px, 5px, 5px, @purple);
-  }
-
-
-  h2 {
-    font-size: 20px;
-    font-family: @fontLarge;
-    text-align: center;
-    margin: 10px 0px 5px;
-
-    a { 
-      text-decoration: none;
-      color: @standout;
-    }
   }
 
   .details {
@@ -515,7 +515,7 @@ nav {
   }
   
   p { 
-    margin: 5px 15px 10px;
+    margin: 4px 12px 8px 12px;
   }
 
 
@@ -524,17 +524,19 @@ nav {
   }
   
   textarea { 
-    width: 98%;
+    width: 240px;
     margin: 0px;
-
-    height: 80px;
-    width: 300px;
+    padding: 4px;
 
     resize: none;
     border: 0px;
-    .border(@borderMedium);
-
     outline: none;
+    .border(@borderMedium);
+  }
+
+  .flowReply { 
+    height: 80px;
+    width: 260px;
   }
 
   .iconRack { 
@@ -542,11 +544,6 @@ nav {
     width: 100%;
 
     height: 40px;
-  }
-
-  .flowReply { 
-    width: 320px;
-    height: 100px;
   }
 
   .replyIcon { 
@@ -585,23 +582,23 @@ nav {
     display: inline-block;
     width: 6px;
 
-    border-color: @shading;
+    border-color: @yellow;
     border-left-width: 4px;
-    border-left-style: solid;
+    border-left-style: groove;
   }
 
   .topBracket { 
     top: 50%;
     border-top-left-radius: @borderMedium;
     border-top-width: 3px;
-    border-top-style: solid;
+    border-top-style: groove;
   }
 
   .botBracket { 
     bottom: 50%;
     border-bottom-left-radius: @borderMedium;
     border-bottom-width: 3px;
-    border-bottom-style: solid;
+    border-bottom-style: groove;
   }
 }
 
@@ -1023,36 +1020,6 @@ nav {
   }
 
 }
-
-
-#homeButton { 
-  height: 40px;
-  width: 200px;
-
-  position: absolute;
-  top: 0px;
-  left: 0px; right: 0px;
-  margin: auto;
-
-  background-color: @orange;
-  border-bottom-right-radius: @borderMedium;
-  border-bottom-left-radius: @borderMedium;
-
-  box-shadow: 0px 0px 0px 2px @yellow;
-
-  text-align: center;
-  padding-top: 10px;
-
-  font-size: 30px;
-  font-family: @fontLarge;
-  font-weight: bolder;
-  text-shadow: @shading 2px 2px;
-  letter-spacing: 2px;
-
-  color: @bright; 
-  text-decoration: none;
-}
-
 
 /* ---- ---- ---- ---- */
 /* Animations          */

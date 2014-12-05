@@ -6,16 +6,20 @@ var Topics = function () {
   var topics = [];
   var topicsByKey = {};
 
-  this.addTopic = function (convoset) { 
-    if (topicsByKey[convoset.slug] == undefined) { 
-      topicsByKey[convoset.slug] = convoset;
-      topics.push(convoset);
+  this.addTopic = function (json) { 
+    var slug = toSlug(json.contents);
+
+    if (topicsByKey[slug] == undefined) { 
+      topicsByKey[slug] = json;
+      topics.push(json);
       return true;
     } else { 
       return false
     }
 
   }
+  
+  // TODO: Everything below this point
 
   this.removeTopic = function (key) { 
     delete topicsByKey[key];
@@ -39,18 +43,26 @@ var Topics = function () {
   }
 
   this.getRoots = function () {
-    return topics.map(function (convoset) {
-      return convoset.root;
+    return topics.map(function (json) {
+      return JSON.stringify(json);
     });
   }
 
   this.getRootsInJson = function () { 
-    return JSON.stringify(topics.map(function (convoset) {
-      return convoset.root.toJson();
+    return JSON.stringify(topics.map(function (json) {
+      return json.root.toJson();
     }));
   }
 
   return this;
+}
+
+function toSlug (title) { 
+  return title.toString() 
+              .toLowerCase()
+              .replace(/-+/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/[^a-z0-9-]/g, '');
 }
 
 if (typeof module !== 'undefined') {
