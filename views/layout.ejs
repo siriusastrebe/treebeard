@@ -34,10 +34,9 @@
 
     var IO = io.connect(),
         SESSIONID = findSID(), 
-        LOGIN = {status: 'participant', username: randomUsername()},
-        USERNAMES,
-        TREE;
+        LOGIN = {status: 'participant', username: randomUsername()};
 
+    Syc.connect(IO);
  
     function findSID ()  {
       return $.cookie('connect.sid'); 
@@ -59,7 +58,7 @@
 
 
 </head>
-<body ng-app="convo" ng-controller="KeysController" ng-keydown="keyDown($event)">
+<body ng-app="convo">
 
   <!-- Nav menu -->
   <div ng-controller="NavController" ng-hide="view === 'none'">
@@ -120,26 +119,6 @@
         }
     });
     
-    APP.controller('KeysController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
-        $scope.keyDown = function (ev) { 
-          k = ev.which;
-          // Arrow, WASD, and Vim bindings
-          if (k === 37 || k === 65 || k === 72) 
-            $rootScope.$emit('key', 'left')
-          if (k === 38 || k === 87 || k === 75)
-            $rootScope.$emit('key', 'up');
-          if (k === 39 || k === 76 || k === 68)
-            $rootScope.$emit('key', 'right');
-          if (k === 40 || k === 83 || k === 74)
-            $rootScope.$emit('key', 'down');
- 
-          // Escape key binding
-          if (k === 27)
-            $rootScope.$emit('key', 'esc');
-        }
-    }]);
-
-
     APP.controller('ErrorController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
       $scope.errorShowing = false;
 
@@ -156,12 +135,6 @@
       $scope.continue = function () { 
         $scope.errorShowing = false;
       }
-
-      $rootScope.$on('key', function (event, key) { 
-        if (key === 'esc' && $scope.loginShowing === true) { 
-          $scope.errorShowing = false;
-        }
-      });
     }]);
 
     APP.controller('LoginController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
@@ -170,7 +143,6 @@
       $scope.login = function () { 
          username = $scope.username;
          LOGIN.username = username;
-         USERNAMES.push(username);
          $rootScope.$emit('changedUsername');
          $scope.loginShowing = false;
       };
@@ -183,11 +155,8 @@
         $scope.loginShowing = true;
       });
 
-      $rootScope.$on('key', function (event, key) { 
-        console.log('key ' + key);
-        if (key === 'esc' && $scope.loginShowing === true) { 
-          $scope.loginShowing = false;
-        }
+      $rootScope.$on('hideLogin', function () {
+        $scope.loginShowing = false;
       });
     }]);
 

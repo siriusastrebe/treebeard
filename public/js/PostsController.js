@@ -26,19 +26,38 @@ function branch (json) {
 
 window.$scope;
 
-APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$location', function ($scope, $rootScope, $timeout, $location) {
+APP.controller('PostsController', ['$scope', '$rootScope', '$location', function ($scope, $rootScope, $location) {
   // --------------------------------
   // Defaults
   // --------------------------------
   var PostsController = $scope;
 
   $scope.view = 'flow';
+  $scope.posts = [];
+
+  $scope.pathname = window.location.pathname;
+  $scope.subject = $scope.pathname.split('/')[1];
 
   $scope.root = [];
-  Syc.connect(IO, function () {
-    USERNAMES = Syc.list('usernames');
-    TREE = Syc.list('Tree');
-    $scope.root = Syc.list('Tree')['got']
+
+  Syc.list('Tree', function (root) { 
+    $scope.root = root[$scope.subject];
+
+    $scope.posts = filterPosts(Syc.ancestors($scope.root));
+
+    Syc.watch($scope.root, function (change) { 
+      if (typeof change.change === 'object') {
+        var ancestors = Syc.ancestors(change.change);
+        var newPosts = filterPosts(ancestors);
+        $scope.posts.concat(newPosts);
+
+        $scope.$digest();
+      }
+    }, {recursive: true});
+
+    function filterPosts (objects) { 
+      return objects.filter( function (object) { return (Syc.Type(object) === 'object'); });
+    }
   });
 
   // --------------------------------
@@ -122,44 +141,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$timeout', '$locatio
   $scope.select = function (item) { 
     $scope.action.selection = item;
   }
-
-  $rootScope.$on('key', function (event, key) { 
-    if (typeof document.activeElement.readOnly === 'undefined') { 
-
-      cur = $scope.selectedModel;
-      if (cur) { 
-        if (key === 'left' || key === 'right' || key === 'up') { 
-          if (cur.parent) {
-            if (key === 'up') { 
-              $scope.select(cur.parent, $scope.view);
-            }
-
-            else { 
-              siblings = cur.parent.children;
-              index = siblings.indexOf(cur);
-              
-              if (key === 'left') {
-                target = index - 1;
-                if (target === -1) target += siblings.length;
-              }
-              if (key === 'right') { 
-                target = index + 1;
-                if (target >= siblings.length) target = 0;
-              }
-
-
-              $scope.select(siblings[target], $scope.view);
-            }
-          }
-        }
-        if (key === 'down') {
-          if (cur.children.length >= 1) 
-            $scope.select(cur.children[0]);
-        }
-      }
-    }
-  });
-
   // --------------------------------
   // Search Filter
   // --------------------------------

@@ -13,14 +13,11 @@
   <!--                    -->
 
   <div id="forumView" ng-if="view==='forum'">
-
     <input id="query" type="search" ng-model="search.query"></input>
 
     <ul>
-      <li ng-repeat="convo in posts" ng-include="'forumRenderer'"></li>
+      <li ng-repeat="convo in posts track by convo['syc-object-id']" ng-include="'forumRenderer'"></li>
     </ul>
-
-
 
     <script type="text/ng-template" id="forumRenderer">
       <div class="post slidehide colorhide" ng-hide="convo.filtered" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')">
@@ -114,7 +111,7 @@
 
       <div class="bracket" ng-class="{topBracket: $first, botBracket: $last}"></div>
 
-      <div class="node" ng-class="{selected: action.selection===flowe}" ng-Click="select(flow)">
+      <div class="node" ng-class="{selected: action.selection===flow}" ng-Click="select(flow)">
         <div class="details">
           <h3>{{flow.author}}</h3>
           <h4>{{flow.time}}</h4>

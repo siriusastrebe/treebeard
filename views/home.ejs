@@ -1,24 +1,39 @@
 <script type="text/javascript">
-  APP.controller('TopicsController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
+  APP.controller('TopicsController', ['$scope', '$rootScope', '$location', function ($scope, $rootScope, $location) { 
     $showPublish = false;
 
-    $scope.topicSubmit = function () {
-      var tree = Syc.list('Tree');
+    $scope.tree = Syc.list('Tree', getTree) || [];
+    function getTree (root) { $scope.tree = root; }
 
+    $scope.topicSubmit = function () {
       var branch = {
           author: LOGIN.username,
           contents: $scope.contents,
           children: []
       }
 
-      tree[$scope.title] = [branch]
+      var slug = toSlug($scope.contents)
+
+      $scope.tree[slug] = [branch]
+
+      window.location = slug;
+    }
+
+    function toSlug (str) { 
+      return str.toString()
+                .toLowerCase()
+                .replace(/-+/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '');
     }
 
     $scope.showLogin = function () { 
       $rootScope.$emit('showLogin');
     }
 
-    $scope.roots = tree;
+    $scope.hideLogin = function () {
+      $rootScope.$emit('hideLogin');
+    }
 
   }]);
 </script>
@@ -37,11 +52,11 @@
 
 <div id="homepage" ng-controller="TopicsController">
   <ul id="topics">
-    <li ng-repeat="root in roots">
+    <li ng-repeat="(name, object) in tree">
       <h4>
-        <a href="/{{root.contents}}/">{{root.title}}</a>
+        <a ng-href="/{{name}}/">{{object[0].contents}}</a>
         by
-        {{root.author}}
+        {{object[0].author}}
       </h4>
     </li>
   </ul>
@@ -50,12 +65,10 @@
   <h2 id="publishHeader" class="buttbuddies" ng-click="showPublish = !showPublish">New Topic</h2>
   <h2 id="loginButton" class="buttbuddies" ng-click="showLogin()">Login</h2>
 
-  <div id="publish" ng-show="showPublish">
-    <form id="publishForm" ng-submit="topicSubmit()">
-      <input type='text' ng-model='title' placeholder='Title' />
-      <textarea ng-model='contents' placeholder='Make a bold claim'></textarea>
-      <input type='submit' />
-      <i id="closePublish" class="fa fa-times-circle fa-lg" ng-click="showPublish = false"></i>
+  <div id="publish" ng-show="showPublish" ng-click="showPublish = !showPublish">
+    <form id="publishForm" ng-submit="topicSubmit()" ng-click="$event.stopPropagation()">
+      <textarea ng-model="contents" ng-focus="showPublish" placeholder="Make a bold claim"></textarea>
+      <input type="submit" />
     </form>
   </div>
 
