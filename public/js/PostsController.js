@@ -38,75 +38,26 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', function
   $scope.pathname = window.location.pathname;
   $scope.subject = $scope.pathname.split('/')[1];
 
-  $scope.root = [];
+  $scope.root = [{author: 'Hold your horses', contents: 'Waiting on data...'}];
 
-  Syc.list('Tree', function (root) { 
-    $scope.root = root[$scope.subject];
+  Syc.list($scope.subject, function (root) { 
+    $scope.root = root;
 
-    $scope.posts = filterPosts(Syc.ancestors($scope.root));
+    $scope.posts = determinePosts(Syc.ancestors($scope.root));
 
     Syc.watch($scope.root, function (change) { 
       if (typeof change.change === 'object') {
-        var ancestors = Syc.ancestors(change.change);
-        var newPosts = filterPosts(ancestors);
-        $scope.posts.concat(newPosts);
+        var ancestors = Syc.ancestors(change.change),
+            newPosts = determinePosts(ancestors);
 
+        $scope.posts.concat(newPosts);
         $scope.$digest();
       }
     }, {recursive: true});
 
-    function filterPosts (objects) { 
+    function determinePosts (objects) { 
       return objects.filter( function (object) { return (Syc.Type(object) === 'object'); });
     }
-  });
-
-  // --------------------------------
-  // Testing/Debugging
-  // --------------------------------
-  /*
-  $scope.debugConvo;
-  $scope.debugView = false;
-
-  $scope.$watch( 
-    function () { return DEBUG }, 
-    function (dev, o) { $scope.development = dev }
-  );
-  
-
-  Convos.debug = function () { 
-    $scope.$apply( function () { 
-      $scope.roots = $scope.roots[0].children[0];
-    });
-  }
-
-  $scope.debug = function (convo) { 
-    if ($scope.debugView === false) { 
-      $scope.debugView = true;
-      convo.debug = true;
-      $scope.debugConvo = convo;
-    }
-  }
-
-  $scope.closeDebug = function () { 
-    $scope.debugView = false;
-    $scope.debugConvo = false;
-  }
-  */
-  // --------------------------------
-  // Tree/List/Flow View control
-  // --------------------------------
-  // Triggered on pageload in addition to any url changes.
-  $scope.$on("$locationChangeStart", function (event, next, current) { 
-    if ($location.hash() === 'forum') { 
-      $scope.view = 'forum';
-    }
-    else if ($location.hash() === 'tree') { 
-      $scope.view = 'tree';
-    }
-    else if ($location.hash() === 'flow') {
-      $scope.view = 'flow';
-    }
-    else $scope.view = 'flow';
   });
 
   // --------------------------------
@@ -141,50 +92,43 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', function
   $scope.select = function (item) { 
     $scope.action.selection = item;
   }
+
+
+  // --------------------------------
+  // Tree/List/Flow View control
+  // --------------------------------
+  // Triggered on pageload in addition to any url changes.
+  $scope.$on("$locationChangeStart", function (event, next, current) { 
+    if ($location.hash() === 'forum') { 
+      $scope.view = 'forum';
+    }
+    else if ($location.hash() === 'tree') { 
+      $scope.view = 'tree';
+    }
+    else if ($location.hash() === 'flow') {
+      $scope.view = 'flow';
+    }
+    else $scope.view = 'flow';
+  });
+
   // --------------------------------
   // Search Filter
   // --------------------------------
-  /*
   $scope.search = {query: ""};
 
-  $scope.$watch('search', 
-      function (newVal, oldVal) { 
-        $scope.posts.forEach( function (post) { 
-          if ($scope.convoFilter(post))  
-            post.filtered = false;
-          else
-            post.filtered = true;
-        });
-      },
-      true
-  );
+  $scope.postFilter = function (post) { 
+    var query = $scope.search.query.toLowerCase();
 
-  $scope.convoFilter = function (convo) { 
-    // Generally you would expect the filter to be explicitly declared
-    // inline. Unfortunately, if I do this,  convoFilter is called every 
-    // time there's a digest cycle in angular. With large datasets, that's 
-    // incredibly inefficient. Not to mention, a digest cycle is called on 
-    // each mouseenter and mouseleave of a forumView post, increasing client
-    // side overhead by a huge margin through normal use. I'm pissed.
-    //
-    // Anyways, I've implemented a $watch on 'search' so that it only runs
-    // a check on the entire post dataset when you update the search query.
-    included = false;
-
-    query = $scope.search.query.toLowerCase();
-    
-    // For efficiency
     if (query.length === 0) { return true };
 
-    if (convo.contents.toLowerCase().indexOf(query) > -1 ||
-        convo.author.toLowerCase().indexOf(query) > -1 ||
-        convo.time === query) {
-      included = true;
+    if (post.contents.toLowerCase().indexOf(query) > -1 ||
+        post.author.toLowerCase().indexOf(query) > -1 ||
+        post.time === query) {
+      return true;
     }
 
-    return included;
+    return false;
   }
-  */
 }]);
 
 

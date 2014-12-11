@@ -16,24 +16,21 @@
     <input id="query" type="search" ng-model="search.query"></input>
 
     <ul>
-      <li ng-repeat="convo in posts track by convo['syc-object-id']" ng-include="'forumRenderer'"></li>
+      <li class="repeated-item" ng-repeat="post in posts | filter:postFilter track by post['syc-object-id']"  ng-include="'forumRenderer'"></li>
     </ul>
 
     <script type="text/ng-template" id="forumRenderer">
-      <div class="post slidehide colorhide" ng-hide="convo.filtered" id="forum{{convo.token}}" ng-class="{selected: convo.selected}" ng-Click="select(convo, 'forum')">
-
-        <h2 ng-if="convo.type === 'Root'"><a href="{{convo.link}}">{{convo.title}}</a></h2>
+      <div class="post slidehide colorhide" ng-class="{selected: action.selection===post}" ng-Click="select(post)">
 
         <div class="details">
-          <h3>{{convo.author}}</h3>
-          <h4>{{convo.time}}</h4>
+          <h3>{{post.author}}</h3>
+          <h4>{{post.time}}</h4>
         </div>
 
-        <p class="quote" ng-if="convo.type === 'Branch'" ng-Click="select(convo.parent, 'forum'); $event.stopPropagation()">{{convo.parent.contents | limitTo:120}}...</p>
-        <p>{{convo.contents}}</p>
+        <p>{{post.contents}}</p>
 
-        <form ng-submit="reply(convo)" class="forumReply slideableH" ng-slide="convo.selected">
-          <textarea ng-model="convo.response" ng-enter="reply(convo)"></textarea>
+        <form ng-submit="reply(post)" class="forumReply slideableH" ng-slide="action.selection===post">
+          <textarea ng-model="action.message" ng-enter="reply(convo)"></textarea>
         </form>
 
       </div>
@@ -45,11 +42,13 @@
   <!--      Tree View      -->
   <!--                     -->
 
+  <!--
   <div class="treeView" ng-if="view==='tree'">
     <ul>
       <li ng-repeat="convo in root" ng-include="'treeRenderer'"></li>
     </ul>
   </div>
+  -->
 
 
   <script type="text/ng-template" id="treeRenderer">
@@ -151,11 +150,13 @@
   <!--      Debug info      -->
   <!--                      -->
 
+  <!--
   <div class="debugView" ng-show="debugView" ng-click="closeDebug()">
     <ul>
       <li ng-repeat="convo in posts" ng-include="'debugRenderer'"></li>
     </ul>
   </div>
+  -->
 
 
   <script type="text/ng-template" id="debugRenderer">

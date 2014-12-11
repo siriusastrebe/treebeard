@@ -101,8 +101,7 @@ app.get(sycExternalPath, function (req, res) {
 gotJson = {
     contents: "Family Tree of Westeros"
   , author: "Stroobles"
-  , title: "GoT family tree"
-  , link: "http://img.timeinc.net/time/2012/t100poll/t100poll_martin_george_rr.jpg"
+  , children: []
 }
 
 var lannister = { contents: "House Lannister", author: 'sirius', children: [
@@ -220,14 +219,44 @@ var usernames = [];
 syc.sync('usernames', usernames); 
 
 var roots = {};
-roots['got'] = [gotJson];
+var got = [gotJson];
+roots['got'] = got;
 syc.sync('Tree', roots);
+syc.sync('got', got);
 
 syc.verify(usernames, function (changes, socket) { 
   if (typeof changes.change === 'string') {
     return true
   }
 });
+
+function postVerifier (change) { 
+  if (syc.type(change) !== 'object') return false;
+  if (typeof change.author !== 'string') return false;
+  if (typeof change.contents !== 'string') return false;
+  if (syc.type(change.children) !== 'array') return false;
+  for (var property in change) { 
+    if (property !== 'author' && property !== 'contents' && property !== 'children') {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+syc.verify(roots, function (changes, socket) { 
+  if (syc.type(changes.change) !== 'array') return false;
+  return postVerifier(changes.change[0]);
+});
+
+
+syc.watch(roots, function (changes, socket) { 
+  var topicName = changes.property,
+      topicRoot = changes.change;
+  
+  Syc.sync(topicName, topicRoot) 
+});
+
 
 
 // WebSocket
