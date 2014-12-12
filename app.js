@@ -245,6 +245,7 @@ function postVerifier (change) {
 }
 
 syc.verify(roots, function (changes, socket) { 
+  if (changes.type !== 'add') return false;
   if (syc.type(changes.change) !== 'array') return false;
   return postVerifier(changes.change[0]);
 });
