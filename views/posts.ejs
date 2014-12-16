@@ -13,14 +13,14 @@
   <!--                    -->
 
   <div id="forumView" ng-if="view==='forum'">
-    <input id="query" type="search" ng-model="search.query"></input>
+    <input id="query" type="search" ng-change="" ng-model="search.query"></input>
 
     <ul>
-      <li class="repeated-item" ng-repeat="post in posts | filter:postFilter track by post['syc-object-id']"  ng-include="'forumRenderer'"></li>
+      <li class="forumNode" ng-repeat="post in posts | filter:postFilter track by post['syc-object-id']"  ng-include="'forumRenderer'"></li>
     </ul>
 
     <script type="text/ng-template" id="forumRenderer">
-      <div class="post slidehide colorhide" ng-class="{selected: action.selection===post}" ng-Click="select(post)">
+      <div class="post" ng-class="{selected: action.selection===post}" ng-Click="select(post)">
 
         <div class="details">
           <h3>{{post.author}}</h3>
@@ -29,8 +29,8 @@
 
         <p>{{post.contents}}</p>
 
-        <form ng-submit="reply(post)" class="forumReply slideableH" ng-slide="action.selection===post">
-          <textarea ng-model="action.message" ng-enter="reply(convo)"></textarea>
+        <form ng-submit="reply(post)" class="forumReply replyBox" ng-slide="action.selection===post">
+          <textarea ng-model="action.message" ng-focus="action.selection===post" ng-enter="reply(post)"></textarea>
         </form>
 
       </div>
@@ -104,7 +104,6 @@
     </ul>
   </div>
 
-
   <script type="text/ng-template" id="flowRenderer">
   <div class="flowView">
 
@@ -116,15 +115,14 @@
           <h4>{{flow.time}}</h4>
         </div>
         <p>{{flow.contents}}</p>
-        <div ng-slide="action.selection===flow" class="iconRack slideableH">
+        <div ng-slide="action.selection===flow" class="iconRack">
           <i ng-click="openReply(flow)" class="replyIcon fa fa-comment-o fa-lg"></i>
-          <i ng-click="debug(flow)" ng-show="development" class="debugIcon fa fa-question fa-lg"></i>
         </div>
       </div>
 
       <ul class="children">
-        <li class="animate-repeat" ng-repeat="flow in flow.children track by flow['syc-object-id']" ng-include="'flowRenderer'"></li>
-        <li class="flowReply slideable" ng-slide="action.replying===flow" ng-include="'flowReplyRenderer'"></li>
+        <li class="flowNode" ng-repeat="flow in flow.children track by flow['syc-object-id']" ng-include="'flowRenderer'"></li>
+        <li class="flowReply" ng-slide="action.replying===flow" ng-include="'flowReplyRenderer'"></li>
       </ul>
     
     </div>

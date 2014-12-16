@@ -98,37 +98,40 @@ app.get(sycExternalPath, function (req, res) {
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ = 
 // Datasets
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
+var a = "Batar Jr";
+var b = "Kuviera, the Great Uniter";
+
 gotJson = {
     contents: "Family Tree of Westeros"
-  , author: "Stroobles"
+  , author: b
   , children: []
 }
 
-var lannister = { contents: "House Lannister", author: 'sirius', children: [
+var lannister = { contents: "House Lannister", author: a, children: [
   { contents: "Tywin Lannister", author: 'sirius', children: [
-    { contents: "Cercei Lannister (crazy)", author: 'sirius', children: [
-      { contents: "Joffery Baratheon", author: 'sirius' },
-      { contents: "Myrcella Baratheon", author: 'sirius' },
-      { contents: "Tommen Baratheon", author: 'sirius' },
+    { contents: "Cercei Lannister (crazy)", author: a, children: [
+      { contents: "Joffery Baratheon", author: a },
+      { contents: "Myrcella Baratheon", author: a },
+      { contents: "Tommen Baratheon", author: a },
     ]},
-    { contents: "Jamie Lannister", author: 'sirius' },
-    { contents: "Tyrion Lannister", author: 'sirius' },
+    { contents: "Jamie Lannister", author: a },
+    { contents: "Tyrion Lannister", author: a },
   ]},
-  { contents: "Kevan Lannister", author: 'sirius' },
+  { contents: "Kevan Lannister", author: a },
 ]}
 
-var stark = { contents: "House Stark", author: 'sirius', children: [
-  { contents: "Rickard Stark", author: 'sirius', children: [ 
-    { contents: "Eddard Stark", author: 'sirius', children: [
-      { contents: "Rob Stark", author: 'sirius' },
-      { contents: "Sansa Stark", author: 'sirius' },
-      { contents: "Arya Stark", author: 'sirius' },
-      { contents: "Bran Stark", author: 'sirius' },
-      { contents: "Rickon Stark", author: 'sirius' },
-      { contents: "Jon Snow (knows nothing)", author: 'sirius' },
+var stark = { contents: "House Stark", author: a, children: [
+  { contents: "Rickard Stark", author: a, children: [ 
+    { contents: "Eddard Stark", author: a, children: [
+      { contents: "Rob Stark", author: a },
+      { contents: "Sansa Stark", author: a },
+      { contents: "Arya Stark", author: a },
+      { contents: "Bran Stark", author: a },
+      { contents: "Rickon Stark", author: a },
+      { contents: "Jon Snow (knows nothing)", author: a },
     ]},
-    { contents: "Benjen Stark", author: 'sirius' },
-    { contents: "Brandon Stark", author: 'sirius' },
+    { contents: "Benjen Stark", author: a },
+    { contents: "Brandon Stark", author: a },
   ]},
 ]}
 
@@ -232,14 +235,14 @@ syc.verify(usernames, function (changes, socket) {
 
 function postVerifier (change) { 
   if (syc.type(change) !== 'object') return false;
-  if (typeof change.author !== 'string') return false;
-  if (typeof change.contents !== 'string') return false;
-  if (syc.type(change.children) !== 'array') return false;
   for (var property in change) { 
     if (property !== 'author' && property !== 'contents' && property !== 'children') {
       return false;
     }
   }
+  if (typeof change.author !== 'string') return false;
+  if (typeof change.contents !== 'string') return false;
+  if (syc.type(change.children) !== 'array') return false;
 
   return true;
 }
@@ -256,6 +259,15 @@ syc.watch(roots, function (changes, socket) {
       topicRoot = changes.change;
   
   Syc.sync(topicName, topicRoot) 
+
+  Syc.verify(topicRoot, function (c) { 
+    console.log(c);
+    if (Syc.Type(c.variable) !== 'array') 
+      return false;
+    if (c.type !== 'add')
+      return false
+    return postVerifier (c.change)
+  }, {recursive: true});
 });
 
 

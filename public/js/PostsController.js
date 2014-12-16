@@ -26,7 +26,7 @@ function branch (json) {
 
 window.$scope;
 
-APP.controller('PostsController', ['$scope', '$rootScope', '$location', function ($scope, $rootScope, $location) {
+APP.controller('PostsController', ['$scope', '$rootScope', '$location', '$timeout', function ($scope, $rootScope, $location, $timeout) {
   // --------------------------------
   // Defaults
   // --------------------------------
@@ -50,7 +50,9 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', function
         var ancestors = Syc.ancestors(change.change),
             newPosts = determinePosts(ancestors);
 
-        $scope.posts.concat(newPosts);
+        console.log(newPosts);
+
+        $scope.posts.push.apply($scope.posts, newPosts);
         $scope.$digest();
       }
     }, {recursive: true});
@@ -67,7 +69,8 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', function
   $scope.action = { 
       replying: undefined,
       selection: undefined,
-      message: ''
+      recent: undefined,
+      message: '',
   }
 
   $scope.reply = function (parent) {
@@ -82,7 +85,11 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', function
 
     $scope.action.replying = undefined;
     $scope.action.selection = undefined;
-    $scope.action.message = ''
+    $scope.action.message = '';
+    $scope.action.recent = item;
+    $timeout( function () { 
+      $scope.action.recent = undefined;
+    }, 100);
   }
 
   $scope.openReply = function (item) { 
@@ -115,6 +122,10 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', function
   // Search Filter
   // --------------------------------
   $scope.search = {query: ""};
+  $scope.filter = function () {  
+    var query = $scope.search.query;
+
+  }
 
   $scope.postFilter = function (post) { 
     var query = $scope.search.query.toLowerCase();
@@ -156,6 +167,7 @@ APP.directive('ngFocus', function ($timeout) {
       scope.$watch(attrs.ngFocus, function (value) { 
         if (value === true) { 
           $timeout(function () { 
+            console.log('focusing', element[0]);
             element[0].focus();
           }, 100);
 //          scope[attrs.focusMe] = false;
@@ -170,11 +182,23 @@ APP.directive('ngSlide', function ($animate, $timeout) {
     link: function (scope, element, attrs) { 
       scope.$watch(attrs.ngSlide, function (ngSlide) { 
         if (ngSlide) 
-          $animate.removeClass(element, 'slide');
-        else 
           $animate.addClass(element, 'slide');
+        else 
+          $animate.removeClass(element, 'slide');
       });
     }
   } 
 });
 
+APP.directive('ngGlide', function ($animate, $timeout) { 
+  return {
+    link: function (scope, element, attrs) { 
+      scope.$watch(attrs.ngSlide, function (ngSlide) { 
+        if (ngSlide) 
+          $animate.removeClass(element, 'flowSlide');
+        else 
+          $animate.addClass(element, 'flowSlide');
+      });
+    }
+  } 
+});

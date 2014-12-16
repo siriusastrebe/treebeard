@@ -382,9 +382,8 @@ nav #homeButton {
   margin-left: 10px;
   min-width: 250px;
   max-width: 400px;
-  min-height: 50px;
-  max-height: 225px;
   cursor: pointer;
+  min-height: 50px;
 }
 .flowView .node:hover {
   box-shadow: 1px 1px 1px 0px #888888;
@@ -422,13 +421,29 @@ nav #homeButton {
   -webkit-border-radius: 10px;
 }
 .flowView .flowReply {
-  height: 80px;
+  height: 0px;
   width: 260px;
+  overflow: hidden;
+  -webkit-transition: 0.4s height ease;
+  -moz-transition: 0.4s height ease;
+  -o-transition: 0.4s height ease;
+  transition: 0.4s height ease;
+}
+.flowView .flowReply.slide {
+  height: 80px !important;
 }
 .flowView .iconRack {
   position: relative;
   width: 100%;
-  height: 40px;
+  height: 0px;
+  overflow: hidden;
+  -webkit-transition: 0.4s height ease;
+  -moz-transition: 0.4s height ease;
+  -o-transition: 0.4s height ease;
+  transition: 0.4s height ease;
+}
+.flowView .iconRack.slide {
+  height: 40px !important;
 }
 .flowView .replyIcon {
   position: absolute;
@@ -488,6 +503,9 @@ nav #homeButton {
   margin-bottom: 50px;
   min-width: 300px;
   width: 60%;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
 }
 #forumView .post:hover .quote {
   height: 1.5em;
@@ -569,10 +587,19 @@ nav #homeButton {
   cursor: pointer;
 }
 #forumView .post .forumReply {
-  height: 60px;
+  height: 0px;
+  overflow: hidden;
+  -webkit-transition: 0.4s height ease;
+  -moz-transition: 0.4s height ease;
+  -o-transition: 0.4s height ease;
+  transition: 0.4s height ease;
 }
 #forumView .post .forumReply textarea {
   height: 40px;
+  padding: 0px 4px;
+}
+#forumView .post .forumReply.replyBox.slide {
+  height: 60px !important;
 }
 #forumView .post ul {
   list-style-type: none;
@@ -849,117 +876,139 @@ nav #homeButton {
 .hidden {
   display: none;
 }
-.slide {
-  overflow: hidden;
-  height: 0 !important;
-  width: 0 !important;
-}
-.slideableH {
-  overflow: hidden;
-  -webkit-transition: height 300ms ease;
-  -moz-transition: height 300ms ease;
-  -o-transition: height 300ms ease;
-  transition: height 300ms ease;
-}
-.slideableW {
-  overflow: hidden;
-  -webkit-transition: width 300ms ease;
-  -moz-transition: width 300ms ease;
-  -o-transition: width 300ms ease;
-  transition: width 300ms ease;
-}
-.slideable {
-  overflow: hidden;
-  -webkit-transition: width 300ms ease, height 300ms ease;
-  -moz-transition: width 300ms ease, height 300ms ease;
-  -o-transition: width 300ms ease, height 300ms ease;
-  transition: width 300ms ease, height 300ms ease;
-}
-/* Using max-height as a transition is a trick when you don't want to specify a height on the element being transitioned. */
-.slidehide {
-  max-height: 2000px;
-  opacity: 1;
-  transition: max-height 0.75s ease-in-out, opacity 0.75s ease-in-out;
-}
-.slidehide.ng-hide {
-  opacity: 0!important;
-  max-height: 0px!important;
-  padding: 0px!important;
-  margin: 0px!important;
-  border: 0px!important;
-  display: block!important;
-}
-.ng-hide.colorhide {
-  background-color: #fada5e !important;
-}
-/*
-  We're using CSS transitions for when
-    the enter and move events are triggered
-      for the element that has the .repeated-item
-        class
-        */
-.repeated-item.ng-enter,
-.repeated-item.ng-move {
-  -webkit-transition: 0.5s linear all;
-  -moz-transition: 0.5s linear all;
-  -o-transition: 0.5s linear all;
-  transition: 0.5s linear all;
+/* ---- ---- ---- ---- */
+/* Forum Posts         */
+/* ---- ---- ---- ---- */
+.forumNode.ng-enter,
+.forumNode.ng-move {
+  -webkit-transition: 0.5s all ease;
+  -moz-transition: 0.5s all ease;
+  -o-transition: 0.5s all ease;
+  transition: 0.5s all ease;
   opacity: 0;
 }
-/*
-                   The ng-enter-active and ng-move-active
-                    are where the transition destination properties
-                     are set so that the animation knows what to
-                      animate.
-                      */
-.repeated-item.ng-enter.ng-enter-active,
-.repeated-item.ng-move.ng-move-active {
+.forumNode.ng-leave .post {
+  background-color: #fada5e !important;
+}
+.forumNode.ng-enter.ng-enter-active,
+.forumNode.ng-move.ng-move-active {
   opacity: 1;
 }
-/*
-                          We're using CSS keyframe animations for when
-                            the leave event is triggered for the element
-                              that has the .repeated-item class
-                              */
-.repeated-item.ng-leave {
-  -webkit-animation: 0.5s my_animation;
-  -moz-animation: 0.5s my_animation;
-  -o-animation: 0.5s my_animation;
-  animation: 0.5s my_animation;
+.forumNode.ng-leave {
+  -webkit-animation: 1.0s postanimation;
+  -moz-animation: 1.0s postanimation;
+  -o-animation: 1.0s postanimation;
+  animation: 1.0s postanimation;
 }
-@keyframes my_animation {
+@keyframes postanimation {
+  from {
+    opacity: 1;
+  }
+  to {
+    height: 0px;
+    opacity: 0;
+  }
+}
+@-webkit-keyframes postanimation {
+  from {
+    opacity: 1;
+  }
+  to {
+    height: 0px;
+    opacity: 0;
+  }
+}
+@-moz-keyframes postanimation {
   from {
     opacity: 1;
   }
   to {
     opacity: 0;
+    height: 0px;
   }
 }
-/*
-                                            Unfortunately each browser vendor requires
-                                              its own definition of keyframe animation code...
-                                              */
-@-webkit-keyframes my_animation {
+@-o-keyframes postanimation {
   from {
     opacity: 1;
   }
   to {
+    height: 0px;
     opacity: 0;
   }
 }
-@-moz-keyframes my_animation {
+/* ---- ---- ---- ---- */
+/* Reply Slide Box     */
+/* ---- ---- ---- ---- */
+.replyBox {
+  height: 0px;
+  -webkit-transition: 0.4s max-height ease;
+  -moz-transition: 0.4s max-height ease;
+  -o-transition: 0.4s max-height ease;
+  transition: 0.4s max-height ease;
+}
+.replyBox.slide {
+  height: 60px;
+}
+/* ---- ---- ---- ---- */
+/* Flow Node Addition  */
+/* ---- ---- ---- ---- */
+.flowNode.ng-enter,
+.flow.ng-move {
+  -webkit-transition: 0.5s all ease;
+  -moz-transition: 0.5s all ease;
+  -o-transition: 0.5s all ease;
+  transition: 0.5s all ease;
+  opacity: 0;
+  max-height: 0px;
+}
+.flowNode.ng-enter.ng-enter-active,
+.flowNode.ng-move.ng-move-active {
+  opacity: 1;
+  max-height: 225px;
+}
+.flowNode.ng-leave {
+  -webkit-animation: 1.0s postanimation;
+  -moz-animation: 1.0s postanimation;
+  -o-animation: 1.0s postanimation;
+  animation: 1.0s postanimation;
+}
+@keyframes postanimation {
   from {
     opacity: 1;
+    max-height: 225px;
   }
   to {
+    max-height: 0px;
     opacity: 0;
   }
 }
-@-o-keyframes my_animation {
+@-webkit-keyframes postanimation {
   from {
     opacity: 1;
+    max-height: 225px;
   }
   to {
+    max-height: 0px;
+    opacity: 0;
+  }
+}
+@-moz-keyframes postanimation {
+  from {
+    opacity: 1;
+    max-height: 225px;
+  }
+  to {
+    opacity: 0;
+    max-height: 0px;
+  }
+}
+@-o-keyframes postanimation {
+  from {
+    opacity: 1;
+    max-height: 225px;
+  }
+  to {
+    max-height: 0px;
     opacity: 0;
   }
 }
