@@ -512,7 +512,7 @@ nav #homeButton {
 }
 #forumView .post {
   width: 100%;
-  margin: 1px 0px 1px 0px;
+  margin: 0px 0px 0px 0px;
   padding: 0px;
   overflow: auto;
   background-color: #ffffff;

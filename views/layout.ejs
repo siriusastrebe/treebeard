@@ -73,7 +73,7 @@
         </div>
       </a>
       <div id="views">
-        <a ng-href="##tree"><i class="fa fa-sitemap fa-3x" ng-class="{selected:view==='tree'}"></i></a>
+              <!--        <a ng-href="##tree"><i class="fa fa-sitemap fa-3x" ng-class="{selected:view==='tree'}"></i></a> -->
         <a ng-href="##flow"><i class="fa fa-leaf fa-3x" ng-class="{selected: view==='flow'}"></i></a>
         <a ng-href="##forum"><i class="fa fa-align-justify fa-3x" ng-class="{selected: view==='forum'}"></i></a>
       </div>
@@ -122,16 +122,6 @@
     
     APP.controller('ErrorController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
       $scope.errorShowing = false;
-
-      IO.on('error', function (data) { 
-        $scope.$apply( function () { 
-          if (data.msg !== 'undefined') 
-            $scope.errorMessage = data.msg;
-          else
-            $scope.errorMessage = data;
-          $scope.errorShowing = true;
-        });
-      });
 
       $scope.continue = function () { 
         $scope.errorShowing = false;
