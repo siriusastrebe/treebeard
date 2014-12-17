@@ -233,7 +233,7 @@ syc.verify(usernames, function (changes, socket) {
   }
 });
 
-function postVerifier (change) { 
+function newPostVerifier (change) { 
   if (syc.type(change) !== 'object') return false;
   for (var property in change) { 
     if (property !== 'author' && property !== 'contents' && property !== 'children') {
@@ -247,11 +247,14 @@ function postVerifier (change) {
   return true;
 }
 
-syc.verify(roots, function (changes, socket) { 
+function addingPostsVerifier (changes, socket) { 
+        console.log('adder');
   if (changes.type !== 'add') return false;
   if (syc.type(changes.change) !== 'array') return false;
-  return postVerifier(changes.change[0]);
-});
+  return newPostVerifier(changes.change[0]);
+}
+
+syc.verify(roots, addingPostsVerifier);
 
 
 syc.watch(roots, function (changes, socket) { 
@@ -260,14 +263,7 @@ syc.watch(roots, function (changes, socket) {
   
   Syc.sync(topicName, topicRoot) 
 
-  Syc.verify(topicRoot, function (c) { 
-    console.log(c);
-    if (Syc.Type(c.variable) !== 'array') 
-      return false;
-    if (c.type !== 'add')
-      return false
-    return postVerifier (c.change)
-  }, {recursive: true});
+  Syc.verify(topicRoot, addingPostsVerifier, {recursive: true});
 });
 
 

@@ -94,8 +94,8 @@
   <!-- Login -->
   <div ng-controller="LoginController" ng-show='loginShowing' id="login" ng-click="hideLogin()">
     <form ng-submit="login()" ng-click="$event.stopPropagation()">
-      <input type="text" ng-model='username' placeholder="Pick a username" />
-      <input type='submit' value="Login"></input><i class="fa fa-key" id="key"></i>
+      <input id="username" type="text" ng-model='username' placeholder="Pick a username" />
+      <input id="loginbutton" type='submit' value="Login"></input>
     </form>
   </div>
 
