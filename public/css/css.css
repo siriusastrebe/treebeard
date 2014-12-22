@@ -23,7 +23,6 @@
 /* Background          */
 /* ---- ---- ---- ---- */
 html {
-  background: url('http://i.imgur.com/LCtQiMW.jpg');
   background-attachment: fixed;
   background-position: center center;
 }
@@ -93,6 +92,7 @@ header #banner {
 header #slogan {
   font-size: 20px;
   font-family: verdana;
+  text-shadow: 0px 0px 3px #fff;
 }
 footer {
   height: 150px;
@@ -285,6 +285,7 @@ nav #homeButton {
   color: #55dd88;
   font-weight: bolder;
   text-decoration: none;
+  text-shadow: 0px 0px 10px #FFF;
 }
 #homepage #topics li {
   margin: 12px;
@@ -624,16 +625,16 @@ nav #homeButton {
 .treeView {
   position: relative;
   white-space: nowrap;
-  display: table-cell;
-  width: 100%;
-}
-.treeView .children li {
-  display: inline-block;
-  vertical-align: top;
 }
 .treeView .children {
   padding-left: 5px;
   padding-right: 5px;
+  text-align: center;
+}
+.treeView .children li {
+  display: inline-block;
+  vertical-align: top;
+  text-align: left;
 }
 .treeView .node {
   white-space: normal;
@@ -964,10 +965,10 @@ nav #homeButton {
 /* ---- ---- ---- ---- */
 .flowNode.ng-enter,
 .flow.ng-move {
-  -webkit-transition: 0.5s all ease;
-  -moz-transition: 0.5s all ease;
-  -o-transition: 0.5s all ease;
-  transition: 0.5s all ease;
+  -webkit-transition: 0.5s all ease-in;
+  -moz-transition: 0.5s all ease-in;
+  -o-transition: 0.5s all ease-in;
+  transition: 0.5s all ease-in;
   opacity: 0;
   max-height: 0px;
 }

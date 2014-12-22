@@ -227,13 +227,8 @@ roots['got'] = got;
 syc.sync('Tree', roots);
 syc.sync('got', got);
 
-syc.verify(usernames, function (changes, socket) { 
-  if (typeof changes.change === 'string') {
-    return true
-  }
-});
-
-function newPostVerifier (change) { 
+// Syc Verifiers
+function postObjectVerifier (change) { 
   if (syc.type(change) !== 'object') return false;
   for (var property in change) { 
     if (property !== 'author' && property !== 'contents' && property !== 'children') {
@@ -243,28 +238,42 @@ function newPostVerifier (change) {
   if (typeof change.author !== 'string') return false;
   if (typeof change.contents !== 'string') return false;
   if (syc.type(change.children) !== 'array') return false;
-
+  if (change.children.length !== 0) return false;
   return true;
 }
 
-function addingPostsVerifier (changes, socket) { 
-        console.log('adder');
+function childrenArrayVerifier (changes, socket) { 
   if (changes.type !== 'add') return false;
-  if (syc.type(changes.change) !== 'array') return false;
-  return newPostVerifier(changes.change[0]);
+  if (syc.type(changes.variable) !== 'array') return false;
+  if (syc.type(changes.change) !== 'object') return false;
+  return postObjectVerifier(changes.change);
 }
 
-syc.verify(roots, addingPostsVerifier);
+// Verify calls
+syc.verify(roots, function (changes) {
+  if (changes.type !== 'add') return false;
+  if (syc.type(changes.change) !== 'array') return false;
+  for (var index in changes.changes) { 
+    if (postObjectVerifier(changes.changes[index]) === false); 
+      return false;
+  }
+  return true
+});
 
+syc.verify(usernames, function (changes, socket) { 
+  return (typeof changes.change === 'string');
+});
 
 syc.watch(roots, function (changes, socket) { 
   var topicName = changes.property,
       topicRoot = changes.change;
-  
+ 
   Syc.sync(topicName, topicRoot) 
 
-  Syc.verify(topicRoot, addingPostsVerifier, {recursive: true});
+  Syc.verify(topicRoot, childrenArrayVerifier, {recursive: true});
 });
+
+
 
 
 

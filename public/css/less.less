@@ -49,7 +49,6 @@
 /* Background          */
 /* ---- ---- ---- ---- */
 html {  
-  background: url('http://i.imgur.com/LCtQiMW.jpg'); 
   background-attachment: fixed;
   background-position: center center;
 } 
@@ -136,6 +135,7 @@ header {
   #slogan { 
     font-size: 20px;
     font-family: @fontText;
+    text-shadow: 0px 0px 3px #fff;
   }
 }
 
@@ -340,7 +340,7 @@ nav {
 /* ---- ---- ---- ---- */
 #homepage { 
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.90);
   margin: auto;
   .border(@borderBig);
   box-shadow: -1px -1px 1px 0px @shading;
@@ -362,6 +362,7 @@ nav {
       color: @darkTeal;
       font-weight: bolder;
       text-decoration: none;
+      text-shadow: 0px 0px 10px #FFF;
     }
 
     li {
@@ -1131,10 +1132,10 @@ nav {
 /* Flow Node Addition  */
 /* ---- ---- ---- ---- */
 .flowNode.ng-enter, .flow.ng-move {
-  -webkit-transition: 0.5s all ease;
-     -moz-transition: 0.5s all ease;
-       -o-transition: 0.5s all ease;
-          transition: 0.5s all ease;
+  -webkit-transition: 0.5s all ease-in;
+     -moz-transition: 0.5s all ease-in;
+       -o-transition: 0.5s all ease-in;
+          transition: 0.5s all ease-in;
   opacity: 0;
   max-height: 0px;
 }

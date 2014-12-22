@@ -45,12 +45,14 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', '$timeou
 
     $scope.posts = determinePosts(Syc.ancestors($scope.root));
 
+    $scope.$digest();
+
     Syc.watch($scope.root, function (change) { 
-      if (typeof change.change === 'object') {
+      if (change.type === 'delete') { 
+        $scope.$digest();
+      } else if (typeof change.change === 'object') {
         var ancestors = Syc.ancestors(change.change),
             newPosts = determinePosts(ancestors);
-
-        console.log(newPosts);
 
         $scope.posts.push.apply($scope.posts, newPosts);
         $scope.$digest();
@@ -167,7 +169,6 @@ APP.directive('ngFocus', function ($timeout) {
       scope.$watch(attrs.ngFocus, function (value) { 
         if (value === true) { 
           $timeout(function () { 
-            console.log('focusing', element[0]);
             element[0].focus();
           }, 100);
 //          scope[attrs.focusMe] = false;

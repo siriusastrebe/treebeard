@@ -18,11 +18,50 @@
   <script type='text/javascript' src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
   <script type='text/javascript' src="//cdn.jsdelivr.net/jquery.cookie/1.4.0/jquery.cookie.js"></script>
   <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.js'></script>
-  <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.3/angular-animate.min.js'></script>
+  <script type='text/javascript' src='/js/angular-animate.min.js'></script>
   <script type='text/javascript' src="/socket.io/socket.io.js"></script>
   <script type='text/javascript' src="/syc.js"></script>
 
   <script type="text/javascript">
+    var backgrounds = [
+        'http://i.imgur.com/TVwCP.jpg',
+        'http://i.imgur.com/1ZJQnuL.jpg',
+        'http://i.imgur.com/8WprBhQ.jpg',
+        'http://i.imgur.com/Zy1rW.jpg',
+        'http://i.imgur.com/Z7Y7fTM.jpg',
+        'http://i.imgur.com/PPJKikt.jpg',
+        'http://i.imgur.com/DWQS1im.jpg',
+        'http://i.imgur.com/RmMCbpb.jpg',
+        'http://fc07.deviantart.net/fs71/f/2014/323/0/b/sail_above_the_clouds_by_midrevv-d86tadm.jpg',
+        'http://i.imgur.com/xnvqOit.jpg',
+        'http://i.imgur.com/DypwXfo.jpg',
+        'http://i.imgur.com/8iwkGEs.jpg',
+        'http://i.imgur.com/9Y0b3qH.jpg',
+        'http://i.imgur.com/ksFHUPN.jpg',
+        'http://i.imgur.com/oE1eyOw.jpg',
+        'http://i.imgur.com/0J0Qua2.jpg',
+        'http://i.imgur.com/krp70Wt.jpg',
+        'http://i.imgur.com/G0EZOCZ.jpg',
+        'http://i.imgur.com/QiYKWOh.jpg',
+        'http://i.imgur.com/lbpvXmZ.jpg',
+        'http://i.imgur.com/hHQfmfJ.jpg',
+        'http://i.imgur.com/52x3bit.jpg',
+        'http://i.imgur.com/QIwxHKW.jpg',
+        'http://i.imgur.com/BvV0fBj.jpg',
+        'http://www.desktopbackgrounds.me/wp-content/uploads/2014/05/Bamboo-Forest-Kyoto-Wallpaper.jpg',
+        'http://i.imgur.com/gsLu1V3.jpg',
+        'http://i.imgur.com/02StyWw.jpg',
+        'http://i.imgur.com/dMiqNBT.jpg',
+        'http://i.imgur.com/2uCdTHA.jpg',
+        'http://i.imgur.com/YxGwP4h.jpg',
+        'http://i.imgur.com/nxHsemC.jpg',
+        'http://i.imgur.com/QWocqWC.jpg',
+    ];
+
+    var h = document.getElementsByTagName("html")[0];
+    var i = Math.floor(Math.random()*backgrounds.length);
+    h.style.backgroundImage="url('" + backgrounds[i] + "')";
+
     var APP = angular.module( 'convo', ['ngAnimate'],
         // This is here because recursively using ng-templates
         // will cause an infinite digest error if the depth of the
@@ -60,7 +99,6 @@
 
 </head>
 <body ng-app="convo">
-
   <!-- Nav menu -->
   <div ng-controller="NavController" ng-hide="view === 'none'">
     <nav class="fadeable" ng-fade="!nav" ng-mouseleave="delayedNavHide()" ng-mouseenter="resetDelayHide()">
