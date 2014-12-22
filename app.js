@@ -15,14 +15,6 @@ var app = module.exports = express.createServer();
 
 
 var io = socket.listen(app);
-io.set('log level', 2);
-io.set('transports', [
-    'websocket'
-  , 'flashsocket'
-  , 'htmlfile'
-  , 'xhr-polling'
-  , 'jsonp-polling'
-]);
 
 var lessFile = './public/css/less.less';
 var cssFile = './public/css/css.css';
