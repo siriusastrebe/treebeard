@@ -19,7 +19,7 @@
   <script type='text/javascript' src="//cdn.jsdelivr.net/jquery.cookie/1.4.0/jquery.cookie.js"></script>
   <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.js'></script>
   <script type='text/javascript' src='/js/angular-animate.min.js'></script>
-  <script type='text/javascript' src="http://localhost:3000/socket.io/socket.io.js"></script>
+  <script type='text/javascript' src="/socket.io/socket.io.js"></script>
   <script type='text/javascript' src="/syc.js"></script>
 
   <script type="text/javascript">
@@ -72,7 +72,7 @@
         }
     );
 
-    var IO = io.connect('http://localhost:3000/'),
+    var IO = io.connect(),
         SESSIONID = findSID(), 
         LOGIN = {status: 'participant', username: randomUsername()};
 
