@@ -71,11 +71,12 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', '$timeou
   $scope.action = { 
       replying: undefined,
       selection: undefined,
-      recent: undefined,
       message: '',
   }
 
   $scope.reply = function (parent) {
+    if ($scope.action.message.length === 0) return;
+
     var item = {
         contents: $scope.action.message,
         author: LOGIN.username,
@@ -88,10 +89,6 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', '$timeou
     $scope.action.replying = undefined;
     $scope.action.selection = undefined;
     $scope.action.message = '';
-    $scope.action.recent = item;
-    $timeout( function () { 
-      $scope.action.recent = undefined;
-    }, 100);
   }
 
   $scope.openReply = function (item) { 

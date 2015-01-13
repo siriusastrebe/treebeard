@@ -422,6 +422,7 @@ nav #homeButton {
 }
 .flowView textarea {
   width: 240px;
+  height: 65px;
   margin: 0px;
   padding: 4px;
   resize: none;
@@ -443,29 +444,28 @@ nav #homeButton {
 .flowView .flowReply.slide {
   height: 80px !important;
 }
-.flowView .iconRack {
-  position: relative;
-  width: 100%;
-  height: 0px;
-  overflow: hidden;
-  -webkit-transition: 0.4s height ease;
-  -moz-transition: 0.4s height ease;
-  -o-transition: 0.4s height ease;
-  transition: 0.4s height ease;
-}
-.flowView .iconRack.slide {
-  height: 40px !important;
+.flowView .node .replyIcon.visible,
+.flowView .node:hover .replyIcon {
+  opacity: 1.0;
 }
 .flowView .replyIcon {
-  position: absolute;
-  right: 20px;
+  float: right;
+  margin-left: 8px;
+  margin-right: 10px;
+  margin-bottom: 6px;
   padding: 5px;
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
+  -webkit-transition: 0.4s opacity ease;
+  -moz-transition: 0.4s opacity ease;
+  -o-transition: 0.4s opacity ease;
+  transition: 0.4s opacity ease;
+  opacity: 0.0;
   cursor: pointer;
 }
-.flowView .replyIcon:hover {
+.flowView .replyIcon:hover,
+.flowView .node.replying .replyIcon {
   background-color: #fada5e;
 }
 .flowView .debugIcon {

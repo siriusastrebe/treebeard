@@ -109,15 +109,17 @@
 
       <div class="bracket" ng-class="{topBracket: $first, botBracket: $last}"></div>
 
-      <div class="node" ng-class="{selected: action.selection===flow}" ng-Click="select(flow)">
+      <div class="node" ng-class="{selected: action.selection===flow, replying: action.replying===flow}" ng-Click="select(flow)">
+
         <div class="details">
           <h3>{{flow.author}}</h3>
           <h4>{{flow.time}}</h4>
         </div>
+
+        <i ng-click="openReply(flow)" ng-class="{visible: action.selection===flow}" class="replyIcon fa fa-comment-o fa-lg"></i>
+
         <p>{{flow.contents}}</p>
-        <div ng-slide="action.selection===flow" class="iconRack">
-          <i ng-click="openReply(flow)" class="replyIcon fa fa-comment-o fa-lg"></i>
-        </div>
+
       </div>
 
       <ul class="children">
