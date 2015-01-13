@@ -101,14 +101,6 @@
     </form>
   </div>
 
-  <div ng-controller="ErrorController" ng-show="errorShowing" id="error" ng-click="errorShowing = !errorShowing">
-    <form ng-submit="continue()" ng-click="$event.stopPropagation()"> 
-      <div>{{errorMessage}}</div>
-      <div>Contact <a href="mailto:SiriusAStrebe@gmail.com">SiriusAStrebe@gmail.com</a></div>
-      <input type='submit' value="I understand..."></input>
-    </form>
-  </div>
-
   <footer></footer>
 
   <script type="text/javascript">
@@ -122,14 +114,6 @@
         }
     });
     
-    APP.controller('ErrorController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
-      $scope.errorShowing = false;
-
-      $scope.continue = function () { 
-        $scope.errorShowing = false;
-      }
-    }]);
-
     APP.controller('LoginController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
       $scope.loginShowing = false;
 
