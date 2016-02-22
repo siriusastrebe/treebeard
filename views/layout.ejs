@@ -124,14 +124,6 @@
         }
     });
     
-    APP.controller('ErrorController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
-      $scope.errorShowing = false;
-
-      $scope.continue = function () { 
-        $scope.errorShowing = false;
-      }
-    }]);
-
     APP.controller('LoginController', ['$scope', '$rootScope', function ($scope, $rootScope) { 
       $scope.loginShowing = false;
 
