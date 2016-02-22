@@ -2,13 +2,12 @@
   APP.controller('TopicsController', ['$scope', '$rootScope', '$location', function ($scope, $rootScope, $location) { 
     $showPublish = false;
 
-    $scope.tree = Syc.list('Tree', function (root) { 
-      $scope.tree = root; 
-      syc.watch(root, function (change) { 
+    Syc.loaded(function () { 
+      $scope.tree = Syc.list('Tree');
+      Syc.Watch($scope.tree, function (change) { 
         $scope.$digest();
       });
     });
-
 
     $scope.topicSubmit = function () {
       var branch = {

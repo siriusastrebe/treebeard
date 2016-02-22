@@ -24,7 +24,7 @@
 
   <script type="text/javascript">
     var h = document.getElementsByTagName("html")[0];
-    h.style.backgroundImage="url('/img/Whales.jpg')";
+    h.style.backgroundImage="url('http://i.imgur.com/mBbwdg9.jpg')";
 
     var APP = angular.module( 'convo', ['ngAnimate'],
         // This is here because recursively using ng-templates
@@ -101,6 +101,7 @@
     </form>
   </div>
 
+<!--
   <div ng-controller="ErrorController" ng-show="errorShowing" id="error" ng-click="errorShowing = !errorShowing">
     <form ng-submit="continue()" ng-click="$event.stopPropagation()"> 
       <div>{{errorMessage}}</div>
@@ -108,6 +109,7 @@
       <input type='submit' value="I understand..."></input>
     </form>
   </div>
+-->
 
   <footer></footer>
 

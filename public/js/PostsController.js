@@ -40,8 +40,8 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', '$timeou
 
   $scope.root = [{author: 'Hold your horses', contents: 'Waiting on data...'}];
 
-  Syc.list($scope.subject, function (root) { 
-    $scope.root = root;
+  Syc.loaded(function (root) { 
+    $scope.root = Syc.list($scope.subject)
 
     $scope.posts = determinePosts(Syc.ancestors($scope.root));
 

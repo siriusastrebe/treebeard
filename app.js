@@ -131,8 +131,35 @@ var stark = { contents: "House Stark", author: a, children: [
 gotJson.children = [lannister, stark];
 
 
+binJson = {
+    contents: "Stress test: 1024 element Binary Tree"
+  , author: b
+  , children: binaryPopulate(0)
+}
+
+function binaryPopulate (depth) {
+  if (depth < 10) {
+    return [{
+      contents: "Left, Depth: " + depth,
+      author: a, 
+      children: [
+        binaryPopulate(depth + 1)
+			]
+    }, {
+      contents: "Right, Depth: " + depth,
+      author: a, 
+      children: [
+        binaryPopulate(depth + 1)
+      ]
+    }]
+  }
+}
+  
+
+
 
 /*
+
 binaryJson = {
     contents: 'Zero'
   , author: "Michael Sloan, Haskell God"
@@ -140,7 +167,7 @@ binaryJson = {
   , timestamp: new Date()
 }
 
-binary = new Convoset.Convoset();
+//binary = new Convoset.Convoset();
 
 binaryRoot = binary.JsonToRoot(binaryJson);
 
@@ -171,9 +198,10 @@ binMaker(binaryRoot, 1, 8);
 binBreadth(queue);
 */
 
+
 var TOPICS = new Topics();
 TOPICS.addTopic(gotJson);
-//TOPICS.addTopic(binary);
+TOPICS.addTopic(binJson);
 
 
 

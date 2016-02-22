@@ -421,8 +421,8 @@ nav #homeButton {
   text-align: center;
 }
 .flowView textarea {
-  width: 240px;
-  height: 65px;
+  width: 340px;
+  height: 70px;
   margin: 0px;
   padding: 4px;
   resize: none;
@@ -434,7 +434,7 @@ nav #homeButton {
 }
 .flowView .flowReply {
   height: 0px;
-  width: 260px;
+  width: 360px;
   overflow: hidden;
   -webkit-transition: 0.4s height ease;
   -moz-transition: 0.4s height ease;
@@ -442,7 +442,24 @@ nav #homeButton {
   transition: 0.4s height ease;
 }
 .flowView .flowReply.slide {
-  height: 80px !important;
+  height: 90px !important;
+}
+.flowView .flowReply .node {
+  box-shadow: 0px 0px 3px #FF4;
+}
+@keyframes glow {
+  from {
+    box-shadow: 0px 0px 4px #C84;
+  }
+  to {
+    box-shadow: 0px 0px 4px #FFF;
+  }
+}
+.flowView .flowReply .node {
+  animation-duration: 1.5s;
+  animation-name: glow;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
 }
 .flowView .node .replyIcon.visible,
 .flowView .node:hover .replyIcon {
