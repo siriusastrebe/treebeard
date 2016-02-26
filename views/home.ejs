@@ -21,7 +21,7 @@
 
       Syc.list('Tree')[slug] = branch;
 
-      window.location = slug;
+      setTimeout(function () { window.location = slug; }, 1000);
     }
 
     function toSlug (str) { 
