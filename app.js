@@ -132,25 +132,21 @@ gotJson.children = [lannister, stark];
 
 
 binJson = {
-    contents: "Stress test: 1024 element Binary Tree"
+    contents: "Stress test: 256 element Binary Tree"
   , author: b
   , children: binaryPopulate(0)
 }
 
 function binaryPopulate (depth) {
-  if (depth < 10) {
+  if (depth < 6) {
     return [{
       contents: "Left, Depth: " + depth,
       author: a, 
-      children: [
-        binaryPopulate(depth + 1)
-			]
+      children: binaryPopulate(depth + 1)
     }, {
       contents: "Right, Depth: " + depth,
       author: a, 
-      children: [
-        binaryPopulate(depth + 1)
-      ]
+      children: binaryPopulate(depth + 1)
     }]
   }
 }
@@ -226,14 +222,6 @@ app.get('/:topic',  function (req, res) {
     }
 
     res.render('posts.ejs');
-
-    /*
-    else { 
-      res.render('404.ejs',
-        { url: req.params.topic } 
-      );
-    }
-    */
 });
 
 
@@ -241,13 +229,40 @@ app.get('/:topic',  function (req, res) {
 var usernames = [];
 syc.sync('usernames', usernames); 
 
-var roots = {};
-var got = [gotJson];
-roots['got'] = got;
+
+var roots = {zin: binJson, got: gotJson},
+    got = [gotJson],
+    bin = [binJson];
+
 syc.sync('Tree', roots);
 syc.sync('got', got);
+syc.sync('zin', bin);
+
+syc.watch(roots, function (changes, socket) { 
+  var topicName = changes.property,
+      topicRoot = changes.newValue;
+ 
+  Syc.sync(topicName, [topicRoot]);
+});
 
 // Syc Verifiers
+syc.verify(roots, function (changes) {
+  console.log(changes);
+  if (changes.type !== 'add') return false;
+  if (syc.type(changes.newValue) !== 'object') return false;
+  if (postObjectVerifier(changes.newValue) === false) { 
+      return false;
+  }
+  return true;
+});
+
+syc.verify(usernames, function (changes, socket) { 
+  return (typeof changes.newValue === 'string');
+});
+
+syc.verify(got, childrenArrayVerifier);
+syc.verify(bin, childrenArrayVerifier);
+
 function postObjectVerifier (change) { 
   if (syc.type(change) !== 'object') return false;
   for (var property in change) { 
@@ -265,33 +280,9 @@ function postObjectVerifier (change) {
 function childrenArrayVerifier (changes, socket) { 
   if (changes.type !== 'add') return false;
   if (syc.type(changes.variable) !== 'array') return false;
-  if (syc.type(changes.change) !== 'object') return false;
-  return postObjectVerifier(changes.change);
+  if (syc.type(changes.newValue) !== 'object') return false;
+  return postObjectVerifier(changes.newValue);
 }
-
-// Verify calls
-syc.verify(roots, function (changes) {
-  if (changes.type !== 'add') return false;
-  if (syc.type(changes.change) !== 'array') return false;
-  for (var index in changes.changes) { 
-    if (postObjectVerifier(changes.changes[index]) === false); 
-      return false;
-  }
-  return true
-});
-
-syc.verify(usernames, function (changes, socket) { 
-  return (typeof changes.change === 'string');
-});
-
-syc.watch(roots, function (changes, socket) { 
-  var topicName = changes.property,
-      topicRoot = changes.change;
- 
-  Syc.sync(topicName, topicRoot) 
-
-  Syc.verify(topicRoot, childrenArrayVerifier, {recursive: true});
-});
 
 
 

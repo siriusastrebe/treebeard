@@ -40,24 +40,20 @@ APP.controller('PostsController', ['$scope', '$rootScope', '$location', '$timeou
 
   $scope.root = [{author: 'Hold your horses', contents: 'Waiting on data...'}];
 
-  Syc.loaded(function (root) { 
+  Syc.loaded(function () { 
     $scope.root = Syc.list($scope.subject)
 
     $scope.posts = determinePosts(Syc.ancestors($scope.root));
 
     $scope.$digest();
 
-    Syc.watch($scope.root, function (change) { 
-      if (change.type === 'delete') { 
-        $scope.$digest();
-      } else if (typeof change.change === 'object') {
-        var ancestors = Syc.ancestors(change.change),
-            newPosts = determinePosts(ancestors);
+    Syc.watch_recursive($scope.root, function (change) { 
+      console.log('Received changes', change);
 
-        $scope.posts.push.apply($scope.posts, newPosts);
-        $scope.$digest();
-      }
-    }, {recursive: true});
+      $scope.posts = determinePosts(Syc.ancestors($scope.root));
+
+      $scope.$digest();
+    });
 
     function determinePosts (objects) { 
       return objects.filter( function (object) { return (Syc.Type(object) === 'object'); });

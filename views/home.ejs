@@ -4,7 +4,8 @@
 
     Syc.loaded(function () { 
       $scope.tree = Syc.list('Tree');
-      Syc.Watch($scope.tree, function (change) { 
+      $scope.$digest();
+      Syc.watch_recursive($scope.tree, function (change) { 
         $scope.$digest();
       });
     });
@@ -18,7 +19,7 @@
 
       var slug = toSlug($scope.contents)
 
-      $scope.tree[slug] = [branch]
+      Syc.list('Tree')[slug] = branch;
 
       window.location = slug;
     }
@@ -58,9 +59,9 @@
   <ul id="topics">
     <li ng-repeat="(name, object) in tree">
       <h4>
-        <a ng-href="/{{name}}/">{{object[0].contents}}</a>
+        <a ng-href="/{{name}}/">{{object.contents}}</a>
         by
-        {{object[0].author}}
+        {{object.author}}
       </h4>
     </li>
   </ul>
