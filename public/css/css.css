@@ -474,16 +474,16 @@ nav #homeButton {
   border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
-  -webkit-transition: 0.4s opacity ease;
-  -moz-transition: 0.4s opacity ease;
-  -o-transition: 0.4s opacity ease;
-  transition: 0.4s opacity ease;
-  opacity: 0.0;
+  -webkit-transition: 0.4s background-color ease;
+  -moz-transition: 0.4s background-color ease;
+  -o-transition: 0.4s background-color ease;
+  transition: 0.4s background-color ease;
   cursor: pointer;
+  background-color: #FFFFAA;
 }
 .flowView .replyIcon:hover,
 .flowView .node.replying .replyIcon {
-  background-color: #fada5e;
+  background-color: #4488ff;
 }
 .flowView .debugIcon {
   position: absolute;

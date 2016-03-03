@@ -93,8 +93,8 @@ app.get(sycExternalPath, function (req, res) {
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ = 
 // Datasets
 // ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ =
-var a = "Batar Jr";
-var b = "Kuviera, the Great Uniter";
+var a = "Sherlock Holmes";
+var b = "Dr. Watson";
 
 gotJson = {
     contents: "Family Tree of Westeros"
